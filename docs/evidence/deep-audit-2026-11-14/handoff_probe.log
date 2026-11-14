@@ -1,0 +1,42 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+seed=11 tick=71 event=kick data={ "player": 6, "kind": 0, "speed": 15.5670127261725, "receiver": 9 } intended=9
+seed=11 tick=71 ctrl=6 owner=-1 receiver=9 remembered=<null>
+seed=11 tick=72 event=control data={ "player": 9 } intended=9
+seed=11 tick=72 ctrl=9 owner=-1 receiver=9 remembered=<null>
+seed=11 tick=73 ctrl=9 owner=-1 receiver=9 remembered=9
+seed=11 tick=76 ctrl=9 owner=-1 receiver=9 remembered=9
+seed=11 tick=101 ctrl=9 owner=16 receiver=9 remembered=9
+seed=11 tick=192 event=kick data={ "player": 16, "kind": 0, "speed": 12.879157594213, "receiver": 17 } intended=17
+seed=11 tick=200 ctrl=9 owner=-1 receiver=17 remembered=9
+seed=11 tick=231 event=control data={ "player": 7 } intended=17
+VERDICT seed=11 { "ok": true, "fail": [], "notes": ["options p>=0.6 offered to the human at pass time: 5; control hand-offs 2; ticks where AI overrode human input 0; players without duty (samples) 10"] }
+seed=44 tick=71 event=kick data={ "player": 6, "kind": 0, "speed": 15.0488036811134, "receiver": 9 } intended=9
+seed=44 tick=71 ctrl=6 owner=-1 receiver=9 remembered=<null>
+seed=44 tick=72 event=control data={ "player": 7 } intended=9
+seed=44 tick=72 ctrl=7 owner=-1 receiver=9 remembered=<null>
+seed=44 tick=73 ctrl=7 owner=-1 receiver=9 remembered=9
+seed=44 tick=76 ctrl=7 owner=-1 receiver=9 remembered=9
+seed=44 tick=101 ctrl=7 owner=-1 receiver=9 remembered=9
+seed=44 tick=141 event=kick data={ "player": 17, "kind": 0, "speed": 12.1983119760358, "receiver": 20 } intended=20
+seed=44 tick=200 event=kick data={ "player": 20, "kind": 0, "speed": 11.9097286915349, "receiver": 17 } intended=17
+seed=44 tick=200 ctrl=7 owner=-1 receiver=17 remembered=9
+seed=44 tick=231 event=control data={ "player": 5 } intended=17
+VERDICT seed=44 { "ok": false, "fail": ["control did not follow the pass to the receiver"], "notes": ["options p>=0.6 offered to the human at pass time: 4; control hand-offs 2; ticks where AI overrode human input 0; players without duty (samples) 10"] }
+seed=55 tick=71 event=kick data={ "player": 6, "kind": 0, "speed": 15.8678611440062, "receiver": 9 } intended=9
+seed=55 tick=71 ctrl=6 owner=-1 receiver=9 remembered=<null>
+seed=55 tick=72 event=control data={ "player": 9 } intended=9
+seed=55 tick=72 ctrl=9 owner=-1 receiver=9 remembered=<null>
+seed=55 tick=73 ctrl=9 owner=-1 receiver=9 remembered=9
+seed=55 tick=76 ctrl=9 owner=-1 receiver=9 remembered=9
+seed=55 tick=101 ctrl=9 owner=-1 receiver=9 remembered=9
+seed=55 tick=132 event=kick data={ "player": 17, "kind": 0, "speed": 12.6061010181329, "receiver": 20 } intended=20
+seed=55 tick=200 ctrl=9 owner=-1 receiver=20 remembered=9
+seed=55 tick=231 event=control data={ "player": 6 } intended=20
+seed=55 tick=256 event=kick data={ "player": 20, "kind": 0, "speed": 11.9467479327364, "receiver": 17 } intended=17
+seed=55 tick=306 event=kick data={ "player": 17, "kind": 0, "speed": 13.8663042439054, "receiver": 18 } intended=18
+VERDICT seed=55 { "ok": true, "fail": [], "notes": ["options p>=0.6 offered to the human at pass time: 4; control hand-offs 2; ticks where AI overrode human input 0; players without duty (samples) 10"] }
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+     at: cleanup (core/object/object.cpp:2514)
+ERROR: 18 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:795)

@@ -1,0 +1,61 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+=== seed 11: Хозяева 1-0 Гости | ticks 12007 | 7.0s wall (28x realtime)
+  ХОЗ: poss 58% | pass 28/33 (85%) | shots 3 (on 2, xG 0.32) | goals 1 | int 4 | tackles 11/12 | turnovers 14 | offs 0 | corners 0 | throws 1 | gk 0 | saves 0
+     phases: BUILD_UP  0%, PROGRESSION 32%, CHANCE 20%, ATT_TRANS  5%, ORG_DEF 20%, DEF_TRANS 20%, SET_PIECE  3% | conflicts 0 | width 44m depth 33m
+  ГОС: poss 42% | pass 34/38 (89%) | shots 0 (on 0, xG 0.00) | goals 0 | int 4 | tackles 11/24 | turnovers 16 | offs 0 | corners 0 | throws 0 | gk 1 | saves 1
+     phases: BUILD_UP  4%, PROGRESSION 22%, CHANCE  2%, ATT_TRANS 11%, ORG_DEF 31%, DEF_TRANS 27%, SET_PIECE  3% | conflicts 0 | width 43m depth 31m
+  ball crowd avg 3.24 max 7 | swarm 2.1% | min teammate gap avg 5.6m | thirds 18/71/12% | ping-pong 2 | stalls 0
+  shots avg dist 17.7m, long(>28m) 0 | restarts { "kickoff": 3, "goal_kick": 1, "throw_in": 1 } | max restart wait 2.0s | max keeper hold 0.0s
+  possession losses (zone of losing team : cause): att3:lob 2, att3:pass 1, att3:save 1, att3:tackle 4, mid3:? 1, mid3:clear 2, mid3:lob 1, mid3:pass 8, mid3:tackle 8, mid3:through 1, own3:pass 1
+  kicks: { "pass": 61, "through": 3, "first-time": 2, "clear": 3, "lob": 4, "cross": 3, "shoot": 1 } | decisions T0 { "dribble": 546, "pass": 25, "through": 1, "lob": 2, "cross": 3, "hold": 2, "shoot": 1 } | T1 { "hold": 2, "pass": 31, "dribble": 248, "through": 2, "clear": 3, "lob": 2 }
+=== seed 22: Хозяева 1-0 Гости | ticks 12406 | 7.1s wall (29x realtime)
+  ХОЗ: poss 51% | pass 24/29 (83%) | shots 2 (on 2, xG 0.77) | goals 1 | int 1 | tackles 11/15 | turnovers 13 | offs 0 | corners 0 | throws 4 | gk 0 | saves 0
+     phases: BUILD_UP  6%, PROGRESSION 17%, CHANCE 15%, ATT_TRANS 12%, ORG_DEF 29%, DEF_TRANS 16%, SET_PIECE  5% | conflicts 0 | width 45m depth 32m
+  ГОС: poss 49% | pass 33/34 (97%) | shots 0 (on 0, xG 0.00) | goals 0 | int 4 | tackles 5/12 | turnovers 12 | offs 0 | corners 0 | throws 1 | gk 0 | saves 0
+     phases: BUILD_UP  4%, PROGRESSION 20%, CHANCE  7%, ATT_TRANS 14%, ORG_DEF 34%, DEF_TRANS 16%, SET_PIECE  5% | conflicts 0 | width 43m depth 31m
+  ball crowd avg 3.19 max 7 | swarm 4.2% | min teammate gap avg 5.2m | thirds 24/65/11% | ping-pong 1 | stalls 0
+  shots avg dist 9.6m, long(>28m) 0 | restarts { "kickoff": 3, "throw_in": 5 } | max restart wait 1.7s | max keeper hold 0.0s
+  possession losses (zone of losing team : cause): att3:? 2, att3:lob 2, att3:pass 5, att3:save 1, att3:tackle 4, mid3:? 1, mid3:lob 1, mid3:pass 5, mid3:tackle 2, own3:? 1, own3:tackle 1
+  kicks: { "pass": 54, "clear": 7, "through": 2, "cross": 2, "first-time": 2, "lob": 5 } | decisions T0 { "dribble": 344, "pass": 17, "clear": 2, "through": 1, "cross": 2, "lob": 4 } | T1 { "dribble": 347, "pass": 29, "hold": 2, "lob": 1, "clear": 5, "through": 1 }
+=== seed 33: Хозяева 1-0 Гости | ticks 11741 | 7.8s wall (25x realtime)
+  ХОЗ: poss 51% | pass 21/23 (91%) | shots 7 (on 5, xG 0.58) | goals 1 | int 4 | tackles 6/10 | turnovers 14 | offs 0 | corners 0 | throws 0 | gk 0 | saves 1
+     phases: BUILD_UP  3%, PROGRESSION 14%, CHANCE 10%, ATT_TRANS 16%, ORG_DEF 31%, DEF_TRANS 23%, SET_PIECE  2% | conflicts 0 | width 43m depth 34m
+  ГОС: poss 49% | pass 42/46 (91%) | shots 1 (on 1, xG 0.06) | goals 0 | int 2 | tackles 8/13 | turnovers 15 | offs 0 | corners 0 | throws 0 | gk 0 | saves 4
+     phases: BUILD_UP  9%, PROGRESSION 34%, CHANCE  3%, ATT_TRANS  8%, ORG_DEF 18%, DEF_TRANS 27%, SET_PIECE  2% | conflicts 0 | width 45m depth 34m
+  ball crowd avg 2.88 max 7 | swarm 0.6% | min teammate gap avg 6.0m | thirds 14/68/18% | ping-pong 1 | stalls 0
+  shots avg dist 21.1m, long(>28m) 0 | restarts { "kickoff": 3 } | max restart wait 1.1s | max keeper hold 1.3s
+  possession losses (zone of losing team : cause): att3:? 2, att3:pass 1, att3:save 3, att3:shot 3, att3:tackle 1, mid3:? 2, mid3:lob 1, mid3:pass 7, mid3:tackle 6, mid3:through 2, own3:clear 1
+  kicks: { "pass": 58, "through": 3, "shoot": 7, "clear": 1, "lob": 5, "cross": 1, "first-time": 1 } | decisions T0 { "dribble": 454, "pass": 18, "shoot": 6, "lob": 2, "cross": 1 } | T1 { "pass": 37, "dribble": 347, "through": 3, "clear": 1, "lob": 3, "shoot": 1, "hold": 2 }
+=== seed 44: Хозяева 0-0 Гости | ticks 11500 | 6.9s wall (28x realtime)
+  ХОЗ: poss 55% | pass 24/26 (92%) | shots 3 (on 3, xG 0.19) | goals 0 | int 1 | tackles 8/12 | turnovers 12 | offs 1 | corners 0 | throws 0 | gk 0 | saves 1
+     phases: BUILD_UP  4%, PROGRESSION 27%, CHANCE 23%, ATT_TRANS  6%, ORG_DEF 24%, DEF_TRANS 14%, SET_PIECE  2% | conflicts 0 | width 44m depth 35m
+  ГОС: poss 45% | pass 32/33 (97%) | shots 1 (on 1, xG 0.06) | goals 0 | int 2 | tackles 5/10 | turnovers 12 | offs 0 | corners 0 | throws 0 | gk 0 | saves 2
+     phases: BUILD_UP  6%, PROGRESSION 23%, CHANCE  3%, ATT_TRANS  7%, ORG_DEF 42%, DEF_TRANS 18%, SET_PIECE  2% | conflicts 0 | width 42m depth 33m
+  ball crowd avg 2.87 max 6 | swarm 1.4% | min teammate gap avg 5.6m | thirds 12/63/24% | ping-pong 1 | stalls 0
+  shots avg dist 21.2m, long(>28m) 0 | restarts { "kickoff": 2, "free_kick": 1 } | max restart wait 1.1s | max keeper hold 0.0s
+  possession losses (zone of losing team : cause): att3:lob 3, att3:pass 2, att3:save 3, att3:tackle 3, mid3:? 2, mid3:clear 3, mid3:lob 2, mid3:pass 2, mid3:tackle 2, own3:clear 2
+  kicks: { "pass": 49, "through": 3, "shoot": 4, "clear": 8, "lob": 6, "cross": 1 } | decisions T0 { "hold": 2, "pass": 20, "dribble": 497, "shoot": 3, "lob": 3, "clear": 1, "cross": 1, "through": 1 } | T1 { "dribble": 273, "through": 2, "pass": 26, "clear": 7, "lob": 3, "hold": 1, "shoot": 1 }
+=== seed 55: Хозяева 2-0 Гости | ticks 12248 | 7.6s wall (27x realtime)
+  ХОЗ: poss 56% | pass 25/28 (89%) | shots 4 (on 3, xG 0.81) | goals 2 | int 2 | tackles 8/11 | turnovers 10 | offs 0 | corners 0 | throws 0 | gk 0 | saves 0
+     phases: BUILD_UP  3%, PROGRESSION 27%, CHANCE 16%, ATT_TRANS  9%, ORG_DEF 25%, DEF_TRANS 17%, SET_PIECE  3% | conflicts 0 | width 43m depth 32m
+  ГОС: poss 44% | pass 35/37 (95%) | shots 0 (on 0, xG 0.00) | goals 0 | int 2 | tackles 7/18 | turnovers 13 | offs 0 | corners 0 | throws 0 | gk 1 | saves 1
+     phases: BUILD_UP  6%, PROGRESSION 23%, CHANCE  4%, ATT_TRANS  9%, ORG_DEF 33%, DEF_TRANS 22%, SET_PIECE  3% | conflicts 0 | width 44m depth 33m
+  ball crowd avg 3.25 max 7 | swarm 1.7% | min teammate gap avg 5.6m | thirds 19/68/13% | ping-pong 2 | stalls 0
+  shots avg dist 15.9m, long(>28m) 0 | restarts { "kickoff": 4, "goal_kick": 1 } | max restart wait 1.1s | max keeper hold 1.2s
+  possession losses (zone of losing team : cause): att3:lob 1, att3:pass 1, att3:save 1, att3:tackle 4, mid3:? 1, mid3:pass 10, mid3:tackle 4, own3:pass 1
+  kicks: { "pass": 55, "through": 3, "shoot": 4, "lob": 4, "clear": 1, "cross": 2 } | decisions T0 { "dribble": 539, "pass": 22, "through": 2, "shoot": 4, "lob": 1, "cross": 2 } | T1 { "hold": 3, "pass": 28, "dribble": 338, "through": 1, "lob": 3, "clear": 1 }
+=== seed 66: Хозяева 2-0 Гости | ticks 12248 | 7.7s wall (26x realtime)
+  ХОЗ: poss 55% | pass 32/38 (84%) | shots 2 (on 2, xG 0.68) | goals 2 | int 0 | tackles 3/4 | turnovers 10 | offs 0 | corners 0 | throws 1 | gk 0 | saves 0
+     phases: BUILD_UP  2%, PROGRESSION 20%, CHANCE 24%, ATT_TRANS 12%, ORG_DEF 29%, DEF_TRANS 10%, SET_PIECE  3% | conflicts 0 | width 44m depth 34m
+  ГОС: poss 45% | pass 42/43 (98%) | shots 0 (on 0, xG 0.00) | goals 0 | int 4 | tackles 9/17 | turnovers 11 | offs 0 | corners 0 | throws 0 | gk 0 | saves 0
+     phases: BUILD_UP  6%, PROGRESSION 25%, CHANCE  8%, ATT_TRANS  0%, ORG_DEF 41%, DEF_TRANS 17%, SET_PIECE  3% | conflicts 0 | width 43m depth 32m
+  ball crowd avg 3.07 max 7 | swarm 3.3% | min teammate gap avg 5.4m | thirds 25/60/15% | ping-pong 5 | stalls 0
+  shots avg dist 10.4m, long(>28m) 0 | restarts { "kickoff": 4, "throw_in": 1 } | max restart wait 1.1s | max keeper hold 1.3s
+  possession losses (zone of losing team : cause): att3:? 1, att3:lob 2, att3:pass 2, att3:tackle 6, mid3:clear 3, mid3:pass 2, mid3:tackle 1, mid3:through 1, own3:clear 2, own3:through 1
+  kicks: { "pass": 63, "through": 9, "lob": 2, "clear": 7, "cross": 5, "first-time": 1, "shoot": 1 } | decisions T0 { "dribble": 418, "pass": 23, "through": 7, "lob": 2, "cross": 4, "hold": 3, "shoot": 1 } | T1 { "pass": 35, "dribble": 279, "clear": 7, "hold": 4, "cross": 1, "through": 2 }
+TOTAL over 6 matches (levels 84 vs 62): home wins 5, draws 1, away wins 0 | goals 7:0 | shots/match 3.8 | stalls 0 | assignment conflicts 0
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+     at: cleanup (core/object/object.cpp:2514)
+ERROR: 14 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:795)

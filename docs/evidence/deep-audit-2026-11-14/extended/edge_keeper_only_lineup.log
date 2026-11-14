@@ -1,0 +1,10 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+FAIL keeper_only_lineup | 16 real goalkeeper records, result size=0; negative scores must still allow a best candidate
+DEEP_AUDIT_DONE checks=1 failed=1
+SCRIPT ERROR: Invalid access to property or key 'id' on a base object of type 'Dictionary'.
+          at: auto_lineup (res://src/career/league_data.gd:110)
+          GDScript backtrace (most recent call first):
+              [0] auto_lineup (res://src/career/league_data.gd:110)
+              [1] _keeper_only_lineup (res://tools/deep_audit.gd:307)
+              [2] _run (res://tools/deep_audit.gd:28)

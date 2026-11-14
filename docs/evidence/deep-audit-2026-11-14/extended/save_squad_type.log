@@ -1,0 +1,10 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+SAVE_CASE_DONE {"backup_equal":false,"case":"squad_type","error":"","ok":false,"recovered":false}
+SCRIPT ERROR: Invalid cast: could not convert value to 'Array'.
+          at: validate (res://src/career/career_state.gd:489)
+          GDScript backtrace (most recent call first):
+              [0] validate (res://src/career/career_state.gd:489)
+              [1] _read (res://src/career/save_manager.gd:55)
+              [2] load_career (res://src/career/save_manager.gd:64)
+              [3] _run (res://tools/audit_save_case.gd:73)

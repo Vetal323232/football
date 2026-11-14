@@ -3,6 +3,8 @@
 Verified against gameplay commit a47746eba365d3a3a1ffc6693069dc2cab484505 on 2026-11-14.
 Use this document for navigation. Confirmed defects and evidence are in [the code review](CODE_REVIEW_2026-11-14.md);
 the ordered implementation tasks are in [AI_WORK_PLAN.md](AI_WORK_PLAN.md).
+Extended audit: [DEEP_AUDIT_2026-11-14.md](DEEP_AUDIT_2026-11-14.md).
+Full Claude entry point: [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTER_PROMPT_EN.md).
 
 ## Read before changing behaviour
 
@@ -71,6 +73,7 @@ just to log its candidates consumes randomness and changes behaviour.
 | Goalkeepers | [keeper_ai.gd](../src/ai/keeper_ai.gd): drive, _path_at_depth | Uses trajectory estimates, reach and reaction limits; MatchSim executes actual catches and parries. |
 | Human action assistance | [human_controller.gd](../src/input/human_controller.gd): update, assist_pass, _shot, _manual_switch | Keyboard input and AI share KickPlanner and MatchSim mechanics. |
 | Input sampling and pause | match_view.gd: _unhandled_input, _sample_input, set_paused | Handles edge-triggered actions, camera-relative movement and pausing simulation updates. |
+| Substitutions and per-identity state | match_sim.gd: substitute, _apply_identity; sim_player.gd; AIAgent; match_view._on_event | Identity changes in the same formation slot; transient physics/action/AI state needs deliberate reset. |
 
 ## Configuration
 
@@ -116,6 +119,9 @@ user://saves/career.json is the normal save, with a .bak backup. Test corrupt sa
 | tools/run_scenarios.gd | Eight diagnostic scenario verdicts; currently exits 0 even when verdicts fail |
 | src/ai/scenario_lib.gd | Scenario setup, observations, injected diagnostic input and success predicates |
 | tools/review_regressions.gd | Five new failing behavioural regressions from this review; correctly returns exit 1 when they fail |
+| tools/deep_audit.gd | Eight deterministic pairs, eight three-season careers, substitution/back-pass/pause/handoff/auto-lineup regressions; select with --case=NAME |
+| tools/audit_save_case.gd | Thirty isolated valid/corrupt save cases, one per process; select with --case=NAME |
+| tools/run_deep_audit.py | Python 3 stdlib driver: engine pin, 60-second per-case bounds, logs/JSON, completion/error checks; baseline 11/37 subprocess cases pass |
 | tools/probe_scn.gd | Event and duty trace for a specific scenario |
 | tools/run_match.gd and src/ai/match_report.gd | Full-match observations; metrics are diagnostic evidence rather than an automatic quality verdict |
 | tools/fuzz_human.gd | Random-input robustness, not human control feel |
@@ -125,3 +131,20 @@ user://saves/career.json is the normal save, with a .bak backup. Test corrupt sa
 
 Use Godot 4.5.1 for comparisons with the recorded baseline. See AI_WORK_PLAN.md for exact commands, dependencies,
 expected failures and completion criteria.
+
+## Change-impact paths for the extended findings
+
+| Task | Start here | Also inspect / recheck |
+| --- | --- | --- |
+| RULE01 / RULE02 | MatchSim._try_kick / _register_touch / _give_possession | Offside snapshot, backpass_team, restart_taker/no_offside, actual keeper contacts; rule counterexamples. |
+| INPUT02 | HumanController.update | TeamAI._ball_claims can choose another intercept receiver; preserve user intent without disabling AI interception planning. |
+| INPUT03 | match_view.set_paused / _sample_input | HumanController.charging/shot_charge, release events, window focus; UI edges and normal charged shots. |
+| SUB01 | MatchSim.substitute | SimPlayer transient fields, AIAgent memory, participants, PlayerRig.refresh_identity, bench/limits. |
+| CAREER01 | LeagueData.auto_lineup | Best candidate initial score -1 versus penalized negative scores; CareerState._repair_lineup and UI error contracts. |
+| SAVE01 | CareerState.validate then normalize | SaveManager._read trusts validation; reject nested types before casts/iteration. Test isolated primary and backup. |
+| AI05 | TeamAI._update_side / _plan_defend | Recovery time series, press/cover commitment, mark targets, scenario observation timing; not yet a proven single cause. |
+| V01 | match_camera / ball_view / pitch_view / HUD | Settings and translations; presentation changes must leave simulation snapshots identical. |
+| T01 | TeamAI attack targets / AIAgent passer memory / OnBallAI._next_option | Existing support and runner duties, KickPlanner feasibility, offside and human handoff; no second coordinator. |
+
+Historical logs and four actual rendered captures: `docs/evidence/deep-audit-2026-11-14/`.
+Brainstorm ideas beyond V01/T01 are in `IMPROVEMENT_IDEAS.md`, not automatically approved feature tasks.

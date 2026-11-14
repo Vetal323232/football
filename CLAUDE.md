@@ -4,13 +4,17 @@ Offline 3D football (Godot 4.5.1, GDScript, `gl_compatibility` renderer). Full b
 Design: `docs/DESIGN.md`. Status / next task: `PROGRESS.md`. Read `PROGRESS.md` before resuming work.
 
 ## Navigation and current work
+- Complete implementation request: `docs/CLAUDE_MASTER_PROMPT_EN.md`.
 - Read `docs/PROJECT_MAP.md` for subsystem ownership, entry points and change-impact paths.
 - Evidence and confirmed findings: `docs/CODE_REVIEW_2026-11-14.md` (baseline gameplay commit `a47746e`).
+- Extended audit, saved logs and new defects: `docs/DEEP_AUDIT_2026-11-14.md`; ranked ideas: `docs/IMPROVEMENT_IDEAS.md`.
 - Ordered tasks, reproduction commands and acceptance criteria: `docs/AI_WORK_PLAN.md`.
 - Start with the first ready task in that queue; reproduce it, implement it, verify it, then update status.
 - `tools/review_regressions.gd` contains five desired-behaviour checks that currently fail on the baseline.
   Keep their expectations; document remaining failures while completing unrelated tasks.
 - Behavioural success and process exit status must both be checked. Never treat an exit code alone as AI quality.
+- `tools/run_deep_audit.py` runs isolated corruption/state/determinism/career checks and catches script errors.
+  Baseline: 11/37 subprocess cases pass (exit 1); failures are open defects, not optional green-check exclusions.
 
 ## Rules
 - Talk to the user in Russian. Code identifiers and technical docs in English. Game UI in Russian via `tr()` keys in `locale/strings.csv`.
@@ -28,7 +32,9 @@ Design: `docs/DESIGN.md`. Status / next task: `PROGRESS.md`. Read `PROGRESS.md` 
 godot --headless --import                                   # import / parse check (also rebuilds translations)
 godot --headless -s tests/run_tests.gd                      # 300 automated checks, exit code 1 on failure
 godot --headless -s tools/review_regressions.gd             # five baseline defects reproduced; currently exit 1
+python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-audit  # extended checks; currently exit 1
 godot --headless -s tools/run_scenarios.gd                  # AI validation scenarios (3 variants x 3 seeds each)
+godot --headless -s tools/run_scenarios.gd -- --seeds=44,55,66,77,88,99 # extended known seeds: 123/144
 godot --headless -s tools/run_match.gd -- --seeds=1,2,3     # full AI-vs-AI matches with metrics
 godot --headless -s tools/fuzz_human.gd                     # random-input robustness of human control
 godot --headless -s tools/career_journey.gd                 # career end-to-end through the real match engine

@@ -19,3 +19,30 @@ Please note anything that feels wrong next to the step number.
 14. Career: **Карьера → Новая карьера**, pick a club, open **Состав**, swap two players, **Трансферы** buy one player, play the fixture, check **Таблица**, exit, start the game again and **Продолжить карьеру**: round, table and budget must be the same.
 
 Questions for you: Is passing responsive? Does the AI teammate movement give you options? Are opponents too easy / too hard on «Средняя»? Is the camera height comfortable? Any animation that looks broken?
+
+## Windows acceptance record after the audit fixes
+
+Record commit/build, Windows version, CPU/GPU, resolution/DPI, keyboard layout, difficulty and match length.
+Start the actual exported EXE from a fresh extraction; do not substitute the editor or Linux pack loading.
+Keep observed FPS/frame-pacing evidence separate from MovieMaker output or accelerated headless speed.
+
+Add these focused regressions to the ordinary checklist:
+
+1. Aim a pass forward with a nearby teammate behind you: assistance must follow intent, not turn backward.
+2. Pass to a clearly selected teammate while a different teammate is closer to the ball path: confirm the
+   initial control ring follows the intended receiver; later interceptions/claims may legitimately change play.
+3. Charge K, pause, release K in the menu, resume: no ghost shot. Repeat holding through resume and with
+   window focus lost; a fresh deliberate charge/release must still work.
+4. Replace a tired/recovering player: fresh substitute can act normally, is correctly named/numbered and
+   does not inherit an old shot/tackle. Verify five-sub limit and career participation after full time.
+5. Play two short matches, one controlling each side, with at least one full half-time transition. Check
+   camera-relative movement, aim, offside-facing directions, radar and control markers in both halves.
+6. Complete a career match, quit, relaunch EXE, continue: same fixture/round, lineup, budget and table.
+
+Rate 1–5 and give one concrete episode for any score below 4: movement/turning, pass intent, shot response,
+switching predictability, useful teammate options, opponent pressure/fairness, ball visibility, camera and fun.
+For tactical complaints note the mode, seed if visible, game minute, ball area and action; a short clip helps.
+Do not demand a long written report from the player before fixing a reproducible fault.
+
+Keep PLAY01 open until these checks have observations from an actual person on Windows. Automated tests,
+synthetic input, screenshots and the audit's three sampled motion frames cannot close this gate.

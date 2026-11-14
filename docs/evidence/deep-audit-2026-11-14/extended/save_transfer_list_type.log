@@ -1,0 +1,10 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+SAVE_CASE_DONE {"backup_equal":false,"case":"transfer_list_type","error":"","ok":false,"recovered":false}
+SCRIPT ERROR: Trying to assign value of type 'float' to a variable of type 'String'.
+          at: validate (res://src/career/career_state.gd:515)
+          GDScript backtrace (most recent call first):
+              [0] validate (res://src/career/career_state.gd:515)
+              [1] _read (res://src/career/save_manager.gd:55)
+              [2] load_career (res://src/career/save_manager.gd:64)
+              [3] _run (res://tools/audit_save_case.gd:73)

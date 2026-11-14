@@ -6,6 +6,11 @@ No backend, no network access at runtime, zero-budget original assets.
 
 Version 0.1.0 — see `PROGRESS.md` for the honest status and known defects.
 
+Claude Code handoff: [master prompt](docs/CLAUDE_MASTER_PROMPT_EN.md),
+[extended audit](docs/DEEP_AUDIT_2026-11-14.md), [project map](docs/PROJECT_MAP.md),
+[ordered tasks](docs/AI_WORK_PLAN.md), [ranked improvement ideas](docs/IMPROVEMENT_IDEAS.md).
+This is a reviewed prototype with open gameplay defects; the Windows executable has not been run by the audit.
+
 ## Install and run
 
 1. Download **Godot 4.5.1-stable (standard, not .NET)** for Windows from <https://godotengine.org/download/archive/4.5.1-stable/>.

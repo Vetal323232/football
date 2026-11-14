@@ -1,0 +1,673 @@
+{
+  "engine": "4.5.1.stable.official.f62fdbde1",
+  "cases": 37,
+  "passed": 11,
+  "results": [
+    {
+      "name": "save/valid",
+      "ok": true,
+      "exit": 0,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=valid"
+      ],
+      "log": "save_valid.log"
+    },
+    {
+      "name": "save/broken_json",
+      "ok": true,
+      "exit": 0,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=broken_json"
+      ],
+      "log": "save_broken_json.log"
+    },
+    {
+      "name": "save/root_array",
+      "ok": true,
+      "exit": 0,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=root_array"
+      ],
+      "log": "save_root_array.log"
+    },
+    {
+      "name": "save/missing_schema",
+      "ok": true,
+      "exit": 0,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=missing_schema"
+      ],
+      "log": "save_missing_schema.log"
+    },
+    {
+      "name": "save/unsupported_schema",
+      "ok": true,
+      "exit": 0,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=unsupported_schema"
+      ],
+      "log": "save_unsupported_schema.log"
+    },
+    {
+      "name": "save/wrong_players_container",
+      "ok": true,
+      "exit": 0,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=wrong_players_container"
+      ],
+      "log": "save_wrong_players_container.log"
+    },
+    {
+      "name": "save/negative_budget",
+      "ok": true,
+      "exit": 0,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=negative_budget"
+      ],
+      "log": "save_negative_budget.log"
+    },
+    {
+      "name": "save/missing_player",
+      "ok": true,
+      "exit": 0,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=missing_player"
+      ],
+      "log": "save_missing_player.log"
+    },
+    {
+      "name": "save/duplicate_fixture",
+      "ok": true,
+      "exit": 0,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=duplicate_fixture"
+      ],
+      "log": "save_duplicate_fixture.log"
+    },
+    {
+      "name": "save/round_high",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=round_high"
+      ],
+      "log": "save_round_high.log"
+    },
+    {
+      "name": "save/round_negative",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=round_negative"
+      ],
+      "log": "save_round_negative.log"
+    },
+    {
+      "name": "save/round_string",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=round_string"
+      ],
+      "log": "save_round_string.log"
+    },
+    {
+      "name": "save/season_zero",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=season_zero"
+      ],
+      "log": "save_season_zero.log"
+    },
+    {
+      "name": "save/season_over_type",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=season_over_type"
+      ],
+      "log": "save_season_over_type.log"
+    },
+    {
+      "name": "save/lineup_duplicate",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=lineup_duplicate"
+      ],
+      "log": "save_lineup_duplicate.log"
+    },
+    {
+      "name": "save/lineup_empty",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=lineup_empty"
+      ],
+      "log": "save_lineup_empty.log"
+    },
+    {
+      "name": "save/lineup_no_keeper",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=lineup_no_keeper"
+      ],
+      "log": "save_lineup_no_keeper.log"
+    },
+    {
+      "name": "save/squad_type",
+      "ok": false,
+      "exit": 1,
+      "script_error": true,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=squad_type"
+      ],
+      "log": "save_squad_type.log"
+    },
+    {
+      "name": "save/club_null",
+      "ok": false,
+      "exit": 1,
+      "script_error": true,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=club_null"
+      ],
+      "log": "save_club_null.log"
+    },
+    {
+      "name": "save/player_null",
+      "ok": false,
+      "exit": 1,
+      "script_error": true,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=player_null"
+      ],
+      "log": "save_player_null.log"
+    },
+    {
+      "name": "save/attrs_type",
+      "ok": false,
+      "exit": 1,
+      "script_error": true,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=attrs_type"
+      ],
+      "log": "save_attrs_type.log"
+    },
+    {
+      "name": "save/attr_missing",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=attr_missing"
+      ],
+      "log": "save_attr_missing.log"
+    },
+    {
+      "name": "save/attr_range",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=attr_range"
+      ],
+      "log": "save_attr_range.log"
+    },
+    {
+      "name": "save/age_missing",
+      "ok": false,
+      "exit": 1,
+      "script_error": true,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=age_missing"
+      ],
+      "log": "save_age_missing.log"
+    },
+    {
+      "name": "save/fixture_score_negative",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=fixture_score_negative"
+      ],
+      "log": "save_fixture_score_negative.log"
+    },
+    {
+      "name": "save/fixture_season_missing",
+      "ok": false,
+      "exit": 1,
+      "script_error": true,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=fixture_season_missing"
+      ],
+      "log": "save_fixture_season_missing.log"
+    },
+    {
+      "name": "save/fixture_played_type",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=fixture_played_type"
+      ],
+      "log": "save_fixture_played_type.log"
+    },
+    {
+      "name": "save/fixture_self_match",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=fixture_self_match"
+      ],
+      "log": "save_fixture_self_match.log"
+    },
+    {
+      "name": "save/transfer_list_type",
+      "ok": false,
+      "exit": 1,
+      "script_error": true,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=transfer_list_type"
+      ],
+      "log": "save_transfer_list_type.log"
+    },
+    {
+      "name": "save/history_type",
+      "ok": false,
+      "exit": 1,
+      "script_error": true,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/audit_save_case.gd",
+        "--",
+        "--case=history_type"
+      ],
+      "log": "save_history_type.log"
+    },
+    {
+      "name": "edge/determinism",
+      "ok": true,
+      "exit": 0,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": true,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/deep_audit.gd",
+        "--",
+        "--case=determinism"
+      ],
+      "log": "edge_determinism.log"
+    },
+    {
+      "name": "edge/career_stress",
+      "ok": true,
+      "exit": 0,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/deep_audit.gd",
+        "--",
+        "--case=career_stress"
+      ],
+      "log": "edge_career_stress.log"
+    },
+    {
+      "name": "edge/substitution_state",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": true,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/deep_audit.gd",
+        "--",
+        "--case=substitution_state"
+      ],
+      "log": "edge_substitution_state.log"
+    },
+    {
+      "name": "edge/backpass_feet",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": true,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/deep_audit.gd",
+        "--",
+        "--case=backpass_feet"
+      ],
+      "log": "edge_backpass_feet.log"
+    },
+    {
+      "name": "edge/pause_shot",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": true,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/deep_audit.gd",
+        "--",
+        "--case=pause_shot"
+      ],
+      "log": "edge_pause_shot.log"
+    },
+    {
+      "name": "edge/pass_handoff",
+      "ok": false,
+      "exit": 1,
+      "script_error": false,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": true,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/deep_audit.gd",
+        "--",
+        "--case=pass_handoff"
+      ],
+      "log": "edge_pass_handoff.log"
+    },
+    {
+      "name": "edge/keeper_only_lineup",
+      "ok": false,
+      "exit": 1,
+      "script_error": true,
+      "completed": true,
+      "timeout": false,
+      "lifetime_warning": false,
+      "command": [
+        "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+        "--headless",
+        "-s",
+        "tools/deep_audit.gd",
+        "--",
+        "--case=keeper_only_lineup"
+      ],
+      "log": "edge_keeper_only_lineup.log"
+    }
+  ]
+}

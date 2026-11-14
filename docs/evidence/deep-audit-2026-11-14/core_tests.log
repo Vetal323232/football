@@ -1,0 +1,26 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+- schedule
+- standings
+- one-time result application
+- transfers
+- development
+- save / load
+- season rollover
+- attributes affect execution
+- ball physics
+- goals
+- ball out and restarts
+- offside
+- possession
+- tackles
+- halves, clock, pause
+- controlled-player handoff
+- idle human at a restart
+- goalkeeper
+- determinism
+300 checks, 0 failed, 6.4s
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+     at: cleanup (core/object/object.cpp:2514)
+ERROR: 17 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:795)

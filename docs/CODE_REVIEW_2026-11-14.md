@@ -134,6 +134,10 @@ numeric ranges. Those additional malformed-state cases are not all reproduced by
 
 ## Limits and unresolved questions
 
+This section describes the first review environment. The subsequent [extended audit](DEEP_AUDIT_2026-11-14.md)
+adds actual software-rendered visual inspection, new seed matrices and deeper corruption/state probes;
+use its boundaries for the current checkpoint. The original evidence below remains historical.
+
 - The Windows executable has not been run by this review.
 - No GPU, display server, visual animation review, audio review or real keyboard playtest was available.
 - The substitutions screen displays fitness (its translated label says "fitness"), while the HUD bar displays

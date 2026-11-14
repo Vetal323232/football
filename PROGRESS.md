@@ -1,7 +1,26 @@
 # Progress
 
-Last update: 2026-11-14 (source review checkpoint; gameplay baseline `a47746e`). Engine: Godot 4.5.1-stable, renderer `gl_compatibility`.
+Last update: 2026-11-14 (extended audit and Claude handoff; gameplay baseline `a47746e`). Engine: Godot 4.5.1-stable, renderer `gl_compatibility`.
 Built and checked in a Linux container (no GPU, no Windows): headless runs + software-rendered screenshots.
+
+## Extended audit checkpoint
+
+- Handoff branch: `codex/deep-audit-claude-brief`, based on `8283045` (`codex/project-map-ai-plan`).
+- Start at `docs/CLAUDE_MASTER_PROMPT_EN.md`, then `docs/DEEP_AUDIT_2026-11-14.md` and the updated task queue.
+- No gameplay source/tuning was changed. All defect IDs remain open. First executable task is still QA01.
+- Fresh core run: 300 checks / 0 failed. Extended scenarios: **123/144** (original 67/72 retained separately).
+- 3v2 only **5/18** on new seeds. Defensive recovery and one human handoff also fail; details/traces in the audit.
+- Eight deterministic pairs pass (AI-only and scripted human); 12 new input-fuzz matches pass.
+- Eight careers × three seasons pass normal state/transfer/table/save invariants: 336 rounds, 672 transfers.
+- Save matrix: valid control passes; 8/29 invalid primaries recover; 21 mishandled, including 8 script-error cases.
+- New regressions reproduce inherited substitute state, keeper back-pass history loss, wrong pass handoff,
+  pause ghost shot and adversarial negative-score auto-lineup. See tools/deep_audit.gd.
+- `python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-audit` -> **11/37 subprocess cases pass**, exit 1.
+- Strength test on both sides: 12 three-minute matches, stronger team 9 wins/3 draws, 13:0; no reported stalls/conflicts.
+- Actual 3D/UI captures plus a six-second software-rendered movie were produced; seven captures and three motion
+  samples were inspected. Ball/player readability and seat contrast need improvement. Windows/human/audio/GPU acceptance remain open.
+- Logs and four captures are versioned under `docs/evidence/deep-audit-2026-11-14/`.
+- Proposed bounded improvements after fixes: V01 readability, T01 give-and-go/third-man experiment. Other ideas are backlog.
 
 ## Review checkpoint
 
