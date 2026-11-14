@@ -36,6 +36,12 @@ func attach(sim_: MatchSim, verbose_ := false) -> void:
 	sim.event.connect(_on_event)
 
 
+func detach() -> void:
+	if sim != null and sim.event.is_connected(_on_event):
+		sim.event.disconnect(_on_event)
+	sim = null
+
+
 func _on_event(kind: StringName, data: Dictionary) -> void:
 	match kind:
 		&"kick":

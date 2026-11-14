@@ -21,6 +21,10 @@ func _init(sim_: MatchSim, team_: int) -> void:
 	team = team_
 
 
+func dispose() -> void:
+	sim = null
+
+
 func on_restart() -> void:
 	charging = false
 	shot_charge = 0.0

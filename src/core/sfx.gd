@@ -55,6 +55,16 @@ func _ready() -> void:
 	add_child(_crowd)
 
 
+func _exit_tree() -> void:
+	# Stop playback so no stream playback objects outlive the audio server at shutdown.
+	for p in _players:
+		p.stop()
+		p.stream = null
+	_crowd.stop()
+	_crowd.stream = null
+	_streams.clear()
+
+
 func _ensure_bus(bus_name: String) -> void:
 	if AudioServer.get_bus_index(bus_name) < 0:
 		AudioServer.add_bus()

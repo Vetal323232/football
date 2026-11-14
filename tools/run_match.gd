@@ -46,6 +46,8 @@ func _init() -> void:
 		totals["shots"] += sim.teams[0].stats.shots + sim.teams[1].stats.shots
 		totals["stalls"] += sim.stalls
 		totals["conflicts"] += sim.teams[0].ai.conflicts + sim.teams[1].ai.conflicts
+		report.detach()
+		sim.dispose()
 	print("TOTAL over %d matches (levels %.0f vs %.0f): home wins %d, draws %d, away wins %d | goals %d:%d | shots/match %.1f | stalls %d | assignment conflicts %d" % [
 		seeds.size(), lv_home, lv_away, totals["hw"], totals["d"], totals["aw"], totals["hg"], totals["ag"], float(totals["shots"]) / seeds.size(), totals["stalls"], totals["conflicts"]])
 	quit()

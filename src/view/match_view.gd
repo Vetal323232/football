@@ -69,6 +69,11 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	Sfx.crowd(false)
+	# Break the sim's ownership cycles; views only held read access.
+	if sim != null:
+		sim.dispose()
+		sim = null
+	rigs.clear()
 
 
 func _build_rigs() -> void:

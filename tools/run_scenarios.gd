@@ -46,6 +46,8 @@ func _init() -> void:
 					sim.step()
 					ScenarioLib.post_step(sim, name, obs)
 				var v := ScenarioLib.judge(sim, name, variant, obs)
+				sim.dispose()
+				obs.clear()
 				s_n += 1
 				total += 1
 				if v["ok"] and (v["fail"] as PackedStringArray).is_empty():

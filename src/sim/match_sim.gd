@@ -26,6 +26,7 @@ var half := 1
 var first_kickoff_team := 0
 var human: HumanController = null
 var setup: MatchSetup
+var disposed := false
 var freeze_clock := false      ## diagnostics: scenarios do not run the match clock
 
 var restart_type := Restart.KICKOFF
@@ -127,6 +128,25 @@ func substitute(team: int, player_id: int, bench_index: int) -> bool:
 	return true
 
 
+## Release the ownership cycles of a finished match (sim <-> team AI <-> team,
+## sim <-> human controller, event listeners that captured the sim). Idempotent.
+## Every owner calls this when it lets go of a match: match_view on exit, headless tools after a run.
+## A disposed sim keeps its plain state readable (score, stats, players) but cannot be stepped.
+func dispose() -> void:
+	if disposed:
+		return
+	disposed = true
+	for c: Dictionary in event.get_connections():
+		event.disconnect(c["callable"])
+	for tm in teams:
+		if tm.ai != null:
+			tm.ai.dispose()
+			tm.ai = null
+	if human != null:
+		human.dispose()
+		human = null
+
+
 func emit(kind: StringName, data := {}) -> void:
 	event.emit(kind, data)
 
@@ -146,7 +166,7 @@ func team_of(pid: int) -> SimTeam:
 # ----------------------------------------------------------------- main step
 
 func step() -> void:
-	if state == State.FULL_TIME:
+	if state == State.FULL_TIME or disposed:
 		return
 	tick += 1
 	match state:

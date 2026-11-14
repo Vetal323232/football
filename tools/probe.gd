@@ -41,4 +41,5 @@ func _init() -> void:
 			print("    opp #%-2d %-3s local(%5.1f,%5.1f) %s" % [q.number, SimPlayer.ROLE_NAMES[q.role], ai.local(q.pos).x, ai.local(q.pos).y, AIAgent.DUTY_NAMES[(sim.teams[q.team].ai.agents[q.id] as AIAgent).duty]])
 	for o: Dictionary in ag.options:
 		print("  OPT %-14s ev=%.4f p=%.2f" % [o["label"], o["ev"], o["p"]])
+	sim.dispose()
 	quit()

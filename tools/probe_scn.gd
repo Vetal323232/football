@@ -44,4 +44,5 @@ func _init() -> void:
 					if ag.duty in [AIAgent.Duty.PRESS, AIAgent.Duty.COVER, AIAgent.Duty.CHASE, AIAgent.Duty.CARRIER, AIAgent.Duty.RECEIVER]:
 						s.append("T%d#%d:%s" % [tm.index, sim.players[id].number, AIAgent.DUTY_NAMES[ag.duty]])
 			print("   %.1fs ball(%.0f,%.0f) owner=%d att=[%s,%s] %s" % [i / 60.0, sim.ball.pos.x, sim.ball.pos.y, sim.ball.owner, sim.teams[0].ai.attacking, sim.teams[1].ai.attacking, " ".join(s)])
+	sim.dispose()
 	quit()

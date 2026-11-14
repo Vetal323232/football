@@ -39,4 +39,5 @@ func _init() -> void:
 			last.clear())
 	while sim.state != MatchSim.State.FULL_TIME and n[0] < 14:
 		sim.step()
+	sim.dispose()
 	quit()

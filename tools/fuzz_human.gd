@@ -66,7 +66,11 @@ func _init() -> void:
 		var st := sim.teams[setup.human_team].stats
 		print("seed %d (human = team %d): %d-%d | human side: passes %d/%d, shots %d, tackles %d/%d | control changes %d | ticks with !=1 human %d | stalls %d | max restart wait %.1fs | finished %s" % [
 			sd, setup.human_team, sim.teams[0].score, sim.teams[1].score, st.passes_completed, st.passes, st.shots, st.tackles_won, st.tackles, switches[0], bad_humans, sim.stalls, report.max_restart_wait, str(sim.state == MatchSim.State.FULL_TIME)])
-		if bad_humans > 0 or sim.stalls > 0 or sim.state != MatchSim.State.FULL_TIME or report.max_restart_wait > tuning.restart_force_time_human + 1.0:
+		var finished := sim.state == MatchSim.State.FULL_TIME
+		var stalls := sim.stalls
+		report.detach()
+		sim.dispose()
+		if bad_humans > 0 or stalls > 0 or not finished or report.max_restart_wait > tuning.restart_force_time_human + 1.0:
 			ok = false
 	print("FUZZ %s" % ("OK" if ok else "FAILED"))
 	quit(0 if ok else 1)

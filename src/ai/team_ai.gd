@@ -57,6 +57,12 @@ func _init(sim_: MatchSim, team_: SimTeam) -> void:
 			keeper_id = id
 
 
+func dispose() -> void:
+	sim = null
+	team = null
+	agents.clear()
+
+
 func opp_index() -> int:
 	return 1 - team.index
 

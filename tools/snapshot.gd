@@ -58,6 +58,7 @@ func _init() -> void:
 			next_t += step
 	sheet.save_png(out)
 	print("saved ", out)
+	sim.dispose()
 	quit()
 
 

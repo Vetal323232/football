@@ -49,13 +49,16 @@ func _init() -> void:
 		var first := cs.apply_result(f["id"], sim.teams[0].score, sim.teams[1].score, sim.participants.keys())
 		var dup := cs.apply_result(f["id"], sim.teams[0].score, sim.teams[1].score, sim.participants.keys())
 		cs.complete_round()
+		var score0 := sim.teams[0].score
+		var score1 := sim.teams[1].score
+		sim.dispose()
 		var err := SaveManager.save(cs, dir)
 		# "Close the game": drop the object and reload from disk.
 		var res := SaveManager.load_career(dir)
 		var same := res["career"] != null and JSON.stringify((res["career"] as CareerState).data) == JSON.stringify(cs.data)
 		cs = res["career"]
 		print("round %d: %s %d-%d %s | bought player on pitch: %s | applied %s, duplicate rejected %s | apps %d->%d | save '%s' reload identical %s | round now %d, position %d" % [
-			r + 1, cs.club(f["home"])["short"], int(f["hg"]) if false else sim.teams[0].score, sim.teams[1].score, cs.club(f["away"])["short"], str(in_match), str(first), str(not dup),
+			r + 1, cs.club(f["home"])["short"], score0, score1, cs.club(f["away"])["short"], str(in_match), str(first), str(not dup),
 			apps_before, int(cs.player(cs.user()["lineup"][5])["apps"]), err, str(same), int(cs.data["round"]), cs.position_of("zar")])
 		ok = ok and first and not dup and same and err == "" and (bought == "" or in_match)
 	while not cs.data["season_over"]:

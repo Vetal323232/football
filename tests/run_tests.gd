@@ -5,6 +5,7 @@ extends SceneTree
 var _fails := 0
 var _checks := 0
 var _current := ""
+var _sims: Array[MatchSim] = []
 var tuning: GameTuning
 ## Self-test of the harness: `-- --violate=budget|lineup` injects a violation that must make the run fail.
 var _violate := ""
@@ -18,6 +19,10 @@ func check(cond: bool, what: String) -> void:
 
 
 func group(name: String) -> void:
+	# Matches of the previous group are finished: release their ownership cycles.
+	for old_sim in _sims:
+		old_sim.dispose()
+	_sims.clear()
 	_current = name
 	print("- %s" % name)
 
@@ -52,6 +57,7 @@ func _init() -> void:
 	test_keeper()
 	test_backpass()
 	test_determinism()
+	group("teardown")
 	print("%d checks, %d failed, %.1fs" % [_checks, _fails, (Time.get_ticks_msec() - t0) / 1000.0])
 	quit(1 if _fails > 0 else 0)
 
@@ -63,6 +69,7 @@ func new_sim(seed_ := 5, human := -1) -> MatchSim:
 	s.human_team = human
 	var sim := MatchSim.new()
 	sim.init_match(s, tuning)
+	_sims.append(sim)
 	return sim
 
 
@@ -886,6 +893,7 @@ func test_halves_and_clock() -> void:
 	s.duration = 40.0
 	var sim := MatchSim.new()
 	sim.init_match(s, tuning)
+	_sims.append(sim)
 	var dir0 := sim.teams[0].dir
 	var first := sim.first_kickoff_team
 	var guard := 0
@@ -1107,6 +1115,7 @@ func test_determinism() -> void:
 		s.duration = 30.0
 		var sim := MatchSim.new()
 		sim.init_match(s, tuning)
+		_sims.append(sim)
 		var guard := 0
 		while sim.state != MatchSim.State.FULL_TIME and guard < 30000:
 			sim.step()

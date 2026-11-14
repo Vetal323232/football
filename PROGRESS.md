@@ -1,34 +1,37 @@
 # Progress
 
-Last update: 2026-11-14 (unified repair/player-career handoff; gameplay baseline `a47746e`). Engine: Godot 4.5.1-stable, renderer `gl_compatibility`.
+Last update: 2026-11-14 (session 2: foundation repairs QA01–MEM01 done on `claude/new-session-yr8bm1`). Engine: Godot 4.5.1-stable, renderer `gl_compatibility`.
 Built and checked in a Linux container (no GPU, no Windows): headless runs + software-rendered screenshots.
 
 ## Active handoff
 
-- **Published handoff branch:** `codex/deep-audit-claude-brief`; this consolidation is based on `87501a5`.
-- **Implementation working branch:** retain an existing Claude branch/WIP if present; otherwise branch from
-  the current handoff. Do not reset another implementation to this historical baseline.
-- **Implementation revision last verified:** `a47746e`. Remote heads checked on 2026-11-14 contained no newer
-  gameplay implementation; local/unpublished Claude work may still exist and must be inspected/preserved.
-- **Current phase:** foundation repairs. **Active task:** none yet. **Next task:** QA01 (READY).
-- **Scope/status authority:** `docs/AI_WORK_PLAN.md`, now 33 entries retaining every old ID. PC00–PC09 are
-  required new scope; B01/B04/T07/T08/P01 are the selected follow-on improvements. Other ideas remain backlog.
-- **This checkpoint:** documentation integration only; no gameplay fix, new mode, migration or new runtime test
-  has been implemented. Historical baselines below remain evidence, not completed task acceptance.
-- **Documentation validation:** all 18 earlier IDs retained; 33 unique queue entries with task sections and
-  acyclic known dependencies; relative links resolve; gameplay/test/data/evidence files unchanged.
-- **Read next:** `docs/CLAUDE_MASTER_PROMPT_EN.md`, the queue index/QA01 section, then tools/run_scenarios.gd,
-  tools/shot.sh and the two tautological assertions in tests/run_tests.gd. Load only relevant map/audit rows.
-- **Concrete next action:** verify Godot 4.5.1, run `godot --headless -s tools/run_scenarios.gd -- --only=unknown_case`,
-  capture the empty selection/exit status, then implement QA01's strict failure/selection/screenshot/assertion gates.
-- **Known open runtime evidence:** five review regressions fail; strict extended audit 11/37 subprocess cases
-  pass; extended scenarios 123/144 (runner exit misleadingly 0). Preserve failures by ID until actually repaired.
-- **Evidence:** `docs/evidence/deep-audit-2026-11-14/`; immutable. Put new results in a separate revision-labelled path.
-- **Player career:** `docs/PLAYER_CAREER_SPEC.md`; new module paths/tests in its map are proposed, not current files.
-- **External gates:** actual Windows EXE/human gameplay/audio/GPU performance remain PLAY01, unverified.
-- **Resume rule:** update this block at each task/context boundary with actual revision, changed/dirty files,
-  acceptance done/open, exact checks/results and one next action. Queue is authoritative for DONE/status.
-  Preserve a coherent commit or labelled WIP; never restart research or claim the whole scope complete at a quota stop.
+- **Implementation branch:** `claude/new-session-yr8bm1` (fast-forwarded from handoff `codex/deep-audit-claude-brief`
+  @ `7265450`, then session-2 commits). Published to origin. Queue authority: `docs/AI_WORK_PLAN.md`.
+- **DONE this session (acceptance evidence in each task's Status block):** QA01, RULE01, RULE02, SAVE01, MEM01.
+- **Active task:** none in progress. **Next task:** SUB01 (READY), then INPUT01, INPUT02, INPUT03, CAREER01, AI01.
+- **Changed files:** tools/run_scenarios.gd, tools/shot.sh, tests/run_tests.gd, src/sim/match_sim.gd,
+  src/career/career_state.gd, src/ai/team_ai.gd, src/ai/match_report.gd, src/input/human_controller.gd,
+  src/view/match_view.gd, src/core/sfx.gd, tools/audit_save_case.gd, tools/deep_audit.gd, tools/run_deep_audit.py,
+  headless tools (dispose calls), CLAUDE.md, docs/AI_WORK_PLAN.md. Working tree clean at checkpoint.
+- **Checks at this revision (real results):**
+  - `godot --headless -s tests/run_tests.gd` -> 342 checks, 0 failed, exit 0 (`-- --violate=budget|lineup` -> exit 1).
+  - `godot --headless -s tools/run_scenarios.gd` -> TOTAL 67/72, **exit 1** (five `attack_3v2` episodes, AI03).
+  - `godot --headless -s tools/review_regressions.gd` -> 5 checks, 2 failed, exit 1
+    (open: `run_trigger` = AI01, `forward_pass` = INPUT01).
+  - `python3 tools/run_deep_audit.py --godot godot --out <dir>` -> **36/40**, exit 1 (was 11/37; 3 cases added).
+    Open: `edge/substitution_state` (SUB01), `edge/pause_shot` (INPUT03), `edge/pass_handoff` (INPUT02),
+    `edge/keeper_only_lineup` (CAREER01, script error).
+  - `tools/career_journey.gd` JOURNEY OK; 4 full matches: 0 stalls, 0 assignment conflicts.
+  - Not rerun this session: extended scenario seeds 44..99 (baseline 123/144), fuzz 12 seeds, Windows export.
+- **Behaviour changes to know:** a flagged player's first-time kick is now offside (match RNG path differs from
+  the a47746e baseline when that happens); keeper foot control keeps the back-pass ban; saves with impossible
+  round/season/line-up/fixture state are rejected and the backup is used; a disposed `MatchSim` cannot be stepped.
+- **Stale documents:** `docs/AI_VALIDATION.md` full-match numbers are from a47746e and were not regenerated.
+  The Windows build delivered in session 1 predates these fixes.
+- **External gates:** PLAY01 (Windows EXE / human play / GPU performance) unverified.
+- **Concrete next action:** `godot --headless -s tools/deep_audit.gd -- --case=substitution_state` to reproduce
+  SUB01, then reset the outgoing player's transient state in `MatchSim.substitute` / `_apply_identity`
+  (timers, pending kick, stamina/fitness from the incoming record, agent run/engage state) and add a test.
 
 Historical audit and original implementation checkpoints follow; they are not alternate current work orders.
 

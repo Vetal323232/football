@@ -33,7 +33,7 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 | 2 | RULE01 | DONE | QA01 | Offside is enforced before a flagged first-time kick. |
 | 3 | RULE02 | DONE | QA01, RULE01 | Keeper foot control preserves a back-pass restriction. |
 | 4 | SAVE01 | DONE | QA01 | Nested invalid saves recover safely; no script errors during validation. |
-| 5 | MEM01 | READY | QA01 | Repeated matches release simulation ownership cycles. |
+| 5 | MEM01 | DONE | QA01 | Repeated matches release simulation ownership cycles. |
 | 6 | SUB01 | READY | QA01 | Fresh substitutes do not inherit outgoing action/recovery state. |
 | 7 | INPUT01 | READY | QA01 | Forward intent cannot select a receiver behind the aim. |
 | 8 | INPUT02 | READY | QA01 | Initial human handoff follows the selected eligible receiver. |
@@ -286,6 +286,16 @@ Acceptance:
 - Break all relevant cycles, including AI-to-team and event/report ownership, rather than merely one pointer.
 - Rerun repeated matches and inspect object/resource counts and exit warnings.
 - Do not suppress the warnings to satisfy the criterion.
+
+Status: **DONE** (session 2). Explicit idempotent `MatchSim.dispose()` disconnects all `event` listeners and
+releases TeamAI (`TeamAI.dispose`), SimTeam.ai and HumanController back-references; `MatchReport.detach()`.
+Called by real owners: `match_view._exit_tree`, run_match, run_scenarios, fuzz_human, career_journey,
+snapshot/probe tools and the test harness (per group). Review `lifetime` 0/12 alive; new
+`deep_audit.gd --case=match_lifetime` 0/10 alive (stepped AI/human headless matches with a report, two
+scenarios with capturing listeners, four match-scene start/exit cycles). Headless tools now exit without
+ObjectDB/resource warnings. Residual, not a match cycle: scene-based SceneTree-script cases still print one
+"ObjectDB instances leaked" line for 6 `AudioStreamPlaybackWAV` objects of the Sfx autoload at quit
+(verbose list contains no GDScript/match objects); not suppressed.
 
 ## SAVE01 — Reject invalid game state before loading it
 

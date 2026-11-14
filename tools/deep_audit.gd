@@ -3,7 +3,7 @@ extends SceneTree
 ## Run through run_deep_audit.py: GDScript runtime errors can otherwise exit 0.
 ## Does not modify gameplay. All save files use an isolated audit directory.
 
-const CASES := ["determinism", "career_stress", "substitution_state", "backpass_feet", "pause_shot", "pass_handoff", "keeper_only_lineup"]
+const CASES := ["determinism", "career_stress", "substitution_state", "backpass_feet", "pause_shot", "pass_handoff", "keeper_only_lineup", "match_lifetime"]
 var failed := 0
 var checks := 0
 var tuning: GameTuning
@@ -306,3 +306,57 @@ func _keeper_only_lineup() -> void:
 			squad.append(cs.player(pid))
 	var lineup := LeagueData.auto_lineup(squad)
 	_check(lineup.size() == 11, "keeper_only_lineup", "16 real goalkeeper records, result size=%d; negative scores must still allow a best candidate" % lineup.size())
+
+
+## MEM01: every real owner path must release a finished match (no RefCounted cycles left).
+func _match_lifetime() -> void:
+	var refs: Array[WeakRef] = []
+	var labels: Array[String] = []
+	# Headless owners: AI-only and human matches that actually ran, with a report attached.
+	for i in 4:
+		var setup := MatchSetup.exhibition(300 + i)
+		setup.human_team = -1 if i % 2 == 0 else 0
+		setup.duration = 6.0
+		var sim := MatchSim.new()
+		var report := MatchReport.new()
+		report.attach(sim)
+		sim.init_match(setup, tuning)
+		for t in 600:
+			sim.step()
+			report.sample()
+		refs.append(weakref(sim))
+		labels.append("headless_%s" % ("ai" if i % 2 == 0 else "human"))
+		report.detach()
+		sim.dispose()
+		sim.dispose()   # idempotent
+	# Scenario owner (listeners capture the sim and the observation dictionary).
+	for name: String in ["human_support", "shot_rebound"]:
+		var ssim := MatchSim.new()
+		ssim.init_match(ScenarioLib.make_setup(name, 0, 11), tuning)
+		ScenarioLib.apply(ssim, name, 0)
+		var obs := {}
+		for t in 120:
+			ScenarioLib.observe(ssim, name, obs)
+			ScenarioLib.drive_inputs(ssim, name, obs)
+			ssim.step()
+		refs.append(weakref(ssim))
+		labels.append("scenario_" + name)
+		ssim.dispose()
+		obs.clear()
+	# Scene owner: repeated match scene start / exit, human and AI-only.
+	var game = root.get_node("Game")
+	for i in 4:
+		game.pending_setup = MatchSetup.exhibition(400 + i)
+		game.pending_setup.human_team = 0 if i % 2 == 0 else -1
+		var view = load("res://scenes/match.tscn").instantiate()
+		root.add_child(view)
+		for t in 30:
+			view._physics_process(1.0 / 60.0)
+		refs.append(weakref(view.sim))
+		labels.append("scene_%d" % i)
+		view.free()
+	var alive := PackedStringArray()
+	for i in refs.size():
+		if refs[i].get_ref() != null:
+			alive.append(labels[i])
+	_check(alive.is_empty(), "match_lifetime", "matches still alive after their owner released them: %d/%d %s" % [alive.size(), refs.size(), ", ".join(alive)])
