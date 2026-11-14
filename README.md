@@ -10,6 +10,9 @@ Claude Code handoff: [master prompt](docs/CLAUDE_MASTER_PROMPT_EN.md),
 [extended audit](docs/DEEP_AUDIT_2026-11-14.md), [project map](docs/PROJECT_MAP.md),
 [ordered tasks](docs/AI_WORK_PLAN.md), [ranked improvement ideas](docs/IMPROVEMENT_IDEAS.md).
 This is a reviewed prototype with open gameplay defects; the Windows executable has not been run by the audit.
+The current handoff also includes the approved [player-career specification](docs/PLAYER_CAREER_SPEC.md).
+That mode is planned, not implemented. Start/resume from the Active handoff in PROGRESS.md; the same queue
+retains all old repairs and adds the new work in dependent increments, with checkpoints for context limits.
 
 ## Install and run
 

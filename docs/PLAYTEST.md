@@ -46,3 +46,30 @@ Do not demand a long written report from the player before fixing a reproducible
 
 Keep PLAY01 open until these checks have observations from an actual person on Windows. Automated tests,
 synthetic input, screenshots and the audit's three sampled motion frames cannot close this gate.
+
+## Player-career checks when the PC tasks enable them
+
+This mode is planned in the current handoff, not playable yet. Add observations at its runnable checkpoints;
+do not report these future checks as already performed. Prepare representative saves where needed so the
+tester does not have to play ten seasons to exercise a transfer or a national return.
+
+1. Create a supported outfield player, choose a plausible first club, inspect strengths/weaknesses and the
+   next fixture. Club and player career entries/saves must be unambiguous.
+2. Play locked to the avatar. Pass, lose possession, change half and take an off-ball position: control must
+   stay with that identity. A pass request may be declined for a football reason; useful openings should be noticed.
+3. Start as a substitute, skip to entry, then play. After being substituted out, inputs must not control the
+   new identity in that slot. Continue to full time without being forced to watch the bench interval.
+4. Check a good midfielder/defender performance without a goal. Read feedback and selection reasons; judge
+   whether they match what happened and give an understandable next objective.
+5. Advance a training week, save, reload and revisit the result. Attribute/experience/appearance rewards and
+   trust changes must not repeat. Bench training and automated drills must leave a viable route forward.
+6. From prepared saves, stay/renew, accept a move, take/return from a loan and reject an expired offer.
+   Check role, rivals, money, next playable action and continuity of the avatar/history.
+7. Enter a U21/senior fixture, finish and return to club. Club ownership, table and contract remain correct;
+   caps and national results are separate. Check camera, both halves and workload/readiness continuity.
+8. Inspect the career timeline/season summary. Its milestones must match actual recorded events. Test the
+   whole keyboard route at 720p and the real machine's normal resolution, with sound and focus loss/resume.
+
+Record brief actual observations: input/control, off-ball opportunities, ratings fairness, development pace,
+clarity of club choices and desire to play the next match. A working menu or an automated twenty-season run
+alone cannot establish that the career is enjoyable.

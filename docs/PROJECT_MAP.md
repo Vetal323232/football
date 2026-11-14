@@ -1,6 +1,8 @@
 # Project map
 
 Verified against gameplay commit a47746eba365d3a3a1ffc6693069dc2cab484505 on 2026-11-14.
+Current runtime paths below exist at that baseline. The player-career section explicitly marks proposed
+integration boundaries; it does not claim the new mode or those files already exist.
 Use this document for navigation. Confirmed defects and evidence are in [the code review](CODE_REVIEW_2026-11-14.md);
 the ordered implementation tasks are in [AI_WORK_PLAN.md](AI_WORK_PLAN.md).
 Extended audit: [DEEP_AUDIT_2026-11-14.md](DEEP_AUDIT_2026-11-14.md).
@@ -10,8 +12,9 @@ Full Claude entry point: [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTER_PROMPT_EN.md
 
 1. [CLAUDE.md](../CLAUDE.md): invariants and verified commands.
 2. [PROGRESS.md](../PROGRESS.md): current checkpoint.
-3. This map, then the relevant task in AI_WORK_PLAN.md.
-4. The named implementation functions and their actual callers.
+3. The queue index and active task in AI_WORK_PLAN.md, then the relevant rows of this map.
+4. Actual implementation/callers and the particular spec/audit sections the task cites. Load PC contracts
+   from [PLAYER_CAREER_SPEC.md](PLAYER_CAREER_SPEC.md) as needed, not all historical logs every session.
 
 Keep CLAUDE.md concise. Update this map when ownership or paths change; update task evidence when behaviour changes.
 
@@ -147,4 +150,55 @@ expected failures and completion criteria.
 | T01 | TeamAI attack targets / AIAgent passer memory / OnBallAI._next_option | Existing support and runner duties, KickPlanner feasibility, offside and human handoff; no second coordinator. |
 
 Historical logs and four actual rendered captures: `docs/evidence/deep-audit-2026-11-14/`.
-Brainstorm ideas beyond V01/T01 are in `IMPROVEMENT_IDEAS.md`, not automatically approved feature tasks.
+The current queue identifies approved follow-on ideas. Remaining entries in `IMPROVEMENT_IDEAS.md` stay backlog.
+
+## Player career integration map (planned; PC00–PC09)
+
+These are candidate ownership boundaries, **not existing files or a requirement to generate empty modules**.
+Prefer a focused extension of existing functions where it stays clear. Update this map to actual paths only
+after implementation. All PC data/acceptance contracts live in PLAYER_CAREER_SPEC; statuses live in the queue.
+
+| Responsibility | Existing entry/callers to extend | Possible new focused owner | Tasks |
+| --- | --- | --- | --- |
+| Mode/profile, compatible saves, result context | CareerState, SaveManager, Game.start_match, career_hub._absorb_match_result | `src/career/player_career_state.gd` facade over the same world; not a duplicate player/league DB | PC00 |
+| Locked UID and bench/substitute binding | MatchSetup, HumanController.update/on_restart/_set_controlled, MatchSim.substitute, match_view._finish/leave_match | Explicit TEAM/PLAYER_LOCKED fields and policy in existing owners | PC01 |
+| Neutral per-UID minutes/actions | MatchSim events/participants, SimPlayer.uid, MatchStats, MatchReport | `src/career/match_participation_record.gd` with explicit attach/detach | PC02 |
+| Role rating, form/trust/reputation evidence | Actual participation facts, Attr role weights | `src/career/player_assessment.gd` outside simulation | PC02, PC04 |
+| Weekly training and bounded growth | CareerState._develop/apply_result, Attr, persisted award ledger | `src/career/career_development.gd`; `career_tuning.gd` / `data/tuning/career_tuning.tres` | PC03 |
+| Coach/club/country selection | LeagueData.auto_lineup, CareerState.lineup_valid, readiness and actual rivals | `src/career/career_selection.gd` with context-scoped trust | PC04, PC07 |
+| Multi-league dates, aging/youth pools, competition tables | Schedule, LeagueData, CareerState.complete_round/start_next_season/standings | `src/career/career_world.gd`; reuse per-competition schedule/table helpers | PC05 |
+| Offers/contracts/loans | CareerState.buy/sell/_move_player, budgets and active registration | `src/career/career_contracts.gd`; one atomic roster/budget path | PC06 |
+| U21/senior fixtures and national return | World calendar, MatchSetup, Game.last_result, explicit result context | Existing world/selection/coordinator owners; national roster contains references to the same players | PC07 |
+| Weekly hub/history/menu routes | main_menu, Game scene flow, UIKit, HUD, translations | `src/ui/player_career_hub.gd`, `scenes/player_career_hub.tscn` if a separate scene is useful | PC08 |
+| Mode-aware tests/long journey | Existing tests, audit tools, career_journey, PLAYTEST | `tests/player_career_tests.gd`, `tools/player_career_journey.gd` (future outputs, not baseline commands) | PC00–PC09 |
+
+Critical cross-mode relationships:
+
+- The existing HumanController automatically follows owner/receiver. That remains TEAM behaviour; PC01 adds
+  a separate locked policy rather than globally deleting the INPUT02 fix or making both modes hand off.
+- Substitution reuses a SimPlayer slot. The avatar is a UID, so leaving/entering the pitch needs identity-aware
+  binding and recording. TEAM fuzz's exactly-one-human assertion is not universal for a benched avatar.
+- `Game.last_result` currently returns a fixture ID and club-oriented data to career_hub. Add context-aware
+  routing before national matches; never feed their result into club complete_round or overwrite user_club.
+- Existing participation development and new player progression share one award owner. Preserve old behaviour
+  for club mode while preventing double apps/attributes in player mode.
+- `player.club` currently matches active squad membership. Loans need a separate owning-club contract field;
+  national callups are neither a transfer nor another active club membership.
+- The current fixed ROUNDS/single-league iteration must stay valid for old saves. PC05 introduces explicit
+  competition/date coordination; changing one constant is not a multi-league calendar implementation.
+- Current save validation is defective (SAVE01). Establish that gate before adding migration/world fields;
+  isolate the player slot and validate every new reference/ledger/container before normalization.
+
+## Selected gameplay extensions and idea ownership
+
+| Direction | Existing extension points | Queue / scope |
+| --- | --- | --- |
+| Give-and-go / third man | AIAgent passer memory, TeamAI support targets, OnBallAI._next_option | T01, first improvement slice |
+| Directional first touch | MatchSim._free_ball_contacts/_give_possession, InputFrame/PlayerCommand, player_rig | B01 after the career slice; shared mechanics |
+| Prepared powerful low shot | HumanController._shot, KickPlanner.plan_shot, shared execution, input/help | B04; preserve INPUT03 and player-locked controls |
+| Team style | TeamTactics, TeamAI phase/utility, menu/world metadata | T07; PC05 can use existing tactic values before refinement |
+| Attacking rotations | TeamAI._plan_attack/_refresh_attack_target, rest-defence assignments and _plan_defend | T08; extend the current compensation mechanism |
+| Playable drills | ScenarioLib, diagnostic_menu, MatchSetup, weekly training ledger | P01; replayability must not duplicate training rewards |
+
+This handoff only changes documentation; all these future code/test paths must be checked against actual HEAD
+before use. Keep historical audit links, current task status and proposed design distinct when resuming.

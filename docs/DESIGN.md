@@ -1,5 +1,11 @@
 # Open Pitch — design
 
+This describes the existing runtime architecture at the audited gameplay baseline. The approved future
+player-career integration is specified in [PLAYER_CAREER_SPEC.md](PLAYER_CAREER_SPEC.md) and marked planned
+in [PROJECT_MAP.md](PROJECT_MAP.md); task status lives only in [AI_WORK_PLAN.md](AI_WORK_PLAN.md).
+In particular, current auto-switching controls and single-league round iteration are TEAM/club defaults,
+not a reason to reuse those behaviours unchanged for a locked avatar or an international calendar.
+
 ## 1. Layers and ownership
 
 ```

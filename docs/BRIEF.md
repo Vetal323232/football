@@ -1,5 +1,12 @@
 # Claude Code implementation brief: Open Pitch
 
+> Scope update, 2026-11-14: this document preserves the original foundation brief. The current executable
+> request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTER_PROMPT_EN.md), with one queue in
+> [AI_WORK_PLAN.md](AI_WORK_PLAN.md). The approved [player-career specification](PLAYER_CAREER_SPEC.md)
+> adds gradual individual development, earned minutes, contracts/loans and national play while retaining
+> club career. Its explicit PLAYER_LOCKED policy extends the original active-player-switching requirement;
+> it does not remove switching from TEAM mode. Old milestones are historical, not proof new tasks are DONE.
+
 ## 1. Deliverable and priorities
 
 Build a standalone Windows 3D association football game inspired by the match gameplay and club career experience of EA Sports FC. Working title: Open Pitch. Use Godot 4 with GDScript, pinning a compatible stable engine version after inspecting the environment.

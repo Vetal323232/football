@@ -1,15 +1,23 @@
 # Open Pitch — project rules
 
-Offline 3D football (Godot 4.5.1, GDScript, `gl_compatibility` renderer). Full brief: `docs/BRIEF.md`.
-Design: `docs/DESIGN.md`. Status / next task: `PROGRESS.md`. Read `PROGRESS.md` before resuming work.
+Offline 3D football (Godot 4.5.1, GDScript, `gl_compatibility` renderer). Keep quick match and club career;
+the approved scope adds a gradual career as one footballer with transfers/loans and national play.
+Read the **Active handoff** at the top of `PROGRESS.md` before resuming. Runtime design: `docs/DESIGN.md`.
 
 ## Navigation and current work
-- Complete implementation request: `docs/CLAUDE_MASTER_PROMPT_EN.md`.
-- Read `docs/PROJECT_MAP.md` for subsystem ownership, entry points and change-impact paths.
+
+- Single current implementation request: `docs/CLAUDE_MASTER_PROMPT_EN.md`.
+- Single authoritative task/status queue: `docs/AI_WORK_PLAN.md` (existing path/IDs retained).
+- Load its index and active task, relevant `docs/PROJECT_MAP.md` rows and actual callers. Do not preload
+  every report/log on each session. `docs/PLAYER_CAREER_SPEC.md` defines PC00–PC09; read the cited sections.
+- The original `docs/BRIEF.md` is historical foundation/scope background; the current request and player
+  specification extend it. The idea register is backlog except for entries explicitly in the queue.
 - Evidence and confirmed findings: `docs/CODE_REVIEW_2026-11-14.md` (baseline gameplay commit `a47746e`).
 - Extended audit, saved logs and new defects: `docs/DEEP_AUDIT_2026-11-14.md`; ranked ideas: `docs/IMPROVEMENT_IDEAS.md`.
-- Ordered tasks, reproduction commands and acceptance criteria: `docs/AI_WORK_PLAN.md`.
 - Start with the first ready task in that queue; reproduce it, implement it, verify it, then update status.
+- Context/token limits require a resumable checkpoint in PROGRESS.md: exact branch/revision, dirty files,
+  completed/open acceptance, commands/results/evidence and one concrete next action. Preserve colleague work;
+  resume the unfinished task rather than resetting the queue. One active task; no competing TODO/progress files.
 - `tools/review_regressions.gd` contains five desired-behaviour checks that currently fail on the baseline.
   Keep their expectations; document remaining failures while completing unrelated tasks.
 - Behavioural success and process exit status must both be checked. Never treat an exit code alone as AI quality.
@@ -17,13 +25,22 @@ Design: `docs/DESIGN.md`. Status / next task: `PROGRESS.md`. Read `PROGRESS.md` 
   Baseline: 11/37 subprocess cases pass (exit 1); failures are open defects, not optional green-check exclusions.
 
 ## Rules
+
 - Talk to the user in Russian. Code identifiers and technical docs in English. Game UI in Russian via `tr()` keys in `locale/strings.csv`.
-- Priority: (1) control feel + ball, (2) AI quality, (3) complete match, (4) career, (5) extras.
+- Priority: match correctness/control and AI, then the approved player-career loop alongside compatible club
+  career, then the selected additional match improvements. See queue dependencies; manual Windows gates
+  stay open when unavailable but do not block independent automated work. No Rust/engine rewrite.
 - Simulation (`src/sim`, `src/ai`, `src/input`) is pure `RefCounted` code, fixed step 60 Hz, deterministic per seed. No scene nodes, no `randf()` (use `sim.rng`), no wall-clock time. Presentation (`src/view`, `src/ui`) only reads sim state.
 - One authority for the ball: `MatchSim`. Controllers (TeamAI, HumanController) only write `PlayerCommand`. AI and human share all mechanics.
-- Tuning lives in `data/tuning/default_tuning.tres` (`GameTuning`), not in behaviour code.
+- Match tuning lives in `data/tuning/default_tuning.tres` (`GameTuning`); PC00 introduces named career tuning.
+  Keep rates/thresholds in those resources, not scattered through behaviour code.
 - Do not weaken a check to make it pass; fix the cause. Diagnostic scenarios must use the production AI (no scripted outcomes).
 - Career state is plain JSON-compatible data with stable IDs; results are applied once (fixture `played` flag), the table is always derived.
+- TEAM handoff and PLAYER_LOCKED control have different invariants. Locked control follows a career UID;
+  bench/subbed-out means zero active humans. Club/national squads reference one player record. National
+  play cannot mutate club ownership/tables; growth, training, fees and offers have once-only award owners.
+- Keep legacy club saves recoverable and the player slot separate. Abilities, form, trust and reputation
+  are distinct; planned new modules/commands are not implemented or tested merely because docs name them.
 - After changing `locale/strings.csv` or adding `class_name` scripts run the import command.
 - Record AI evidence in `docs/AI_VALIDATION.md`, asset provenance in `ASSETS.md`, status in `PROGRESS.md`.
 

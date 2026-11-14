@@ -1,139 +1,107 @@
-# Open Pitch — implementation brief for Claude Code
+# Open Pitch — unified implementation request for Claude Code
 
-Use the following as the working prompt inside this repository. The accompanying map, audit, evidence and
-task queue are part of the brief; this file is the entry point, not a replacement for reading the code.
+This is the single current execution request. Task status and acceptance live in
+[AI_WORK_PLAN.md](AI_WORK_PLAN.md); architecture navigation in [PROJECT_MAP.md](PROJECT_MAP.md).
+The approved player-career extension is [PLAYER_CAREER_SPEC.md](PLAYER_CAREER_SPEC.md).
+Earlier audits and the original BRIEF remain evidence/background, not competing work orders.
 
----
+## Goal and scope
 
-You are the senior gameplay engineer responsible for turning this football prototype into an enjoyable,
-reliable offline keyboard football game. Improve the existing project and deliver tested increments.
-The user's overriding criterion is the quality of the game they can actually play, especially thoughtful
-AI teammates and opponents. They are not asking for a larger feature checklist or a superficial FC clone.
+Deliver enjoyable offline keyboard football in Godot 4.5.1/GDScript, GL Compatibility, Windows target,
+free/original assets. The user prioritizes thoughtful AI, responsive control and clear simple 3D. Use dynamic
+short matches with believable decisions. Keep quick match and the existing club career; add the approved
+career as one footballer with gradual development, earned minutes, meaningful offers/loans and national play.
+Communicate in Russian; code/technical docs in English; Russian UI through translated keys.
 
-Communicate with the user in Russian. Write code identifiers and technical documentation in English.
-The game interface is Russian, with strings in `locale/strings.csv` and `tr()` calls.
+This request includes the previously unimplemented audit repairs. Do not replace that queue with the new
+mode or declare old work complete because a newer brief exists. Godot stays; there is no Rust rewrite.
+Do not implement every brainstorm item at once. The queue distinguishes required increments and backlog.
 
-## Product and working constraints
+## Join or resume without losing context
 
-- Godot **4.5.1 stable**, standard GDScript build, `gl_compatibility`; Windows is the player target.
-- Offline 11v11 versus AI, keyboard controls, quick matches and the existing eight-club career.
-- Free assets only. Prefer coherent improvements to existing procedural art; record external assets and
-  actual licenses in ASSETS.md if any are introduced. No real club branding or proprietary FC content.
-- Keep a playable build throughout. Preserve existing career progress where practical; explicitly version
-  and test any necessary save migration. Never test corruption on the user's real save.
-- Keep scope focused on football quality. Online services, multiplayer and a full rules expansion are not
-  prerequisites. Existing deferred fouls/cards/penalties remain deferred unless separately requested.
-- Work autonomously on the authorized fixes and bounded improvement slice. Do not pause for routine
-  implementation preferences. If a genuine external limitation blocks one task, document it and continue
-  independent authorized work. Do not invent Windows/human validation that the environment cannot provide.
+The published handoff branch is `codex/deep-audit-claude-brief` in `Vetal323232/football`.
+At this consolidation its head was 87501a5; gameplay was still a47746e. These are historical references,
+not instructions to reset a newer branch. Inspect actual branch, HEAD, status, relevant commits and local
+instructions first. Preserve the user's and other contributors' uncommitted work.
 
-## Establish the actual starting point
+If already working on a branch with implementation changes, continue that branch and integrate this brief
+without replacing its code. Otherwise create a working branch from the current published handoff. Do not
+merge/reset the default branch merely to discover instructions. Never force-push over a colleague.
 
-The handoff is on branch `codex/deep-audit-claude-brief` in `Vetal323232/football`. Its parent review branch
-is `codex/project-map-ai-plan` at `8283045`; the audited gameplay source is `a47746e`.
-The handoff adds tests/docs, without fixing gameplay. Fetch and inspect actual HEAD/status before editing.
-If the branch has advanced, compare affected files and rerun relevant baselines; do not assume a stale
-finding remains true or overwrite another person's changes. Create a working branch from the handoff.
+Load only the context needed for the next increment:
 
-Read, in this order:
+1. CLAUDE.md and the **Active handoff** at the top of PROGRESS.md.
+2. The queue index in AI_WORK_PLAN.md, then the current task's section and acceptance checks.
+3. The relevant rows of PROJECT_MAP.md and actual implementation/caller files.
+4. The particular audit finding or PLAYER_CAREER_SPEC section cited by that task.
 
-1. `CLAUDE.md` and `PROGRESS.md` — invariants and current checkpoint.
-2. `docs/PROJECT_MAP.md` — ownership, entry points, coordinates, callers and change-impact paths.
-3. `docs/DEEP_AUDIT_2026-11-14.md` — new measured results and concrete findings.
-4. `docs/CODE_REVIEW_2026-11-14.md` — earlier findings and root-cause reproductions.
-5. `docs/AI_WORK_PLAN.md` — ordered tasks, dependencies, reproduction and acceptance criteria.
-6. `docs/IMPROVEMENT_IDEAS.md` — ranked hypotheses and the proposed limited improvement slice.
-7. Relevant sections of `docs/DESIGN.md`, `docs/BRIEF.md`, `docs/AI_VALIDATION.md` and `docs/PLAYTEST.md`.
+Use `rg -n '^## ' docs/AI_WORK_PLAN.md` to locate a section. Do not preload every audit log, all design files,
+all brainstorm ideas or the entire research history on each resume. Historical raw evidence is immutable.
+Read the broader specification when a cross-system decision needs it, then record the decision briefly.
 
-Do not merely summarize those documents and stop. Inspect the real implementations and callers, reproduce
-the first ready task, fix it, test it, record the evidence and continue through the queue.
+If the handoff says a task was partly implemented, inspect those changes and rerun its named checks before
+continuing. A reported token/context limit means resume the next unfinished action, not restart the project,
+repeat completed research or discard uncommitted implementation. Mark DONE only from actual acceptance evidence.
 
-## Architecture you must preserve
+## One queue and small complete increments
 
-The simulation in `src/sim`, `src/ai`, `src/input` is pure RefCounted code, fixed at 60 Hz. Use `sim.rng`,
-not global randomness or wall-clock time. A seed plus the same sampled inputs must reproduce behaviour
-within the same engine/platform. No scene nodes, visual state or animation callbacks in the simulation.
+AI_WORK_PLAN.md is the **only authoritative task/status queue**. PROGRESS.md is a short resume pointer and
+current evidence record; the map navigates ownership; PLAYER_CAREER_SPEC defines product/data contracts.
+IMPROVEMENT_IDEAS.md is the idea register. Do not create another independent TODO/roadmap or duplicate statuses.
 
-`MatchSim` alone executes motion, ball physics, possession and rules. TeamAI and HumanController request
-actions via PlayerCommand. AI and human use the same KickPlanner, physical limits and rule checks.
-Do not give AI extra speed, instant ball attachment, perfect future information or immunity to errors.
+Start with the first ready task, retaining all IDs:
 
-TeamAI coordinates phase and duties; OnBallAI compares actions; AIAgent holds timing/commitment memory.
-There already are support, runner, width, rest defence, press, cover, marking and interception mechanisms.
-Extend or repair them instead of building a competing coordinator or replacing everything with a new AI stack.
+- Foundation: QA01, RULE01/02, SAVE01, MEM01, SUB01, INPUT01/02/03, CAREER01.
+- Tactical repair: AI01/02/05/03/04; preserve production AI and compare unchanged scenario predicates.
+- First improvement slice: V01 readability and the T01 give-and-go/third-man experiment.
+- Player career: PC00–PC09, in dependency order, with a runnable tested checkpoint after each increment.
+- Further selected match improvements: B01 first touch, B04 shot preparation, T07 styles, T08 rotations, P01 drills.
+- PLAY01 is actual Windows/human acceptance, repeated for changed modes. Its unavailable environment must be
+  recorded, but it does not block independent automated work or authorize a claim of full release acceptance.
 
-Simulation x is pitch length, y is width, height is separate. `team.dir` changes sign at half-time.
-Convert through team local/world helpers; rendering maps (x,y,height) to Godot (x,height,y).
-Tunable values belong in GameTuning/TeamTactics resources, not scattered magic numbers.
+For each task: reproduce/establish baseline, inspect callers, implement one causal change, run meaningful
+acceptance and affected neighbours, inspect behaviour, update the queue/handoff, commit a coherent increment.
+Continue ready authorized work while the session permits; do not stop after merely writing a plan.
+A dependency-blocked feature stays open. An unrelated manual gate must not paralyze the whole queue.
 
-The view samples input, steps simulation and reads state for interpolation/audio/UI. Pause needs deliberate
-input/charge resynchronization as well as stopping sim steps. Match owners need actual lifecycle cleanup.
-Career uses JSON-compatible stable IDs, played-fixture guards, derived standings and isolated save validation.
+Do not consume the whole context on a giant rewrite. At a task boundary or when context becomes tight,
+reserve enough capacity to write a useful checkpoint and preserve the work. Record the exact next action
+before stopping. No tool can guarantee this account's next Claude session or token quota; repository state
+must be sufficient for another session/colleague to resume.
 
-## Baseline and what the numbers mean
+## Non-negotiable implementation contracts
 
-- Core suite: 300 checks, 0 failed; two old assertions end with `or true` and need QA01.
-- Original scenarios: 67/72. Extended seeds: **123/144**. Combined legacy verdict: 190/216.
-- New 3v2: **5/18**; high-loss recovery: **14/18**. New run-behind: 18/18 by weak intent predicate,
-  but through/lofted delivery only 2/18. Do not equate those verdicts with completed attacking combinations.
-- Normal career stress: 8 careers × 3 seasons, 336 rounds and 672 successful transfers pass invariants.
-- Corrupt saves: 1 valid control + 29 mutations; only 8 invalid primaries recover properly, 21 are mishandled,
-  including 8 script-error cases. All are one save-validation family; do not inflate a bug count.
-- Extended runner: **11/37 subprocess cases pass, expected exit 1**. Groups have different assertion counts.
-- Eight deterministic pairs pass; 12 new random-input matches pass. Neither is a human playtest.
-- Existing six-minute level-70 matches average 8.6 shots combined, with excessive midfield play.
-- Attribute advantage persists when the strong side is away. That does not calibrate every difficulty level.
-- Actual Linux software-rendered screenshots and sampled motion exist. **Windows EXE, human feel,
-  real GPU frame pacing and audio quality remain unverified.**
+- MatchSim owns ball/motion/rules; controllers write PlayerCommand. Keep fixed 60 Hz, pure RefCounted sim,
+  sim.rng determinism, shared human/AI mechanics and existing physical prediction. No visual/mission logic in sim.
+- TEAM control keeps intended-receiver handoff. PLAYER_LOCKED binds a stable career UID, never a reused slot:
+  passing cannot transfer control; bench/subbed-out means zero active humans, entry rebinds the avatar.
+- Club, player career and national fixtures share world player identities and the match engine. A country
+  callup never changes club ownership or club tables. Route results by explicit competition/fixture context.
+- Apply fixture results, training, development, fees and offers once. Existing _develop and a new avatar
+  progression system cannot double-award a match. Separate abilities, form, coach trust and reputation.
+- Preserve legacy club saves, isolate the player save slot, validate nested data before normalization and
+  test migrations/recovery. Loans separate owner from current registration without duplicating active squads.
+- A player's role and minutes matter to assessment. Reward useful measured football, not action spam; expose
+  uncertainty in result-only simulations. Training/bench opportunities must provide a viable development path.
+- Extend existing TeamAI duties/anchors/passer memory and CareerState/Schedule/SaveManager. Avoid a second
+  coordinator, parallel simulation or copied league/transfer logic. Add focused helpers only with clear ownership.
+- All speculative paths in PLAYER_CAREER_SPEC/map are proposed, not existing files or completed features.
+  Implement real behaviour and tests before enabling menu actions. Keep unfinished surfaces honestly disabled.
+- Career tuning is data-driven. Normal starts develop over seasons; one season/reload/drill loop cannot turn
+  a young prospect into a 90-rated player. Actual ability gains must influence shared physical execution.
+- No request should weaken defenders, hardcode successful diagnostics, alter seed lists to inflate scores,
+  suppress errors or present a duty flag as a successful attacking combination. Observe computed candidates;
+  never rerun the planner for logging and change RNG. Distinguish legacy and stricter new predicates.
 
-Keep denominators, durations, engine and predicate definitions visible. Do not use “all tests pass” while
-desired-behaviour regressions or required scenario verdicts fail. Expected known failures are still open bugs.
+## Checks and evidence
 
-## Work order
+Use Godot 4.5.1; check the binary version rather than assuming the PATH binary is correct.
+The historical baseline is 300 core checks (two old tautologies), 67/72 legacy episodes, 123/144 extended
+known episodes, five failing review regressions, and 11/37 strict audit subprocess cases passing.
+These are not new successes, and different denominators cannot be added together. Full details are in
+DEEP_AUDIT_2026-11-14.md; inspect only relevant cases until a final cross-system gate is needed.
 
-Follow the detailed queue in `docs/AI_WORK_PLAN.md`; preserve IDs in commits and progress notes.
-
-**A. Trustworthy checks and correctness:** QA01; RULE01/02; SAVE01; MEM01; SUB01; INPUT01/02/03;
-CAREER01. Independent fixes may be reordered when justified, with a recorded reason.
-
-- QA01: failing verdicts/invalid selections/missing screenshots must fail the command; replace tautologies.
-- RULE01: judge a flagged first-time touch before overwriting kick/offside history.
-- RULE02: goalkeeper foot control must not erase a teammate-back-pass handling restriction.
-- SAVE01: validate nested types, mandatory fields, semantics and ranges before typed loops/normalization;
-  recover a good backup, fail cleanly when both copies are unusable.
-- MEM01: break simulation/team/AI/controller/report ownership cycles through an exercised safe lifecycle.
-- SUB01: incoming players do not inherit stun, cooldowns, pending actions or outgoing individual statistics;
-  preserve formation and participation history and reset/replan the right AI memory.
-- INPUT01: forward aim cannot select a receiver behind its half-plane.
-- INPUT02: initial handoff honors the user's eligible selected receiver; deliberate fallbacks do not flicker.
-- INPUT03: pause/focus loss cannot create a ghost shot on resume.
-- CAREER01: auto-lineup handles negative scores/invalid rosters without runtime errors or partial state.
-
-**B. Tactical quality:** AI01 → AI02 → AI05/AI03/AI04 as their dependencies allow.
-
-- Correct runner event timing before changing utility weights. Consume a due event deliberately, once.
-- Align dribble forecasts with actual jog/sprint speed, acceleration, turning, stamina and recovery.
-- Trace new defensive failures before attributing causes or weakening their tests. Protect central lanes,
-  delay an overload and recover with complementary roles. Keep defenders capable while improving attacks.
-- Improve 3v2 release timing, continuation after the first wide pass, support geometry and access to goal.
-  Recognize an overload from the current situation, even without a recent possession change.
-- Strengthen run-behind validation separately from the comparable legacy score: movement, safe window,
-  correct-team delivery to the intended runner, actual receipt/advantage and blocked/offside negative cases.
-
-**C. Bounded design improvements:** after correctness and tactical gates, implement V01 (readability) and
-one T01 (give-and-go/third-man) experiment from IMPROVEMENT_IDEAS.md. Other ideas stay in the backlog.
-V01 can begin earlier if independent; it must not change simulation physics. T01 must extend existing
-passing/support memory rather than force scripted combinations. Keep a tested fallback if an experiment
-does not improve actual decisions. Record a failed experiment honestly; do not substitute a new feature.
-
-**D. Release evidence:** import, production tests, fixed-seed matrices, full-match/career checks, matched
-screenshots/motion and Windows export. Execute PLAY01 on Windows if that environment is available;
-otherwise leave it explicitly blocked with a runnable build and exact manual checklist.
-
-## Reproducible commands
-
-Run from the project root with Godot 4.5.1. Use the Windows console binary and Python 3 on Windows.
-The Python driver's `--godot` accepts an absolute executable path; `--out` is a writable temporary directory.
+Existing commands from the project root:
 
 ```bash
 godot --version
@@ -143,75 +111,35 @@ godot --headless -s tools/review_regressions.gd
 python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-audit
 godot --headless -s tools/run_scenarios.gd
 godot --headless -s tools/run_scenarios.gd -- --seeds=44,55,66,77,88,99
-godot --headless -s tools/probe_scn.gd -- --name=attack_3v2 --variant=0 --seed=11 --secs=10 --duties
 godot --headless -s tools/run_match.gd -- --seeds=1,2,3,4,5,6,7,8 --duration=360
 godot --headless -s tools/fuzz_human.gd -- --seeds=4,5,6,7,8,9,10,11,12,13,14,15 --duration=30
 godot --headless -s tools/career_journey.gd -- --played=3 --duration=60
 ```
 
-Targeted new regressions:
+Select targeted review/edge cases with their documented `--case=NAME`. Until QA01, scenario/screenshot
+exit codes are unreliable; require completed verdicts and real artifacts. The strict Python audit also
+rejects script errors/absent completion markers. Keep expected unresolved failures visible by ID.
+Future player-career tests/journey named in the spec must be created and validated during PC tasks; they
+are not runnable baseline commands. Never report future test counts as passed.
 
-```bash
-godot --headless -s tools/deep_audit.gd -- --case=substitution_state
-godot --headless -s tools/deep_audit.gd -- --case=backpass_feet
-godot --headless -s tools/deep_audit.gd -- --case=pass_handoff
-godot --headless -s tools/deep_audit.gd -- --case=pause_shot
-godot --headless -s tools/deep_audit.gd -- --case=keeper_only_lineup
-godot --headless -s tools/audit_save_case.gd -- --case=attrs_type
-```
+After meaningful tactical changes use the original/extended matrices plus newly reserved seeds and
+arrangements, selected traces and comparable full matches. Preserve shot quality, recovery and input response;
+heuristic xG and pass accuracy alone do not prove good football. Run new career controls incrementally and
+finish with multi-season/migration/loan/national journeys. Avoid duplicate long reruns without a new concern.
+Use matched actual screenshots/motion; software MovieMaker rate is not hardware FPS. A Windows export is
+not Windows execution. Refer to PLAYTEST.md for human checks, including player-locked play.
 
-Both exit code and completed assertion/verdict output matter. Godot can print script errors and exit zero;
-the deep-audit Python wrapper catches this. Existing scenario and screenshot wrappers are untrustworthy
-until QA01. Keep the diagnostic logs under `docs/evidence/deep-audit-2026-11-14` immutable; write new runs
-to a different directory and label the commit/configuration. The save tests use isolated `user://` folders.
+## Checkpoint and final delivery
 
-For visual output, use an actual display/virtual X server and verify the PNG exists and is readable. MovieMaker
-`--write-movie ... --fixed-fps 30 --quit-after 180` produces fixed-rate evidence, not a hardware FPS benchmark.
-Export Windows only with matching 4.5.1 templates; distinguish export success from Windows runtime success.
+Keep the top Active handoff in PROGRESS.md short (roughly 40 lines): branch and implementation revision,
+active/next task, acceptance completed/open, changed files, exact commands with real exit/results, evidence
+paths, unresolved failures and **one concrete next action**. Before a context stop, preserve a focused commit
+or clearly labelled WIP plus exact dirty files; do not mark unverified WIP DONE or discard another person's work.
+Use the existing checkpoint fields; archive expanded narrative below the current block instead of growing
+another progress file. Update map paths after real ownership changes, not to pretend planned modules exist.
 
-## Quality gates and experiment discipline
-
-For every task, inspect exact callers, reproduce before changing, make one causal fix, run its acceptance
-checks and affected neighbours, then update status. Model corrections and numerical retuning should be
-separate, reviewable increments. Add negative controls that prevent a “fix” from becoming a universal action.
-
-After tactical changes run all legacy scenarios plus the extended matrix, and reserve new seeds/arrangements
-before tuning. These audit seeds are already exposed. Aim for at least 7/9 useful legacy 3v2 episodes as the
-queue specifies, with improvement beyond those nine; report shot location/pressure, timing, receipt and
-defensive security. Shot spam, opening defenders intentionally, or more low-value crosses do not satisfy it.
-
-Do not change scenario geometry, seed lists, time windows or predicates to inflate old scores. If a predicate
-is wrong, demonstrate a false positive/negative with a counterexample and publish old/new metrics separately.
-Do not hardcode diagnostic IDs, successful trajectories, guaranteed goals or scenario-specific AI branches.
-
-Observe the candidates already scored by the planner; do not call decision functions again for logging and
-consume RNG. Trace why a good option was rejected: physical feasibility, interception margin, next action,
-onside timing, commitment, pressure and utility. Use the same actual movement model as execution.
-
-Compare full-match shots, useful box entries, possession location, turnovers, support spacing, pass loops,
-recovery, deadlocks and assignment conflicts. Current xG is a heuristic. Do not claim calibration from it.
-Do not chase a numeric metric at the expense of responsive keyboard play or opponent competence.
-
-Keep checks meaningful: no `or true`, weakened assertions, suppressed errors, skipped failing episodes or
-inflated test counts. Reproduce new defects as regression cases and preserve passing counterexamples.
-Do not repeatedly rerun unaffected long suites without a new change or concern; final gates need one
-recorded run against the final revision, not a wall of duplicate logs.
-
-## Deliverables and continuation
-
-- Working code and focused commits identified by task ID; update the existing project, not a replacement.
-- A current `PROGRESS.md`: exact HEAD/checkpoint, completed/open IDs, commands/results, blockers and next task.
-- Updated `AI_VALIDATION.md`: comparable before/after tables, seeds, predicate definitions and selected traces.
-- Updated `PROJECT_MAP.md` only if ownership/entry points change; keep `CLAUDE.md` concise and accurate.
-- A Windows build when export is available, with startup controls and a short manual playtest; never assert
-  “tested on Windows” based on the Linux engine reading its pack.
-- A concise Russian final report: actual fixes/features, tests with their denominators, remaining issues,
-  artifact/branch locations and what still requires a person or Windows machine.
-
-Commit and publish to an accessible working branch using the connection available to this session. If a
-real permission error blocks publishing, preserve commits plus a patch/bundle and exact restoration steps;
-do not report a successful push. Do not merge the default branch without a request.
-
-At a genuine context/environment limit, leave a concrete reproducible checkpoint. Do not mark an untested
-milestone complete. The goal is a football game that makes good decisions and feels good to play, with
-evidence that distinguishes those two claims.
+Publish coherent increments on the accessible working branch. If permission/network blocks publishing,
+preserve commits/patch/bundle and give exact restoration steps; report the real blocker. Do not merge the
+default branch without a request. Do not claim an automatic next session has been scheduled.
+Final Russian delivery states actual completed IDs/features, checks, open tasks, branch/build links and
+Windows/human limitations. A partial session is a checkpoint; it does not complete the approved full scope.

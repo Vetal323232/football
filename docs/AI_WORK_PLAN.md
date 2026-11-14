@@ -1,4 +1,8 @@
-# AI and correctness work plan
+# Unified implementation queue
+
+This file keeps its existing path so earlier handoffs keep working. It is the **single authoritative queue**
+for audit repairs, selected match improvements and the newly authorized player career. Existing IDs are
+preserved. [PLAYER_CAREER_SPEC.md](PLAYER_CAREER_SPEC.md) defines PC contracts, not another status list.
 
 Evidence baseline: gameplay commit a47746e, Godot 4.5.1, 2026-11-14.
 Read [PROJECT_MAP.md](PROJECT_MAP.md) and [CODE_REVIEW_2026-11-14.md](CODE_REVIEW_2026-11-14.md).
@@ -16,7 +20,10 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 - Logging must observe already computed decisions; do not call decision functions again just for output.
 - Changed success predicates require a separately labelled baseline. Keep the legacy diagnostic result comparable.
 - Treat heuristic xG and aggregate pass accuracy as diagnostics; also inspect decisions and physical outcomes.
-- Update this queue when work is completed or blocked. Do not expand the feature set before these quality gates.
+- Update this queue when work is completed or blocked. Follow the agreed phase order below.
+- Use one active task. Read this index and that task's section, rather than loading the entire queue every session.
+- On context/token limits, update the Active handoff in PROGRESS.md with verified work and one exact next action.
+  Resume the same unfinished increment; do not repeat research or reset accepted work. See the master prompt.
 
 ## Queue
 
@@ -37,15 +44,51 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 | 13 | AI05 | TODO | AI01, AI02 | Defensive recovery holds beyond the original scenario seeds. |
 | 14 | AI03 | TODO | RULE01, AI01, AI02 | Numerical advantages lead to useful chances without weakening defence. |
 | 15 | AI04 | TODO | AI01, AI02, INPUT02 | Safe runs behind are served and received; unsafe alternatives are rejected. |
-| 16 | V01 | PROPOSED SLICE | QA01; independent presentation work can start earlier | Ball, camera and stadium are readable in motion. |
-| 17 | T01 | PROPOSED SLICE | AI03, AI04, INPUT02 | Give-and-go/third-man experiment extends existing support logic. |
+| 16 | V01 | TODO | QA01; independent presentation work can start earlier | Ball, camera and stadium are readable in motion. |
+| 17 | T01 | TODO | AI03, AI04, INPUT02 | Give-and-go/third-man experiment extends existing support logic. |
 | 18 | PLAY01 | MANUAL / UNVERIFIED | Runnable Windows build; final behaviour revision | Human control, visual motion and hardware performance have actual evidence. |
+| 19 | PC00 | TODO | QA01, SAVE01, MEM01, SUB01, CAREER01 | Mode/identity/save contracts and a compatible player-career state foundation. |
+| 20 | PC01 | TODO | PC00, RULE01, RULE02, INPUT01, INPUT02, INPUT03 | Stable-UID control, bench entry/exit and off-ball input on the common engine. |
+| 21 | PC02 | TODO | PC01 | Per-UID participation, role-aware ratings, form/trust/reputation inputs. |
+| 22 | PC03 | TODO | PC02 | Slow bounded development, weekly training and once-only rewards. |
+| 23 | PC04 | TODO | PC03 | Coach selection, competition for minutes and an understandable recovery path. |
+| 24 | PC05 | TODO | PC00, PC04 | A bounded multi-league world, age cohorts and shared competition calendar. |
+| 25 | PC06 | TODO | PC03, PC04, PC05 | Explainable offers, renewals, transfers, loans and legal next-season paths. |
+| 26 | PC07 | TODO | PC05, PC06 | U21/senior selection, qualifiers/finals and correct return to club. |
+| 27 | PC08 | TODO | PC04, PC06, PC07, V01 | Complete keyboard career hub, actual event history and playable weekly loop. |
+| 28 | PC09 | TODO | PC08 | Multi-season, migration, reward, contract and national integration acceptance. |
+| 29 | B01 | TODO | AI02, INPUT01, INPUT03, V01 | Directional first touch makes receiving useful and responsive. |
+| 30 | B04 | TODO | INPUT03, AI02 | Deliberate shot preparation, including a controllable powerful low shot. |
+| 31 | T07 | TODO | AI03, AI05, PC05 | Distinct understandable team styles with measured on-field differences. |
+| 32 | T08 | TODO | AI03, AI05, T01 | Coordinated overlaps/inside movements with compensation behind the ball. |
+| 33 | P01 | TODO | PC03, PC08 | Three playable production-AI drills with bounded training credit. |
 
 TODO tasks become ready when dependencies are complete. Independent correctness fixes can be advanced if a
 higher task is genuinely blocked; record why. All five new review regressions currently fail by design on the
 reviewed gameplay code. Their failure is an existing defect, not a regression introduced by the map.
 The extended queue prioritizes save/lifecycle/input correctness before tactical tuning so later evidence
-rests on reliable state. All new tasks remain open; this handoff implemented no gameplay fixes.
+rests on reliable state. All tasks above remain open at this documentation consolidation; no gameplay fix
+or player-career implementation was delivered by this handoff.
+
+## Phases and readiness
+
+1. Complete correctness and tactical repair (orders 1–15), then V01/T01. Preserve all legacy checks.
+2. Build PC00–PC09 in small increments, reusing that repaired foundation. The new mode is required scope,
+   not merely another optional brainstorm item. Do not stop at a character editor or one match.
+3. Apply the selected additional match improvements B01/B04/T07/T08/P01. Implement them once in shared
+   mechanics; all relevant modes benefit. PC05 can assign existing TeamTactics values before T07 refinement.
+4. PLAY01 is a recurring human/Windows gate at runnable checkpoints and the final changed revision. If that
+   environment is unavailable, keep it open and continue independent ready automated work. Never label the
+   full release/play feel accepted on that basis. Rerun affected career integration after later mechanics change.
+
+Dependency satisfaction enables a task; this priority order selects among ready tasks. If a higher task is
+genuinely blocked, record the reason and take an independent ready task. Preserve completed colleague work.
+No session is expected to finish all 33 entries before a token limit; every session must leave a resumable
+checkpoint and continue as far as its actual capacity allows.
+
+The remaining ideas in IMPROVEMENT_IDEAS.md stay backlog: in particular B02/B03, T02–T06, T09, B05,
+V02/V03, U01/U02, P02, A01 and the parts of C01–C03 not covered by PC contracts. Do not silently promote
+all of them to required work, or silently delete them. The idea register explains the overlaps.
 
 ## QA01 — Make validation commands trustworthy
 
@@ -348,7 +391,7 @@ Acceptance:
   preserving effective delay/containment, no swarming, and all original defensive scenario verdicts.
 - Recheck fresh seeds, possession changes, both halves, press/cover commitments and full-match chances conceded.
 
-## V01 / T01 — Limited improvement slice
+## V01 / T01 — First match-improvement slice
 
 Detailed hypotheses and extension points: [IMPROVEMENT_IDEAS.md](IMPROVEMENT_IDEAS.md).
 
@@ -361,6 +404,196 @@ third-man experiment. Open return lane, tracked passer and blocked return requir
 No compulsory ping-pong or scripted success. Recheck input handoff, offside, overloads, recovery and match
 variety. Keep only an evidenced improvement; a well-documented rejected experiment is an honest result.
 
+## PC00 — Player-career state, identity and save foundation
+
+Contract: PLAYER_CAREER_SPEC sections 2–3. Inspect CareerState, SaveManager, Game, MatchSetup and club result
+absorption before adding code. Establish explicit mode, stable avatar UID, profile namespace, fixture context
+and the result/training/transaction award ownership. Introduce career tuning with an explicit schema/migration.
+Use focused pure helpers as needed; proposed module ownership is in PROJECT_MAP.md, not a scaffold checklist.
+
+Acceptance:
+
+- Old valid club saves load/migrate with IDs, played results, budgets and lineups preserved; future/corrupt
+  schemas fail/recover cleanly under the corrected SAVE01 contract. Test isolated copies, including backups.
+- Club and player slots do not overwrite or misidentify each other. Avatar UID resolves to the world player.
+- Quick match and club career defaults remain TEAM mode. Record actual new schema/API/fixture routing decisions
+  and add meaningful positive/negative migration/mode tests. Do not mark a planned module as implemented.
+
+## PC01 — Locked control and a real player's match lifecycle
+
+Contract: spec section 2. Files: MatchSetup, HumanController, InputFrame, TeamAI, MatchSim substitution,
+match_view, match_camera, HUD and mode-aware result return. Preserve INPUT02 behaviour in TEAM mode.
+
+Acceptance:
+
+- A pass, another owner, half-time or restart never changes the avatar identity in PLAYER_LOCKED mode.
+- Zero active humans off-field, exactly one matching UID on-field; substitution in/out cannot control the
+  wrong identity in a reused slot. Test both sides/halves and a goalkeeper/other-player restart taker.
+- Pass requests use ordinary AI evaluation with open/covered/offside controls; manual movement is respected.
+- Bench skip, real entry, playable appearance, exit and full-time return work; quit early does not bank rewards.
+- Camera/help/input reflect the mode. Existing TEAM fuzz/handoff tests still pass without weakening invariants.
+
+## PC02 — Participation facts and fair role-aware assessment
+
+Contract: spec section 4. Inspect MatchSim events/participants, MatchStats, MatchReport and result application.
+Record neutral per-UID minutes, entries/exits and actual football facts; assess them outside MatchSim.
+Separate role rating, recent form, coach trust inputs and reputation evidence. Show reasons and uncertainty.
+
+Acceptance:
+
+- Outgoing/incoming players' minutes/actions stay separate; pause and bench time create no played minutes.
+- A useful midfielder/defender can rate well without scoring. Short cameos, idle action spam, repeated safe
+  passes and request spam cannot dominate rating; evidence includes positive/negative role examples.
+- Match length conversion is explicit, bounded and tested. Result-only simulations do not invent event facts.
+- Repeated assessment is deterministic/idempotent and collectors detach without reviving MEM01 ownership cycles.
+
+## PC03 — Slow growth, weekly training and reward integrity
+
+Contract: spec section 5. Reuse Attr and existing CareerState development through one documented award owner;
+add named data-driven growth/focus rates and training-week IDs. Abilities must influence shared match mechanics.
+
+Acceptance:
+
+- Fixed-seed average/bench/excellent/aging cohorts show gradual differentiated growth; report distributions
+  against the spec's initial balancing hypotheses and justify adjustments. A legal normal start cannot farm
+  90 overall in one season via drills, pass loops, reloads or match-length changes.
+- Training provides a viable slower route for a reserve, can be automated after learning, and uses calendar
+  weeks rather than real-time login. A chosen style leaves room for later development choices.
+- Repeated fixture results, menu returns, reloading and training retries award neither extra apps nor duplicate
+  XP/attributes. Old _develop and the avatar pipeline cannot both grant full growth for the same appearance.
+- Simple growth/condition feedback works; never advertise a dominant-foot/style effect absent from execution.
+
+## PC04 — Coach trust, competition and earned minutes
+
+Contract: spec section 6. Coach selection uses actual rivals, role/tactic fit, form, condition and bounded trust.
+Provide prospect/rotation/starter/key roles, contextual objectives, substitution decisions and recovery paths.
+
+Acceptance:
+
+- Sustained useful play can earn more minutes before major attribute growth; one error does not erase a season.
+- A ten-minute cameo and a defender's assignment receive appropriate expectations; no mandatory striker quota.
+- A weaker club and a crowded elite club produce different plausible roles, with visible reasons and rivals.
+- Omitted/bench/subbed-out states remain playable through training, next opportunity or a later loan; no dead
+  end. Planned substitutions obey the common limits and preserve PC01 identity/PC02 participation.
+
+## PC05 — Shared multi-league calendar and an aging world
+
+Contract: spec sections 3,7. Extend CareerState, Schedule and LeagueData, with a focused world/calendar helper
+if useful. Scope the initial world through data (target three eight-club leagues/eight represented nations).
+Preserve old one-league club-calendar behaviour. Store roles/styles using existing TeamTactics until T07.
+
+Acceptance:
+
+- Each competition has valid references, unique fixtures, correct tables and bounded dates. Contextual routing
+  cannot apply an international result to a club round or use one global ROUNDS constant for every competition.
+- Training, club dates, international windows and season rollover advance once without overlapping player
+  appearances. One player record serves club/country; `user_club` is not overwritten by a national match.
+- World generation has valid club/U21/senior position and goalkeeper pools; unsupported nations cannot be
+  selected. Competitors age/develop and new youth replace retirees over long runs. Avatar retirement is explicit.
+- Existing club saves remain playable; financial changes are explained by actual transactions/prizes/wages.
+
+## PC06 — Agent offers, renewal, transfers and loans
+
+Contract: spec section 8. Reuse roster/budget transactions, with clear owner versus active registration.
+Interest considers position needs, sustained evidence, league level, affordability and fit. Expose meaningful
+stay/step-up/ambitious/loan alternatives; show role, competitors, terms and development environment.
+
+Acceptance:
+
+- Ordinary progress can attract plausible opportunities; one great match need not guarantee an elite contract.
+- Stay/renew, accepted move, rejected/expired/stale offer, contract expiry, loan and loan return all leave legal
+  squads, stable UID and a valid next career action. No arbitrary checklist strands a good career.
+- Revalidate both clubs, money, room and dates at acceptance. Duplicate click/result/reload never duplicates
+  ownership, registration, fees/wages or offers. Loan return releases the borrower and restores correct registration.
+- Actual agent/contract UI actions are keyboard usable; seed tests cover a failed transaction with no partial mutation.
+
+## PC07 — U21 and senior national career
+
+Contract: spec section 9. Add national selection/eligibility, separate coach trust, positional competition,
+callups, qualifiers and a finals competition on the shared calendar and engine. Explanations use real candidates.
+
+Acceptance:
+
+- Weak/strong nation and crowded/open position controls produce explainable selection without one universal
+  rating cutoff. U21 aging, omission, withdrawal and later recall leave valid squads and career continuation.
+- A club match, a callup, a playable international fixture and return preserve contract/squad/budget ownership.
+  Caps/national results and club apps/tables are separate; the avatar is never cloned.
+- Club/international and U21/senior assignments do not require simultaneous appearances; workload/readiness
+  follow the same person. Qualifiers/finals and squad locks can complete, save/reload and start a later cycle.
+
+## PC08 — Full weekly career loop and truthful history
+
+Contract: spec section 10. Reuse UIKit, Game scene flow, HUD and localization; add a player hub/scene only
+where its separate flow is needed. Keep club/player creation and save selection unambiguous.
+
+Acceptance:
+
+- Create, train, inspect role/reasons, enter/skip to appearance, finish, review, save, reload and continue work.
+- Agent stay/move/loan and national selection/return are reachable from actual UI actions, not console-only code.
+- Enabled actions have complete effects; unfinished goalkeeper/lifestyle systems are not presented as working.
+- Timeline/season totals derive from committed facts: debut, first start, transfer/loan and national milestones.
+  No imaginary injury/manager/captain event without corresponding mechanics. Test 720p keyboard focus/scroll and
+  camera/ball readability; record remaining human-play limitations rather than inventing feedback.
+
+## PC09 — Multi-season player-career integration gate
+
+Contract: spec section 11. Add a bounded journey tool and scoped tests as the preceding tasks mature; the
+suggested files in the spec are future outputs, not current executable commands. Simulate routine fixtures
+and play selected real-engine matches, explicitly distinguishing their evidence and recorded facts.
+
+Acceptance:
+
+- Several seeds finish at least ten automated seasons; one run ages the world for twenty seasons. Include
+  real bench entry, rating/growth, club change, renewal, loan/return, U21/senior match and next-season continuation.
+- Verify identity/registration accounting (including declared new/retired cohorts), legal rosters/position pools,
+  calendars, finances, fixture/reward uniqueness,
+  bounded growth, country/club separation, voluntary retirement and a valid continuation after poor form.
+- Legacy migration plus invalid main/backup recovery and isolated slot checks pass; repeated UI results and
+  reloading do not duplicate state. Collectors/sims release their ownership and all physical state stays finite.
+- Rerun affected original match/club/audit checks, documenting unresolved IDs honestly. Extend PLAY01 for
+  actual player-locked Windows play; automated success alone does not close it.
+- Publish actual commands/seeds/revision/results and a runnable checkpoint. A partial vertical slice is not DONE.
+
+## B01 — Directional first touch
+
+Idea register B01. Extend shared first-touch/ball-control commands and presentation coherently; account for
+arrival speed, body orientation, pressure and ability. Make room for receiving into space/protecting the ball.
+Acceptance: manual direction has predictable effect; open/pressured controls differ meaningfully; the ball
+never teleports or becomes guaranteed possession. AI/human share execution. Test both halves, passes/rebounds,
+control attributes, input response and PC01/PC02/PC03 integration. Keep this separate from AI02 forecast repair.
+
+## B04 — Shot preparation and deliberate height/power
+
+Newly agreed brainstorm direction. Inspect HumanController._shot, KickPlanner, MatchSim, input/help and tuning.
+Provide a clear way to prepare/aim a shot and execute a powerful low shot; an intentional lofted attempt remains
+possible. Avoid accidentally changing shot type merely because sprint is held; document any binding changes.
+Acceptance: weak/strong low shots and deliberate high shots respond predictably to input and shared attributes;
+pressure/angle affect physical execution. Charge/pause/restart/input-edge regressions and AI shot planning still
+pass. Update UI/help and test player-locked play; animation may not introduce an artificial command delay.
+
+## T07 — Distinct team styles
+
+Idea T07, refining the TeamTactics values/world labels used in PC05. Start with balanced, fast transition and
+patient build-up; expose understandable controls where appropriate. Acceptance: matched configurations show
+measurable differences in spacing/risk/tempo with useful example traces; no physical stat boosts or weakening
+the user's teammates. Club offers accurately describe the actual style. Preserve recovery and chance quality.
+
+## T08 — Coordinated attacking rotations
+
+Newly agreed direction. Extend existing TeamAI anchors/duties/rest defence: winger inside, overlapping full-back,
+and a compensating midfielder when the opportunity exists. Acceptance: the rotation creates a useful alternative,
+with distinct blocked-run/marked-winger/turnover outcomes; no duplicated lane claims or abandoned central cover.
+Do not replace the coordinator or claim its existing full-back/rest-defence mechanism is entirely new.
+Check overloads, defence, T01 combinations and actual player-locked off-ball opportunities.
+
+## P01 — Playable training drills
+
+Idea P01. Use ScenarioLib/production AI for a 2v1 decision, a 3v2 counter and escaping pressure. Keep keyboard
+play, varied starting arrangements, restart and concise measured feedback. Acceptance: no scripted winning
+opponent, open/blocked alternatives require different choices, ordinary mode mechanics remain shared.
+Training credit is bounded by PC03's calendar/ledger; replaying a drill cannot farm XP. Automated training stays
+viable so the user need not repeat mini-games to continue a slow career. Verify the career UI route and return.
+
 ## PLAY01 — Windows and human gameplay acceptance
 
 Use docs/PLAYTEST.md on the actual Windows executable. Record machine/build version, keyboard layout,
@@ -368,7 +601,8 @@ settings and observations. Check movement, pass direction, switching, shot charg
 support, difficulty, animation in motion, camera, sound, pause/substitution and career continuation.
 
 Measure FPS on the real hardware. Verify the Windows executable itself rather than running its package with
-a Linux engine. Convert observed problems into reproduced tasks before marking this item complete.
+a Linux engine. Include locked-player control, bench entry/substitution out, career renewal and national return
+as those features land. Convert observed problems into reproduced tasks before marking this item complete.
 
 ## Starting request for Claude Code
 

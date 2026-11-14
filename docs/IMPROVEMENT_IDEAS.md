@@ -1,5 +1,10 @@
 # Gameplay improvement brainstorm
 
+Current scope is tracked in [AI_WORK_PLAN.md](AI_WORK_PLAN.md), the single queue; this file is the idea
+register and design rationale, not a second status list. The 2026-11-14 consolidation adds the agreed
+[player career](PLAYER_CAREER_SPEC.md) and the selected additional match directions below. None is
+implemented by this documentation change. Earlier estimates remain hypotheses.
+
 These are design hypotheses grounded in the inspected prototype, not implemented features or proven
 improvements. First repair the queue's correctness defects. Preserve useful existing TeamAI duties,
 offside-aware runs, shared physical execution, action utilities and career data instead of rebuilding them.
@@ -36,21 +41,36 @@ not by a larger number of classes, options, animations or tests.
 | C02 | **Role-based recruitment and limited AI transfers.** Clubs fill actual positional needs with affordable players. | 3 / L | CareerState buy/sell, LeagueData lineup and budgets | Runaway economy/invalid squads. No fictional money; role quotas, bounded transactions, long-season invariants. |
 | C03 | **Small development choices.** Pick one training focus per player and show why attributes changed. | 3 / M | `_develop`, Attr, career_hub | Grind and min-max exploitation. Bounded deterministic growth, clear tradeoff, no paid systems. |
 | A01 | **Clearer audio mix.** Crowd ducks for important contacts; optional directional cues help locate a pass or rebound. | 3 / S–M | Sfx, match_view event handling, volume settings | Actual audio has not been reviewed. Test on speakers/headphones; avoid repetitive cues, revealing hidden AI intent or changing simulation timing. |
+| B04 | **Prepare and control the shot.** Position/body angle matter and the user can deliberately hit a powerful low shot. | 5 / M | HumanController._shot, KickPlanner.plan_shot, shared execution/input/help | Confusing height/power or accidental sprint modifiers. Preserve charge/pause response; compare low/high attempts and attributes. |
+| T08 | **Coordinated attacking rotations.** Winger inside, full-back outside, midfielder compensates to create useful alternative lanes. | 5 / M–L | TeamAI attack anchors/duties and existing rest-defence compensation | Vacated centre and duplicated runs. Blocked/marked/turnover controls must preserve cover. |
+| T09 | **Limited opponent adaptation.** Repeated successful attacks on one side lead to a delayed adjustment that opens space elsewhere. | 4 / L | TeamTactics, bounded match-observation memory | Omniscience and rubber-banding. Use past evidence only, bounded delayed changes, no physical boosts; keep backlog until baseline/style evidence exists. |
+| B05 | **Body feint and change of direction.** Draw a defender one way, then exploit momentum with a shared physical move. | 4 / L | Existing acceleration/turning, InputFrame, MatchSim, PlayerRig | Unresponsive steering or human-only tricks. Basic inertia already exists; a new feint needs real mechanics and fair AI access. |
 
-## Recommended sequence
+## Current scope and overlaps
 
-1. **Correctness and tactical baseline:** complete QA01, RULE01/02, SAVE01, MEM01, SUB01, INPUT01/02/03,
-   AI01/02/05/03/04, CAREER01. Those tasks already cover overload recognition and dribble prediction;
-   do not repackage their bug fixes as newly implemented features.
-2. **Readability slice V01:** low-cost improvement that helps every keyboard playtest. Three camera/stadium
-   comparisons, choose one coherent default, preserve a tactical wider view as an option.
-3. **One attacking combination experiment T01:** useful give-and-go with an alternative third man, extending
-   existing support and passer memory. Include blocked-return and defender-tracking negative controls.
-4. **Then choose from B02 or T07 based on playtest evidence.** The rest remains a backlog, not an instruction
-   to implement twenty features in one session. A new mechanic needs its own scoped acceptance contract.
+Follow the queue phases: existing audit repairs, V01/T01, PC00–PC09 player career, then selected shared
+match improvements B01/B04/T07/T08/P01. Manual Windows gates recur at runnable checkpoints. This ordering
+extends the earlier two-item proposal; it does not mark any work complete or erase the remaining ideas.
 
-V01 and T01 are the proposed bounded improvement slice for the master prompt after the defect gates.
-They require no paid assets, network service, machine-learning training or engine upgrade.
+The subsequent ten-direction discussion maps as follows, so an idea is not implemented twice under a new name:
+
+| Discussion direction | Owner / scope |
+| --- | --- |
+| Partners create space through complementary rotations | T08, after the first combination/defence repairs |
+| Give-and-go with multiple continuations | T01, extending existing passer/support memory |
+| Draw a defender and change direction | AI02 corrects prediction; existing inertia remains; new feint B05 stays backlog |
+| Meaningful first touch | B01, shared by team/player modes |
+| Shot preparation and strong low shot | B04, shared controls/physical execution |
+| Recognizable opponent/club styles | T07; PC05/PC06 use actual existing tactics for world/offer fit |
+| Cautious adaptation to repeated attacks | T09, later backlog with fairness controls |
+| A few useful teammate commands | PC01 includes pass request; extra run/press commands T05 stay backlog |
+| Career built around playing style | Required PC03 development / PC06 offers; C02 full AI transfer market remains backlog |
+| Playable training situations | P01, with PC03 once-only weekly credit and automatic training option |
+
+C01 condition/workload, C03 focused training and the player-specific part of C02 are now partly covered by
+the PC contracts. This does not authorize a second growth engine, a full autonomous transfer economy or
+all lifestyle ideas. The remaining table entries stay backlog until explicitly queued. None requires paid
+assets, a network service, runtime LLMs or an engine rewrite for the agreed initial scope.
 
 ## Concrete football contracts
 

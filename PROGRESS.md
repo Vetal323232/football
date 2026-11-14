@@ -1,12 +1,41 @@
 # Progress
 
-Last update: 2026-11-14 (extended audit and Claude handoff; gameplay baseline `a47746e`). Engine: Godot 4.5.1-stable, renderer `gl_compatibility`.
+Last update: 2026-11-14 (unified repair/player-career handoff; gameplay baseline `a47746e`). Engine: Godot 4.5.1-stable, renderer `gl_compatibility`.
 Built and checked in a Linux container (no GPU, no Windows): headless runs + software-rendered screenshots.
+
+## Active handoff
+
+- **Published handoff branch:** `codex/deep-audit-claude-brief`; this consolidation is based on `87501a5`.
+- **Implementation working branch:** retain an existing Claude branch/WIP if present; otherwise branch from
+  the current handoff. Do not reset another implementation to this historical baseline.
+- **Implementation revision last verified:** `a47746e`. Remote heads checked on 2026-11-14 contained no newer
+  gameplay implementation; local/unpublished Claude work may still exist and must be inspected/preserved.
+- **Current phase:** foundation repairs. **Active task:** none yet. **Next task:** QA01 (READY).
+- **Scope/status authority:** `docs/AI_WORK_PLAN.md`, now 33 entries retaining every old ID. PC00–PC09 are
+  required new scope; B01/B04/T07/T08/P01 are the selected follow-on improvements. Other ideas remain backlog.
+- **This checkpoint:** documentation integration only; no gameplay fix, new mode, migration or new runtime test
+  has been implemented. Historical baselines below remain evidence, not completed task acceptance.
+- **Documentation validation:** all 18 earlier IDs retained; 33 unique queue entries with task sections and
+  acyclic known dependencies; relative links resolve; gameplay/test/data/evidence files unchanged.
+- **Read next:** `docs/CLAUDE_MASTER_PROMPT_EN.md`, the queue index/QA01 section, then tools/run_scenarios.gd,
+  tools/shot.sh and the two tautological assertions in tests/run_tests.gd. Load only relevant map/audit rows.
+- **Concrete next action:** verify Godot 4.5.1, run `godot --headless -s tools/run_scenarios.gd -- --only=unknown_case`,
+  capture the empty selection/exit status, then implement QA01's strict failure/selection/screenshot/assertion gates.
+- **Known open runtime evidence:** five review regressions fail; strict extended audit 11/37 subprocess cases
+  pass; extended scenarios 123/144 (runner exit misleadingly 0). Preserve failures by ID until actually repaired.
+- **Evidence:** `docs/evidence/deep-audit-2026-11-14/`; immutable. Put new results in a separate revision-labelled path.
+- **Player career:** `docs/PLAYER_CAREER_SPEC.md`; new module paths/tests in its map are proposed, not current files.
+- **External gates:** actual Windows EXE/human gameplay/audio/GPU performance remain PLAY01, unverified.
+- **Resume rule:** update this block at each task/context boundary with actual revision, changed/dirty files,
+  acceptance done/open, exact checks/results and one next action. Queue is authoritative for DONE/status.
+  Preserve a coherent commit or labelled WIP; never restart research or claim the whole scope complete at a quota stop.
+
+Historical audit and original implementation checkpoints follow; they are not alternate current work orders.
 
 ## Extended audit checkpoint
 
 - Handoff branch: `codex/deep-audit-claude-brief`, based on `8283045` (`codex/project-map-ai-plan`).
-- Start at `docs/CLAUDE_MASTER_PROMPT_EN.md`, then `docs/DEEP_AUDIT_2026-11-14.md` and the updated task queue.
+- Historical entry instruction; current selective read/resume order is in the Active handoff above.
 - No gameplay source/tuning was changed. All defect IDs remain open. First executable task is still QA01.
 - Fresh core run: 300 checks / 0 failed. Extended scenarios: **123/144** (original 67/72 retained separately).
 - 3v2 only **5/18** on new seeds. Defensive recovery and one human handoff also fail; details/traces in the audit.
@@ -20,7 +49,8 @@ Built and checked in a Linux container (no GPU, no Windows): headless runs + sof
 - Actual 3D/UI captures plus a six-second software-rendered movie were produced; seven captures and three motion
   samples were inspected. Ball/player readability and seat contrast need improvement. Windows/human/audio/GPU acceptance remain open.
 - Logs and four captures are versioned under `docs/evidence/deep-audit-2026-11-14/`.
-- Proposed bounded improvements after fixes: V01 readability, T01 give-and-go/third-man experiment. Other ideas are backlog.
+- At this earlier checkpoint the proposed slice was V01/T01; the current queue also includes the approved
+  player career and selected follow-on match work. Do not use this historical line to remove those tasks.
 
 ## Review checkpoint
 
