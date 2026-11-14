@@ -1,0 +1,40 @@
+; Engine configuration file.
+config_version=5
+
+[application]
+
+config/name="Open Pitch"
+config/description="Offline 3D football with club career"
+config/version="0.1.0"
+run/main_scene="res://scenes/main_menu.tscn"
+config/features=PackedStringArray("4.5", "GL Compatibility")
+run/max_fps=120
+
+[autoload]
+
+Game="*res://src/core/game.gd"
+Sfx="*res://src/core/sfx.gd"
+
+[display]
+
+window/size/viewport_width=1600
+window/size/viewport_height=900
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://locale/strings.ru.translation", "res://locale/strings.en.translation")
+locale/fallback="ru"
+
+[physics]
+
+common/physics_ticks_per_second=60
+common/max_physics_steps_per_frame=4
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+anti_aliasing/quality/msaa_3d=2
+lights_and_shadows/directional_shadow/size=4096
