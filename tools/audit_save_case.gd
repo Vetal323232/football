@@ -8,7 +8,7 @@ const CASES := ["valid", "broken_json", "root_array", "missing_schema", "unsuppo
 	"lineup_duplicate", "lineup_empty", "lineup_no_keeper", "squad_type", "club_null",
 	"player_null", "attrs_type", "attr_missing", "attr_range", "age_missing",
 	"fixture_score_negative", "fixture_season_missing", "fixture_played_type", "fixture_self_match",
-	"transfer_list_type", "history_type"]
+	"transfer_list_type", "history_type", "both_invalid", "missing_backup"]
 
 
 func _init() -> void:
@@ -67,14 +67,24 @@ func _run() -> void:
 		"fixture_self_match": d["fixtures"][0]["away"] = d["fixtures"][0]["home"]
 		"transfer_list_type": d["transfer_list"] = 3
 		"history_type": d["history"] = 3
+		"both_invalid", "missing_backup": d["round"] = 999
 	var f := FileAccess.open(SaveManager.path(dir), FileAccess.WRITE)
 	f.store_string("{broken" if selected == "broken_json" else JSON.stringify(d))
 	f.close()
+	if selected == "both_invalid":
+		var fb := FileAccess.open(SaveManager.path(dir) + ".bak", FileAccess.WRITE)
+		fb.store_string(JSON.stringify(d))
+		fb.close()
+	elif selected == "missing_backup":
+		DirAccess.remove_absolute(SaveManager.path(dir) + ".bak")
 	var result := SaveManager.load_career(dir)
 	var loaded: CareerState = result.get("career")
 	var equal_to_backup := loaded != null and JSON.stringify(loaded.data) == JSON.stringify(cs.data)
 	var should_recover := selected != "valid"
 	var ok := equal_to_backup and bool(result["recovered"]) == should_recover
+	if selected == "both_invalid" or selected == "missing_backup":
+		# Nothing usable: no career object, no "recovered" claim, an understandable error.
+		ok = loaded == null and not bool(result["recovered"]) and str(result["error"]) != ""
 	print("SAVE_CASE_DONE " + JSON.stringify({"case": selected, "ok": ok, "recovered": result["recovered"], "backup_equal": equal_to_backup, "error": result["error"]}))
 	SaveManager.delete(dir)
 	quit(0 if ok else 1)

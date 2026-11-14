@@ -461,61 +461,223 @@ func _move_player(pid: String, from_id: String, to_id: String, cost: int) -> voi
 
 # --------------------------------------------------------------- validation
 
-## Structural validation used after loading and in tests. Returns error strings.
+## Structural and semantic validation used before every save and after every load.
+## Works on untrusted data: every container and field type is checked before it is
+## iterated or indexed, so malformed (but syntactically valid) JSON cannot raise a
+## script error. Returns error strings; empty means the state is safe to normalize and use.
 static func validate(d: Variant) -> Array:
 	var errs := []
 	if not (d is Dictionary):
-		return ["not a dictionary"]
+		return ["root is not a dictionary"]
 	var dd: Dictionary = d
 	for k: String in ["schema", "season", "round", "user_club", "seed", "clubs", "players", "fixtures", "transfer_list", "season_over"]:
 		if not dd.has(k):
 			errs.append("missing key %s" % k)
 	if not errs.is_empty():
 		return errs
-	if int(dd["schema"]) != SCHEMA:
+	if not _is_int(dd["schema"]) or int(dd["schema"]) != SCHEMA:
 		return ["unsupported schema %s" % str(dd["schema"])]
-	if not (dd["clubs"] is Dictionary) or not (dd["players"] is Dictionary) or not (dd["fixtures"] is Array):
+	if not (dd["clubs"] is Dictionary) or not (dd["players"] is Dictionary) or not (dd["fixtures"] is Array) or not (dd["transfer_list"] is Array):
 		return ["wrong container types"]
-	if not (dd["clubs"] as Dictionary).has(dd["user_club"]):
+	if not _int_in(dd["season"], 1, 100000):
+		errs.append("season must be a positive integer")
+	if not _int_in(dd["round"], 0, ROUNDS):
+		errs.append("round must be an integer in 0..%d" % ROUNDS)
+	if not _is_int(dd["seed"]):
+		errs.append("seed must be an integer")
+	if not (dd["season_over"] is bool):
+		errs.append("season_over must be a boolean")
+	if not (dd["user_club"] is String) or not (dd["clubs"] as Dictionary).has(dd["user_club"]):
 		errs.append("user club missing")
-	var owner := {}
-	for cid: String in dd["clubs"]:
-		var c: Dictionary = dd["clubs"][cid]
-		if not c.has("squad") or not c.has("lineup") or not c.has("budget"):
-			errs.append("club %s incomplete" % cid)
+	if not errs.is_empty():
+		return errs
+	var cur_round := int(dd["round"])
+	var cur_season := int(dd["season"])
+	if bool(dd["season_over"]) != (cur_round >= ROUNDS):
+		errs.append("season_over does not match the round")
+	var clubs: Dictionary = dd["clubs"]
+	var players: Dictionary = dd["players"]
+
+	# --- players -----------------------------------------------------------
+	var player_ok := {}
+	for pid: Variant in players:
+		var pv: Variant = players[pid]
+		if not (pid is String) or not (pv is Dictionary):
+			errs.append("player %s is not a record" % str(pid))
 			continue
-		if float(c["budget"]) < 0:
-			errs.append("club %s negative budget" % cid)
-		if (c["squad"] as Array).size() < 11:
-			errs.append("club %s cannot field a team" % cid)
-		for pid: String in c["squad"]:
+		var p: Dictionary = pv
+		var bad := false
+		for k: String in ["id", "name", "pos", "club"]:
+			if not (p.get(k) is String):
+				errs.append("player %s: %s missing or not text" % [pid, k])
+				bad = true
+		if not bad and p["id"] != pid:
+			errs.append("player %s: id mismatch" % pid)
+			bad = true
+		if not bad and not ["GK", "DF", "MF", "FW"].has(p["pos"]):
+			errs.append("player %s: unknown position" % pid)
+			bad = true
+		if not _int_in(p.get("age"), 14, 60):
+			errs.append("player %s: age missing or out of range" % pid)
+			bad = true
+		if not _int_in(p.get("number"), 1, 99):
+			errs.append("player %s: number missing or out of range" % pid)
+			bad = true
+		if p.has("apps") and not _int_in(p["apps"], 0, 100000):
+			errs.append("player %s: apps invalid" % pid)
+			bad = true
+		if p.has("listed") and not (p["listed"] is bool):
+			errs.append("player %s: listed invalid" % pid)
+			bad = true
+		var av: Variant = p.get("attrs")
+		if not (av is Dictionary):
+			errs.append("player %s: attrs missing or not a dictionary" % pid)
+			bad = true
+		else:
+			for k: String in Attr.KEYS:
+				if not _int_in((av as Dictionary).get(k), 1, 99):
+					errs.append("player %s: attribute %s missing or out of 1..99" % [pid, k])
+					bad = true
+		if p.has("growth"):
+			var gv: Variant = p["growth"]
+			if not (gv is Dictionary):
+				errs.append("player %s: growth invalid" % pid)
+				bad = true
+			else:
+				for gk: Variant in gv:
+					if not (gk is String) or not _is_num(gv[gk]):
+						errs.append("player %s: growth entry invalid" % pid)
+						bad = true
+		if not bad:
+			player_ok[pid] = true
+
+	# --- clubs -------------------------------------------------------------
+	var owner := {}
+	for cid: Variant in clubs:
+		var cv: Variant = clubs[cid]
+		if not (cid is String) or not (cv is Dictionary):
+			errs.append("club %s is not a record" % str(cid))
+			continue
+		var c: Dictionary = cv
+		for k: String in ["id", "name", "short", "kit", "kit2"]:
+			if not (c.get(k) is String):
+				errs.append("club %s: %s missing or not text" % [cid, k])
+		if c.get("id") is String and c["id"] != cid:
+			errs.append("club %s: id mismatch" % cid)
+		for k: String in ["kit", "kit2"]:
+			if c.get(k) is String and not (c[k] as String).is_valid_html_color():
+				errs.append("club %s: %s is not a colour" % [cid, k])
+		if not _int_in(c.get("budget"), 0, 2000000000):
+			errs.append("club %s: budget missing, negative or not an integer" % cid)
+		var sv: Variant = c.get("squad")
+		var lv: Variant = c.get("lineup")
+		if not (sv is Array) or not (lv is Array):
+			errs.append("club %s: squad/lineup missing or not lists" % cid)
+			continue
+		var squad: Array = sv
+		var lineup: Array = lv
+		if squad.size() < 11 or squad.size() > MAX_SQUAD:
+			errs.append("club %s: squad size %d cannot field a legal team" % [cid, squad.size()])
+		var in_squad := {}
+		for pid: Variant in squad:
+			if not (pid is String):
+				errs.append("club %s: squad entry is not an id" % cid)
+				continue
 			if owner.has(pid):
 				errs.append("player %s in two squads" % pid)
 			owner[pid] = cid
-			if not (dd["players"] as Dictionary).has(pid):
+			in_squad[pid] = true
+			if not players.has(pid):
 				errs.append("squad references missing player %s" % pid)
-			elif dd["players"][pid].get("club", "") != cid:
+			elif player_ok.has(pid) and players[pid]["club"] != cid:
 				errs.append("player %s club mismatch" % pid)
-		for pid: String in c["lineup"]:
-			if not (c["squad"] as Array).has(pid):
-				errs.append("lineup of %s references %s outside squad" % [cid, pid])
-	for pid: String in dd["players"]:
-		var p: Dictionary = dd["players"][pid]
-		if not owner.has(pid):
+		if lineup.size() != 11:
+			errs.append("club %s: lineup must have 11 players" % cid)
+		var seen := {}
+		for pid: Variant in lineup:
+			if not (pid is String) or not in_squad.has(pid):
+				errs.append("lineup of %s references %s outside squad" % [cid, str(pid)])
+			elif seen.has(pid):
+				errs.append("lineup of %s lists %s twice" % [cid, pid])
+			seen[pid] = true
+		if lineup.size() == 11 and lineup[0] is String and player_ok.has(lineup[0]) and players[lineup[0]]["pos"] != "GK":
+			errs.append("club %s: lineup has no goalkeeper in goal" % cid)
+	for pid: Variant in players:
+		if pid is String and not owner.has(pid):
 			errs.append("player %s has no squad" % pid)
-		if not p.has("attrs") or not p.has("pos") or not p.has("name"):
-			errs.append("player %s incomplete" % pid)
+
+	# --- fixtures ----------------------------------------------------------
+	var fixtures: Array = dd["fixtures"]
+	var n_clubs := clubs.size()
+	if fixtures.size() != n_clubs * (n_clubs - 1):
+		errs.append("fixture count %d does not match a double round-robin" % fixtures.size())
 	var fids := {}
-	for f: Dictionary in dd["fixtures"]:
-		if fids.has(f.get("id", "")):
-			errs.append("duplicate fixture %s" % str(f.get("id", "")))
-		fids[f.get("id", "")] = true
-		if not (dd["clubs"] as Dictionary).has(f.get("home", "")) or not (dd["clubs"] as Dictionary).has(f.get("away", "")):
-			errs.append("fixture %s references unknown club" % str(f.get("id", "")))
-	for pid: String in dd["transfer_list"]:
-		if not (dd["players"] as Dictionary).has(pid):
-			errs.append("transfer list references missing player %s" % pid)
+	for fv: Variant in fixtures:
+		if not (fv is Dictionary):
+			errs.append("fixture is not a record")
+			continue
+		var f: Dictionary = fv
+		if not (f.get("id") is String):
+			errs.append("fixture without id")
+			continue
+		var fid: String = f["id"]
+		if fids.has(fid):
+			errs.append("duplicate fixture %s" % fid)
+		fids[fid] = true
+		if not (f.get("home") is String) or not (f.get("away") is String) or not clubs.has(f.get("home")) or not clubs.has(f.get("away")):
+			errs.append("fixture %s references unknown club" % fid)
+		elif f["home"] == f["away"]:
+			errs.append("fixture %s: club plays itself" % fid)
+		if not _int_in(f.get("season"), 1, 100000) or int(f["season"]) != cur_season:
+			errs.append("fixture %s: season missing or not the current season" % fid)
+		if not (f.get("played") is bool):
+			errs.append("fixture %s: played must be a boolean" % fid)
+		if not _int_in(f.get("hg"), 0, 99) or not _int_in(f.get("ag"), 0, 99):
+			errs.append("fixture %s: score missing or out of range" % fid)
+		if not _int_in(f.get("round"), 0, ROUNDS - 1):
+			errs.append("fixture %s: round missing or out of range" % fid)
+		elif f.get("played") is bool:
+			# Rounds are completed atomically: everything before the current round is played, nothing after it.
+			var fr := int(f["round"])
+			if fr < cur_round and not f["played"]:
+				errs.append("fixture %s of a finished round has no result" % fid)
+			elif fr > cur_round and f["played"]:
+				errs.append("fixture %s of a future round already has a result" % fid)
+
+	# --- lists -------------------------------------------------------------
+	for pid: Variant in dd["transfer_list"]:
+		if not (pid is String) or not players.has(pid):
+			errs.append("transfer list references missing player %s" % str(pid))
+	if dd.has("history"):
+		if not (dd["history"] is Array):
+			errs.append("history is not a list")
+		else:
+			for hv: Variant in dd["history"]:
+				if not (hv is Dictionary) or not _int_in((hv as Dictionary).get("season"), 1, 100000) \
+						or not _int_in((hv as Dictionary).get("user_pos"), 1, maxi(1, n_clubs)) \
+						or not ((hv as Dictionary).get("champion") is String) or not clubs.has((hv as Dictionary).get("champion")):
+					errs.append("history entry invalid")
+	if dd.has("last_round_results"):
+		if not (dd["last_round_results"] is Array):
+			errs.append("last_round_results is not a list")
+		else:
+			for rv: Variant in dd["last_round_results"]:
+				if not (rv is String) or not fids.has(rv):
+					errs.append("last_round_results references unknown fixture")
 	return errs
+
+
+static func _is_num(v: Variant) -> bool:
+	return (v is int or v is float) and is_finite(float(v))
+
+
+## Integer value; JSON numbers arrive as floats, so 3.0 counts and 3.5 does not.
+static func _is_int(v: Variant) -> bool:
+	return _is_num(v) and float(v) == floor(float(v)) and absf(float(v)) < 9.0e15
+
+
+static func _int_in(v: Variant, lo: int, hi: int) -> bool:
+	return _is_int(v) and int(v) >= lo and int(v) <= hi
 
 
 ## JSON turns every number into float: restore integer fields after loading.

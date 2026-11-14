@@ -19,7 +19,7 @@ SAVE_CASES = ["valid", "broken_json", "root_array", "missing_schema", "unsupport
               "lineup_duplicate", "lineup_empty", "lineup_no_keeper", "squad_type", "club_null",
               "player_null", "attrs_type", "attr_missing", "attr_range", "age_missing",
               "fixture_score_negative", "fixture_season_missing", "fixture_played_type", "fixture_self_match",
-              "transfer_list_type", "history_type"]
+              "transfer_list_type", "history_type", "both_invalid", "missing_backup"]
 EDGE_CASES = ["determinism", "career_stress", "substitution_state", "backpass_feet", "pause_shot", "pass_handoff", "keeper_only_lineup"]
 
 

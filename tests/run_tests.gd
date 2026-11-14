@@ -348,6 +348,38 @@ func test_save_load() -> void:
 	var broken2: Dictionary = cs.data.duplicate(true)
 	(broken2["clubs"]["smk"]["squad"] as Array).append(broken2["clubs"]["zar"]["squad"][0])
 	check(not CareerState.validate(broken2).is_empty(), "duplicated player detected")
+	# Semantically impossible or wrongly typed state is rejected without script errors.
+	var mutations := {
+		"round beyond the season": func(m: Dictionary) -> void: m["round"] = 999,
+		"negative round": func(m: Dictionary) -> void: m["round"] = -1,
+		"round as text": func(m: Dictionary) -> void: m["round"] = "tomorrow",
+		"fractional round": func(m: Dictionary) -> void: m["round"] = 1.5,
+		"season zero": func(m: Dictionary) -> void: m["season"] = 0,
+		"season_over as text": func(m: Dictionary) -> void: m["season_over"] = "false",
+		"season_over contradicting the round": func(m: Dictionary) -> void: m["season_over"] = true,
+		"club record null": func(m: Dictionary) -> void: m["clubs"]["smk"] = null,
+		"squad not a list": func(m: Dictionary) -> void: m["clubs"]["smk"]["squad"] = "bad",
+		"lineup with a duplicate": func(m: Dictionary) -> void: m["clubs"]["smk"]["lineup"][2] = m["clubs"]["smk"]["lineup"][1],
+		"lineup empty": func(m: Dictionary) -> void: m["clubs"]["smk"]["lineup"] = [],
+		"player record null": func(m: Dictionary) -> void: m["players"][m["clubs"]["smk"]["squad"][3]] = null,
+		"attrs not a dictionary": func(m: Dictionary) -> void: m["players"][m["clubs"]["smk"]["squad"][3]]["attrs"] = "bad",
+		"attribute out of range": func(m: Dictionary) -> void: m["players"][m["clubs"]["smk"]["squad"][3]]["attrs"]["pace"] = 999,
+		"age missing": func(m: Dictionary) -> void: m["players"][m["clubs"]["smk"]["squad"][3]].erase("age"),
+		"negative score": func(m: Dictionary) -> void: m["fixtures"][0]["hg"] = -3,
+		"played flag as text": func(m: Dictionary) -> void: m["fixtures"][0]["played"] = "false",
+		"club plays itself": func(m: Dictionary) -> void: m["fixtures"][0]["away"] = m["fixtures"][0]["home"],
+		"future fixture already played": func(m: Dictionary) -> void: m["fixtures"][55]["played"] = true,
+		"finished round without result": func(m: Dictionary) -> void: m["fixtures"][0]["played"] = false,
+		"transfer list not a list": func(m: Dictionary) -> void: m["transfer_list"] = 3,
+		"history not a list": func(m: Dictionary) -> void: m["history"] = 3,
+	}
+	check(CareerState.validate(cs.data).is_empty(), "control: the unmodified state is valid")
+	for label: String in mutations:
+		var md: Dictionary = cs.data.duplicate(true)
+		(mutations[label] as Callable).call(md)
+		check(not CareerState.validate(md).is_empty(), "rejected: %s" % label)
+	var json_copy: Variant = JSON.parse_string(JSON.stringify(cs.data))
+	check(CareerState.validate(json_copy).is_empty(), "a JSON round trip (all numbers as floats) is still valid")
 	f = FileAccess.open(SaveManager.path(dir) + ".bak", FileAccess.WRITE)
 	f.store_string("garbage")
 	f.close()

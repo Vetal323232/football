@@ -32,7 +32,7 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 | 1 | QA01 | DONE | None | Failing checks produce failing commands; assertions actually assert. |
 | 2 | RULE01 | DONE | QA01 | Offside is enforced before a flagged first-time kick. |
 | 3 | RULE02 | DONE | QA01, RULE01 | Keeper foot control preserves a back-pass restriction. |
-| 4 | SAVE01 | READY | QA01 | Nested invalid saves recover safely; no script errors during validation. |
+| 4 | SAVE01 | DONE | QA01 | Nested invalid saves recover safely; no script errors during validation. |
 | 5 | MEM01 | READY | QA01 | Repeated matches release simulation ownership cycles. |
 | 6 | SUB01 | READY | QA01 | Fresh substitutes do not inherit outgoing action/recovery state. |
 | 7 | INPUT01 | READY | QA01 | Forward intent cannot select a receiver behind the aim. |
@@ -308,6 +308,13 @@ Acceptance:
   all nested-type cases and semantic mutations. Add both-invalid and missing-backup cases.
 - Run the normal multi-season stress control and preserve IDs, integer state and ownership. Fractional
   JSON growth values have an explicit 1e-5 round-trip tolerance in the audit; do not confuse formatting with corruption.
+
+Status: **DONE** (session 2). `CareerState.validate` rewritten for untrusted data: every container/field type,
+range and cross-reference is checked before typed access (season/round/season_over consistency, player and
+club records, 11-man line-up with keeper, fixture season/round/score/played consistency, lists).
+`run_deep_audit.py --group save` -> **32/32** (30 original + `both_invalid`, `missing_backup`), no script errors;
+review `save_integrity` passes; 24 validation checks added to `test_save_load` (342 core checks, 0 failed);
+`deep_audit.gd --case=career_stress` 8 careers x 3 seasons clean; `career_journey.gd` OK.
 
 ## RULE02 — Preserve the back-pass history through keeper foot control
 
