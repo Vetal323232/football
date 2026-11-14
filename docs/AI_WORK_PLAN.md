@@ -43,8 +43,8 @@ Repair detail: [CLAUDE_BUGFIX_PROMPT_EN.md](CLAUDE_BUGFIX_PROMPT_EN.md). Subsequ
 | 9 | INPUT03 | DONE | QA01 | Releasing a charged shot in pause does not fire on resume. |
 | 10 | CAREER01 | DONE | QA01, SAVE01 | Auto-lineup is all-or-nothing and keeper eligibility precedes rating (session 3). |
 | 11 | AI01 | DONE | QA01 | Runner notifications trigger at the intended time, once. |
-| 12 | AI02 | REOPENED | AI01 | Normal gait correction retained; recovery cap and sudden-pressure scheduling remain. |
-| 13 | AI05 | TODO | AI01, AI02 | Defensive recovery holds beyond the original scenario seeds. |
+| 12 | AI02 | DONE | AI01 | Dribble forecast equals execution incl. recovery caps; bounded urgent-entry reconsideration (session 4). |
+| 13 | AI05 | READY | AI01, AI02 | Defensive recovery holds beyond the original scenario seeds. |
 | 14 | AI03 | TODO | RULE01, AI01, AI02 | Numerical advantages lead to useful chances without weakening defence. |
 | 15 | AI04 | TODO | AI01, AI02, INPUT02 | Safe runs behind are served and received; unsafe alternatives are rejected. |
 | 16 | V01 | TODO | QA01; independent presentation work can start earlier | Ball, camera and stadium are readable in motion. |
@@ -221,7 +221,23 @@ Acceptance:
 - Resolve the five named blocked-lane regressions without changing predicates or weakening defenders;
   trace remaining failures explicitly. Compare all known matrices and reserve new seeds/geometry before tuning.
 
-Status: **REOPENED** after independent gameplay review. Retain the session-3 normal-gait correction below.
+Session-4 closure of the reopened items: **DONE**.
+- `carry_speed`: recovery states (stun / tackle recovery / dive recovery) return `recover_speed` without the
+  dribble ratio, exactly as `_move_players`; an active lunge or dive is not a carry (0 / INF). `carry_time`
+  from a recovery = capped phase, then a normal carry (hypothetical: possession is dropped meanwhile, and the
+  tests assert that it is). `test_carry_recovery_states` 19 checks; the 54 straight and 8 turning controls kept.
+- Urgent-entry policy in `OnBallAI.drive` (`urgent_press_time` 0.4, `urgent_release_time` 0.55, latch in
+  `AIAgent.urgent_latched`): pressure entering reach allows one immediate decision before the ordinary
+  deadline; sustained pressure decides at the ordinary cadence (commitment ignored, deadline kept); a new
+  entry needs relief beyond the release time. `test_urgent_entry` 10 checks: entry, sustained (1–3 decisions
+  per 0.3 s), hysteresis band, relief, re-entry, runner event still exactly once.
+- `gameplay_review.gd` both cases pass; `run_deep_audit.py` **49/49, exit 0**; core 473/0.
+- Scenario matrices after the closure (unchanged predicates; order buildup/blocked/3v2/wing/high_loss/run/rebound/human):
+  legacy 63/72 (9/9/3/9/6/9/9/9); extended 127/144 (16/18/10/17/12/18/18/18); review-2 seeds 86/96
+  (11/12/7/12/8/12/12/12); gameplay-review seeds 211..373 79/96 (11/12/2/11/7/12/12/12). Sum 355/408 vs 358/408
+  before; no weights were changed. Remaining failures are AI05 (high_loss) and AI03 (attack_3v2).
+
+Earlier status text (historical): REOPENED after independent gameplay review. Retain the session-3 normal-gait correction below.
 Remaining contracts: `tools/gameplay_review.gd --case=carry_recovery` reports helper 1.488 versus real cap
 1.6 m/s; `--case=urgent_pressure` holds a stale command with ETA=0 while 0.1 s remains on the ordinary
 deadline. See CLAUDE_BUGFIX_PROMPT_EN.md: match recovery branches/validity and implement bounded

@@ -120,6 +120,7 @@ func on_restart() -> void:
 		ag.run_state = 0
 		ag.engage = false
 		ag.next_decision = 0.0
+		ag.urgent_latched = false
 		ag.commit_until = 0.0
 		ag.in_reach_since = -1.0
 		ag.next_refresh = 0.0

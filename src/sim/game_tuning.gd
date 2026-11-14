@@ -103,6 +103,8 @@ extends Resource
 @export_group("AI timing")
 @export var team_update_ticks := 6
 @export var onball_decision_time := 0.15
+@export var urgent_press_time := 0.4
+@export var urgent_release_time := 0.55
 @export var settle_time := 0.2
 @export var dribble_commit_time := 0.4
 @export var press_switch_margin := 0.45

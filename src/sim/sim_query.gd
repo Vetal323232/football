@@ -32,28 +32,57 @@ static func time_to_reach(p: SimPlayer, point: Vector2, tn: GameTuning, react :=
 ## Top speed a player actually reaches while carrying the ball with the given gait.
 ## Mirrors MatchSim._move_players: sprint needs stamina, jogging applies jog_ratio,
 ## and the ball always costs dribble_speed_ratio.
+##
+## Non-actionable states follow the same branches as the movement step:
+## - active tackle lunge or dive: movement is committed to that action, the ball cannot be carried (0);
+## - stun / tackle recovery / dive recovery: capped at recover_speed, and the dribble ratio is NOT
+##   applied there (the movement step does not apply it either).
+## Note that MatchSim drops possession in those states, so these values describe the capped movement
+## of this tick, not a sustained dribble.
 static func carry_speed(p: SimPlayer, sprint: bool, tn: GameTuning) -> float:
+	if p.tackle_t > 0.0 or p.dive_t > 0.0:
+		return 0.0
+	if not p.can_act():
+		return tn.recover_speed
 	var top := p.top_speed(tn)
 	if not (sprint and p.stamina > 0.03):
 		top *= tn.jog_ratio
-	if not p.can_act():
-		top = minf(top, tn.recover_speed)
 	return top * tn.dribble_speed_ratio
+
+
+## Remaining time in which the player is limited to recover_speed (0 when he can act).
+static func recovery_left(p: SimPlayer) -> float:
+	return maxf(p.stun, maxf(p.tackle_recover, p.dive_recover))
 
 
 ## Time for the ball carrier to cover `dist` metres in direction `dir` with the given gait,
 ## from his current velocity, using the same acceleration / braking limits as the movement
 ## step. Exact for straight runs; a turn is approximated by braking the sideways component.
+##
+## For a player in recovery this is a hypothetical: the recovery timer runs out on the way, so the
+## estimate is "capped phase at recover_speed, then a normal carry from that speed". It does not
+## claim he keeps the ball meanwhile. During an active lunge/dive the answer is INF.
 static func carry_time(p: SimPlayer, dir: Vector2, dist: float, sprint: bool, tn: GameTuning) -> float:
-	var vmax := carry_speed(p, sprint, tn)
-	if vmax <= 0.01:
+	if p.tackle_t > 0.0 or p.dive_t > 0.0:
 		return INF
 	var t := 0.0
 	var d := dist
 	var v0 := p.vel.dot(dir)
-	var side := (p.vel - dir * v0).length()
-	# Sideways speed has to be shed while turning; it delays the forward build-up.
-	t += 0.5 * side / tn.decel
+	var lock := recovery_left(p)
+	if lock > 0.0:
+		var d_lock := tn.recover_speed * lock
+		if d_lock >= d:
+			return d / tn.recover_speed
+		t = lock
+		d -= d_lock
+		v0 = tn.recover_speed
+	var vmax := p.top_speed(tn) * tn.dribble_speed_ratio * (1.0 if sprint and p.stamina > 0.03 else tn.jog_ratio)
+	if vmax <= 0.01:
+		return INF
+	if lock <= 0.0:
+		var side := (p.vel - dir * v0).length()
+		# Sideways speed has to be shed while turning; it delays the forward build-up.
+		t += 0.5 * side / tn.decel
 	if v0 < 0.0:
 		var tb := -v0 / tn.decel
 		d += 0.5 * -v0 * tb

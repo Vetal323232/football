@@ -32,6 +32,7 @@ var offside_since := -1.0
 
 # On-ball decision.
 var next_decision := 0.0
+var urgent_latched := false     ## an urgent-pressure entry was already answered
 var commit_until := 0.0
 var move_dir := Vector2.ZERO
 var move_sprint := false

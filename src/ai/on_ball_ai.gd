@@ -14,13 +14,23 @@ static func drive(ai: TeamAI, p: SimPlayer, ag: AIAgent) -> void:
 	var now := ai.now
 	var opp := ai.opp_index()
 	var t_press := SimQuery.opp_arrival(sim, sim.ball.pos, opp, 0.0)
-	# Replan triggers: decision timer, commitment over, or sudden pressure.
-	var urgent := t_press < 0.4
+	# Replan triggers: decision timer, commitment over, a runner event, or pressure.
+	# Urgent-entry policy: the moment an opponent comes within urgent_press_time the carrier may
+	# decide immediately, once, even before his ordinary deadline. While the pressure lasts he
+	# keeps deciding at the ordinary cadence (commitment is ignored, the deadline is not), and a
+	# new entry is only recognised after the pressure has eased beyond urgent_release_time.
+	var urgent := t_press < tn.urgent_press_time
+	if t_press > tn.urgent_release_time:
+		ag.urgent_latched = false
+	var urgent_entry := urgent and not ag.urgent_latched
 	var opportunity := ai.take_run_event()
-	if (now < ag.next_decision or (now < ag.commit_until and not urgent)) and not opportunity:
+	var due := now >= ag.next_decision and (now >= ag.commit_until or urgent)
+	if not (due or urgent_entry or opportunity):
 		p.cmd.move = ag.move_dir
 		p.cmd.sprint = ag.move_sprint
 		return
+	if urgent:
+		ag.urgent_latched = true
 	ag.next_decision = now + tn.onball_decision_time
 	# First touch: settle the ball before choosing, unless pressed.
 	var settle := tn.settle_time * (1.35 - 0.6 * p.control)

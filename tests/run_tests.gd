@@ -61,6 +61,8 @@ func _init() -> void:
 	test_backpass()
 	test_substitution()
 	test_carry_forecast()
+	test_carry_recovery_states()
+	test_urgent_entry()
 	test_run_event()
 	test_determinism()
 	group("teardown")
@@ -1602,6 +1604,159 @@ func test_carry_forecast() -> void:
 				turn_case = "%s from velocity %s: predicted %.2f s, executed %.2f s" % ["sprint" if sprint else "jog", v, r2[0], r2[1]]
 	print("    carry forecast: worst turning error %.3f s (%s)" % [worst_turn, turn_case])
 	check(worst_turn <= 0.35, "turning 6 m carry: prediction within 0.35 s (worst %.3f s: %s)" % [worst_turn, turn_case])
+
+
+func test_carry_recovery_states() -> void:
+	group("carry helper in recovery states")
+	# One real movement step per state: the helper's speed cap equals what the step executes.
+	var states := {
+		"stun": func(p: SimPlayer) -> void: p.stun = 0.5,
+		"tackle recovery": func(p: SimPlayer) -> void: p.tackle_recover = 0.5,
+		"dive recovery": func(p: SimPlayer) -> void: p.dive_recover = 0.5,
+	}
+	for label: String in states:
+		for sprint: bool in [false, true]:
+			var sim := new_sim()
+			open_play(sim, Vector2.ZERO)
+			var p := sim.players[sim.teams[0].player_ids[6]]
+			p.pos = Vector2.ZERO
+			(states[label] as Callable).call(p)
+			p.vel = Vector2(tuning.recover_speed, 0)
+			p.cmd.move = Vector2.RIGHT
+			p.cmd.sprint = sprint
+			sim.ball.owner = p.id
+			sim.ball.pos = Vector2(0.5, 0)
+			var predicted := SimQuery.carry_speed(p, sprint, tuning)
+			sim._move_players()
+			check(absf(predicted - p.vel.x) < 0.001, "%s, %s: helper cap %.3f equals executed speed %.3f" % [label, "sprint" if sprint else "jog", predicted, p.vel.x])
+			sim._possession()
+			check(sim.ball.owner != p.id, "%s: the player does not keep possession while recovering" % label)
+	# Active lunge / dive: not a carry at all.
+	var pl := SimPlayer.new()
+	pl.tackle_t = 0.2
+	check(SimQuery.carry_speed(pl, true, tuning) == 0.0 and SimQuery.carry_time(pl, Vector2.RIGHT, 6.0, true, tuning) == INF, "active tackle lunge: no carry speed, infinite carry time")
+	pl.tackle_t = 0.0
+	pl.dive_t = 0.2
+	check(SimQuery.carry_time(pl, Vector2.RIGHT, 6.0, false, tuning) == INF, "active dive: infinite carry time")
+	# Hypothetical six metres from a recovery: timer expires on the way. Compare with real movement
+	# of the player himself (ball not required to stay with him).
+	for lock: float in [0.2, 0.55, 0.9]:
+		for sprint: bool in [false, true]:
+			var sim2 := new_sim()
+			open_play(sim2, Vector2.ZERO)
+			var q := sim2.players[sim2.teams[0].player_ids[6]]
+			q.pace = 0.5
+			q.pos = Vector2(-10, 0)
+			q.stun = lock
+			q.vel = Vector2(tuning.recover_speed, 0)
+			var predicted_t := SimQuery.carry_time(q, Vector2.RIGHT, 6.0, sprint, tuning)
+			var ticks := 0
+			var owned_ticks := 0
+			sim2.ball.owner = q.id
+			sim2.ball.pos = q.pos + Vector2(0.5, 0)
+			while q.pos.x < -4.0 and ticks < 600:
+				q.cmd.clear()
+				q.cmd.move = Vector2.RIGHT
+				q.cmd.sprint = sprint
+				sim2.tick += 1
+				sim2._update_timers()
+				sim2._move_players()
+				# With the ball he would move at dribble pace after recovering: give it back when he can act.
+				if q.can_act():
+					sim2.ball.owner = q.id
+					owned_ticks += 1
+				ticks += 1
+			check(absf(predicted_t - ticks * MatchSim.DT) <= 0.15, "recovery %.2f s then %s: predicted %.2f s, executed %.2f s" % [lock, "sprint" if sprint else "jog", predicted_t, ticks * MatchSim.DT])
+	var short := SimPlayer.new()
+	short.stun = 5.0
+	check(is_equal_approx(SimQuery.carry_time(short, Vector2.RIGHT, 3.0, true, tuning), 3.0 / tuning.recover_speed), "distance covered entirely inside the recovery: distance / recover_speed")
+
+
+func test_urgent_entry() -> void:
+	group("urgent pressure entry")
+	var sim := new_sim(211)
+	open_play(sim, Vector2.ZERO)
+	sim.tick = 300
+	var p := sim.players[sim.teams[0].player_ids[6]]
+	var foe := sim.players[sim.teams[1].player_ids[9]]
+	p.pos = Vector2.ZERO
+	p.has_ball_time = 1.0
+	sim.ball.owner = p.id
+	sim.ball.pos = Vector2(0.5, 0)
+	var ai: TeamAI = sim.teams[0].ai
+	var ag: AIAgent = ai.agents[p.id]
+	var decisions := func() -> int:
+		var n := 0
+		for k: String in ai.decision_counts:
+			n += int(ai.decision_counts[k])
+		return n
+	var tick_drive := func() -> void:
+		sim.tick += 1
+		ai.now = sim.tick * MatchSim.DT
+		p.cmd.clear()
+		p.pending_kick = null
+		sim.ball.owner = p.id
+		OnBallAI.drive(ai, p, ag)
+	ai.now = sim.tick * MatchSim.DT
+	ag.next_decision = ai.now + 0.1
+	ag.commit_until = ai.now + 0.3
+	ag.move_dir = Vector2.DOWN
+	var d0: int = decisions.call()
+	# Negative control: opponent far away -> scheduled decision kept.
+	tick_drive.call()
+	check(decisions.call() == d0 and p.cmd.move.is_equal_approx(Vector2.DOWN), "ordinary pressure keeps the scheduled deadline")
+	# Entry: opponent arrives in reach before the deadline -> one immediate reconsideration.
+	foe.pos = sim.ball.pos + Vector2(0.3, 0)
+	ag.next_decision = ai.now + 0.2
+	ag.commit_until = ai.now + 0.4
+	tick_drive.call()
+	check(decisions.call() == d0 + 1 and ag.urgent_latched, "pressure entering reach triggers one immediate decision")
+	# Sustained pressure: ordinary cadence, not every tick.
+	var d1: int = decisions.call()
+	for i in 18:
+		tick_drive.call()
+	var per_window: int = decisions.call() - d1
+	check(per_window >= 1 and per_window <= 3, "sustained pressure: %d decisions in 0.3 s (cadence %.2f s), not one per tick" % [per_window, tuning.onball_decision_time])
+	# Between threshold and release band: still latched (no flicker entry).
+	var band_x := -1.0
+	for step in 60:
+		foe.pos = sim.ball.pos + Vector2(1.0 + step * 0.1, 0)
+		foe.vel = Vector2.ZERO
+		var eta := SimQuery.opp_arrival(sim, sim.ball.pos, 1, 0.0)
+		if eta > tuning.urgent_press_time + 0.02 and eta < tuning.urgent_release_time - 0.02:
+			band_x = 1.0 + step * 0.1
+			break
+	check(band_x > 0.0, "a distance inside the hysteresis band exists (%.1f m)" % band_x)
+	var d_band: int = decisions.call()
+	ag.next_decision = ai.now + 1.0
+	ag.commit_until = ai.now + 1.0
+	tick_drive.call()
+	check(ag.urgent_latched and decisions.call() == d_band, "inside the band the latch holds and nothing is re-decided")
+	foe.pos = sim.ball.pos + Vector2(0.3, 0)
+	tick_drive.call()
+	check(decisions.call() == d_band, "re-approach without relief is not a new entry")
+	# Relief, then a new entry is answered again at once.
+	foe.pos = sim.ball.pos + Vector2(25, 0)
+	tick_drive.call()
+	check(not ag.urgent_latched, "relief clears the latch")
+	ag.next_decision = ai.now + 0.5
+	ag.commit_until = ai.now + 0.5
+	var d2: int = decisions.call()
+	tick_drive.call()
+	check(decisions.call() == d2, "after relief the long deadline is respected")
+	foe.pos = sim.ball.pos + Vector2(0.3, 0)
+	tick_drive.call()
+	check(decisions.call() == d2 + 1, "a new entry after relief is answered immediately")
+	# A runner event still works exactly once alongside.
+	foe.pos = sim.ball.pos + Vector2(25, 0)
+	tick_drive.call()
+	ag.next_decision = ai.now + 0.5
+	ag.commit_until = ai.now + 0.5
+	ai.run_started_tick = sim.tick + 1
+	var d3: int = decisions.call()
+	tick_drive.call()
+	tick_drive.call()
+	check(decisions.call() == d3 + 1, "runner event still causes exactly one re-evaluation")
 
 
 func test_run_event() -> void:
