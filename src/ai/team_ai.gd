@@ -8,6 +8,7 @@ enum Phase { BUILD_UP, PROGRESSION, CHANCE_CREATION, ATTACK_TRANSITION, ORGANIZE
 const PHASE_NAMES: Array[String] = ["BUILD_UP", "PROGRESSION", "CHANCE", "ATT_TRANS", "ORG_DEF", "DEF_TRANS", "SET_PIECE"]
 const D := AIAgent.Duty
 const R := SimPlayer.Role
+const RUN_EVENT_MAX_AGE := 20   ## ticks a due runner event stays usable
 
 var sim: MatchSim
 var team: SimTeam
@@ -36,7 +37,7 @@ var impatience := 0.0
 var _progress_x := -100.0
 var _progress_t := 0.0
 var counter_on := false
-var run_started_tick := -100
+var run_started_tick := -100   ## tick at which the carrier should re-evaluate for a runner (-100 = none)
 
 # Diagnostics.
 var conflicts := 0
@@ -78,6 +79,17 @@ func on_substitution(id: int) -> void:
 	_last_kick_id = -2   # marks the plan dirty: replan on the next update
 
 
+## Runner notification for the ball carrier. Returns true exactly once, on the first
+## carrier update at or after the scheduled tick; a future event leaves the current
+## commitment alone, and an event nobody consumed in time expires instead of firing late.
+func take_run_event() -> bool:
+	if run_started_tick < 0 or sim.tick < run_started_tick:
+		return false
+	var fresh := sim.tick - run_started_tick <= RUN_EVENT_MAX_AGE
+	run_started_tick = -100
+	return fresh
+
+
 func opp_index() -> int:
 	return 1 - team.index
 
@@ -100,6 +112,7 @@ func on_restart() -> void:
 	presser_id = -1
 	cover_id = -1
 	impatience = 0.0
+	run_started_tick = -100
 	_progress_x = -100.0
 	_progress_t = sim.tick * MatchSim.DT
 	for id in agents:

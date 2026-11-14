@@ -16,7 +16,7 @@ static func drive(ai: TeamAI, p: SimPlayer, ag: AIAgent) -> void:
 	var t_press := SimQuery.opp_arrival(sim, sim.ball.pos, opp, 0.0)
 	# Replan triggers: decision timer, commitment over, or sudden pressure.
 	var urgent := t_press < 0.4
-	var opportunity := ai.run_started_tick >= sim.tick - 1
+	var opportunity := ai.take_run_event()
 	if (now < ag.next_decision or (now < ag.commit_until and not urgent)) and not opportunity:
 		p.cmd.move = ag.move_dir
 		p.cmd.sprint = ag.move_sprint

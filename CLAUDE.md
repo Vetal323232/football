@@ -18,7 +18,7 @@ Read the **Active handoff** at the top of `PROGRESS.md` before resuming. Runtime
 - Context/token limits require a resumable checkpoint in PROGRESS.md: exact branch/revision, dirty files,
   completed/open acceptance, commands/results/evidence and one concrete next action. Preserve colleague work;
   resume the unfinished task rather than resetting the queue. One active task; no competing TODO/progress files.
-- `tools/review_regressions.gd` contains five desired-behaviour checks (one still failing: AI01).
+- `tools/review_regressions.gd` contains five desired-behaviour checks (all pass since AI01).
   Keep their expectations; document remaining failures while completing unrelated tasks.
 - Behavioural success and process exit status must both be checked. Never treat an exit code alone as AI quality.
 - `tools/run_deep_audit.py` runs isolated corruption/state/determinism/career checks and catches script errors.
@@ -48,11 +48,11 @@ Read the **Active handoff** at the top of `PROGRESS.md` before resuming. Runtime
 ## Verified commands (Linux container; `godot` = Godot 4.5.1 stable)
 ```
 godot --headless --import                                   # import / parse check (also rebuilds translations)
-godot --headless -s tests/run_tests.gd                      # 410 automated checks, exit code 1 on failure (-- --violate=budget|lineup self-test must fail)
-godot --headless -s tools/review_regressions.gd             # desired-behaviour checks; 1 of 5 still fails (run_trigger, AI01)
+godot --headless -s tests/run_tests.gd                      # 421 automated checks, exit code 1 on failure (-- --violate=budget|lineup self-test must fail)
+godot --headless -s tools/review_regressions.gd             # five desired-behaviour checks; all pass
 python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-audit  # extended checks; 42/42, exit 0
 godot --headless -s tools/run_scenarios.gd                  # AI validation scenarios; exit 1 while any episode fails (currently 67/72), 2 on bad --only
-godot --headless -s tools/run_scenarios.gd -- --seeds=44,55,66,77,88,99 # extended known seeds: 123/144
+godot --headless -s tools/run_scenarios.gd -- --seeds=44,55,66,77,88,99 # extended known seeds: 122/144, exit 1
 godot --headless -s tools/run_match.gd -- --seeds=1,2,3     # full AI-vs-AI matches with metrics
 godot --headless -s tools/fuzz_human.gd                     # random-input robustness of human control
 godot --headless -s tools/career_journey.gd                 # career end-to-end through the real match engine

@@ -39,8 +39,8 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 | 8 | INPUT02 | DONE | QA01 | Initial human handoff follows the selected eligible receiver. |
 | 9 | INPUT03 | DONE | QA01 | Releasing a charged shot in pause does not fire on resume. |
 | 10 | CAREER01 | DONE | QA01, SAVE01 | Auto-lineup handles negative candidate scores and invalid roster shapes. |
-| 11 | AI01 | READY | QA01 | Runner notifications trigger at the intended time, once. |
-| 12 | AI02 | TODO | AI01 | Dribble utility evaluates the movement that will actually execute. |
+| 11 | AI01 | DONE | QA01 | Runner notifications trigger at the intended time, once. |
+| 12 | AI02 | READY | AI01 | Dribble utility evaluates the movement that will actually execute. |
 | 13 | AI05 | TODO | AI01, AI02 | Defensive recovery holds beyond the original scenario seeds. |
 | 14 | AI03 | TODO | RULE01, AI01, AI02 | Numerical advantages lead to useful chances without weakening defence. |
 | 15 | AI04 | TODO | AI01, AI02, INPUT02 | Safe runs behind are served and received; unsafe alternatives are rejected. |
@@ -169,6 +169,21 @@ Acceptance:
 - Restarting and new events do not reuse stale notifications.
 - Existing immediate-pressure behaviour remains deliberate and tested.
 - Record decision frequency around a runner event in a real run_behind episode.
+
+Status: **DONE** (session 2). `TeamAI.take_run_event()` delivers a scheduled runner event exactly once at or
+after its tick, expires it after `RUN_EVENT_MAX_AGE` (20 ticks) and `on_restart` discards it; `OnBallAI.drive`
+uses it. Review `run_trigger` passes (all five review regressions now pass). `test_run_event` (11 checks).
+Decision frequency in real `run_behind` episodes (`tools/probe_run_event.gd`, 9 episodes, counts existing
+decisions only): 0.5 s after a runner event **9.29 avg / 15 max before the fix -> 2.75 avg / 4 max after**
+(normal cadence about 3.3). Effects measured with and without this change on otherwise identical code:
+8 full matches 13 goals, 8.6 shots/match -> 22 goals, 10.9 shots/match, 0 stalls, 0 conflicts in both.
+Scenario matrices with unchanged predicates: legacy 67/72 (same five `attack_3v2`); extended seeds 44..99
+**122/144** (baseline 123): `human_support` 17->18 and `high_loss` 14->15 improved, `blocked_lane` 18->15.
+The three new `blocked_lane` failures (v2 seeds 77, 88, 99) appear only with this change: at the intended
+decision cadence the carrier keeps a dribble commitment while an opponent closes from behind (v2/77: tackled
+at 2.25 s without a pass) or passes later/into pressure. They stay open and are assigned to AI02
+(forecast vs executed movement and commitment under approaching pressure); reproduce with
+`tools/probe_scn.gd -- --name=blocked_lane --variant=2 --seed=77 --secs=5`.
 
 ## AI02 — Align dribble forecasts with executed movement
 

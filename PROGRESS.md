@@ -8,19 +8,23 @@ Built and checked in a Linux container (no GPU, no Windows): headless runs + sof
 - **Implementation branch:** `claude/new-session-yr8bm1` (based on handoff `codex/deep-audit-claude-brief` @ `7265450`
   plus session-2 commits), published to origin. Queue authority: `docs/AI_WORK_PLAN.md`.
 - **DONE in session 2 (evidence in each task's Status block):** QA01, RULE01, RULE02, SAVE01, MEM01, SUB01,
-  INPUT01, INPUT02, INPUT03, CAREER01 — the whole foundation phase (queue orders 1–10).
-- **Active task:** none in progress. **Next task:** AI01 (READY), then AI02, AI05, AI03, AI04, V01, T01.
+  INPUT01, INPUT02, INPUT03, CAREER01 (foundation phase, queue orders 1–10) and AI01.
+- **Active task:** none in progress. **Next task:** AI02 (READY), then AI05, AI03, AI04, V01, T01.
   PC00 is also dependency-ready (QA01, SAVE01, MEM01, SUB01, CAREER01 done) but comes after the tactical phase.
 - **Checks at this revision (real results):**
-  - `godot --headless -s tests/run_tests.gd` -> 410 checks, 0 failed, exit 0 (`-- --violate=budget|lineup` -> exit 1).
+  - `godot --headless -s tests/run_tests.gd` -> 421 checks, 0 failed, exit 0 (`-- --violate=budget|lineup` -> exit 1).
   - `godot --headless -s tools/run_scenarios.gd` -> TOTAL 67/72, **exit 1** (five `attack_3v2` episodes = AI03).
-  - `godot --headless -s tools/review_regressions.gd` -> 5 checks, **1 failed** (`run_trigger` = AI01), exit 1.
+  - `godot --headless -s tools/review_regressions.gd` -> 5 checks, 0 failed, exit 0.
+  - `tools/run_scenarios.gd -- --seeds=44,55,66,77,88,99` -> **122/144**, exit 1 (baseline 123): buildup 16/18,
+    blocked_lane 15/18 (new: v2 seeds 77,88,99 -> AI02), attack_3v2 5/18, wing_defence 17/18, high_loss 15/18,
+    run_behind 18/18, shot_rebound 18/18, human_support 18/18.
+  - `tools/run_match.gd -- --seeds=1..8 --duration=360` -> 4W 1D 3L, goals 11:11, 10.9 shots/match, 0 stalls, 0 conflicts.
+  - `tools/probe_run_event.gd` -> decisions in 0.5 s after a runner event: 2.75 avg, 4 max (was 9.29 / 15).
   - `python3 tools/run_deep_audit.py --godot godot --out <dir>` -> **42/42, exit 0** (baseline 11/37; five cases
     added this session: both_invalid, missing_backup, match_lifetime, camera_input, pause_policy).
   - `tools/run_scenarios.gd -- --only=human_support --seeds=44,55,66,77,88,99` -> 18/18.
   - `tools/fuzz_human.gd -- --seeds=4..15 --duration=30` -> FUZZ OK; `tools/career_journey.gd` -> JOURNEY OK.
-  - Not rerun: full extended scenario matrix (baseline 123/144), 8-match AI metrics after the last input
-    fixes (4 matches after RULE02: 0 stalls, 0 conflicts), Windows export.
+  - Not rerun after AI01: deep audit (42/42 before AI01; AI01 touched only on-ball timing), Windows export.
 - **Behaviour changes since a47746e:** first-time kick by a flagged player is offside; keeper foot control keeps
   the back-pass ban; invalid saves rejected with backup recovery; `MatchSim.dispose()` must be called by owners;
   substitutes start clean; assisted passes never go behind a held direction; handoff follows the selected
@@ -28,10 +32,11 @@ Built and checked in a Linux container (no GPU, no Windows): headless runs + sof
 - **Stale:** `docs/AI_VALIDATION.md` match numbers (from a47746e); the session-1 Windows build predates these fixes.
 - **Known cosmetic gap:** a substitute's rig keeps the outgoing player's skin/hair colours.
 - **External gates:** PLAY01 (Windows EXE, human play, real focus/keyboard, GPU performance) unverified.
-- **Concrete next action:** `godot --headless -s tools/review_regressions.gd -- --case=run_trigger`, read the
-  AI01 section, then fix `TeamAI.run_started_tick` / `OnBallAI.drive` so the carrier's re-evaluation fires once
-  at the intended tick (currently the event is stored 12 ticks in the future and compared with `>= tick - 1`,
-  so it triggers on every tick until then).
+- **Concrete next action:** read the AI02 section of `docs/AI_WORK_PLAN.md`, then trace
+  `godot --headless -s tools/probe_scn.gd -- --name=blocked_lane --variant=2 --seed=77 --secs=5 --duties`
+  and compare the dribble option the carrier chose (speed/sprint assumed in `OnBallAI.decide`: `run_speed`,
+  6 m look-ahead) with what `MatchSim._move_players` executes (jog vs sprint, `dribble_speed_ratio`), and why
+  the commitment is not broken while the opponent closes from behind (`urgent` only below 0.4 s).
 
 Historical audit and original implementation checkpoints follow; they are not alternate current work orders.
 

@@ -60,6 +60,7 @@ func _init() -> void:
 	test_keeper()
 	test_backpass()
 	test_substitution()
+	test_run_event()
 	test_determinism()
 	group("teardown")
 	print("%d checks, %d failed, %.1fs" % [_checks, _fails, (Time.get_ticks_msec() - t0) / 1000.0])
@@ -1476,6 +1477,69 @@ func test_substitution() -> void:
 	sim.state = MatchSim.State.FULL_TIME
 	tm.subs_made = 0
 	check(not sim.substitute(human_team, tm.player_ids[7], 0), "no substitution after full time")
+
+
+func test_run_event() -> void:
+	group("runner event timing")
+	var sim := new_sim()
+	ScenarioLib.apply(sim, "attack_3v2", 0)
+	var ai: TeamAI = sim.teams[0].ai
+	sim.tick = 300
+	check(not ai.take_run_event(), "no event: nothing to consume")
+	ai.run_started_tick = 312
+	check(not ai.take_run_event() and ai.run_started_tick == 312, "a future event is neither consumed nor lost")
+	sim.tick = 312
+	check(ai.take_run_event(), "a due event is delivered")
+	check(not ai.take_run_event(), "the same event is not delivered twice")
+	sim.tick = 313
+	check(not ai.take_run_event(), "nor on the following tick")
+	ai.run_started_tick = 320
+	sim.tick = 320 + TeamAI.RUN_EVENT_MAX_AGE + 1
+	check(not ai.take_run_event() and ai.run_started_tick < 0, "an event nobody consumed in time expires")
+	ai.run_started_tick = sim.tick + 5
+	ai.on_restart()
+	sim.tick += 5
+	check(not ai.take_run_event(), "a restart discards a pending event")
+	# Carrier behaviour: commitment survives a future event, is broken once by a due one,
+	# and immediate pressure still forces a decision.
+	var s2 := new_sim()
+	ScenarioLib.apply(s2, "attack_3v2", 0)
+	var ai2: TeamAI = s2.teams[0].ai
+	s2.tick = 300
+	ai2.now = 5.0
+	ai2._replan()
+	var c := s2.players[s2.teams[0].player_ids[9]]
+	var ag: AIAgent = ai2.agents[c.id]
+	c.has_ball_time = 2.0
+	ag.next_decision = 5.15
+	ag.commit_until = 5.4
+	ag.move_dir = Vector2.UP
+	ai2.run_started_tick = 312
+	OnBallAI.drive(ai2, c, ag)
+	check(c.cmd.move.is_equal_approx(Vector2.UP) and is_equal_approx(ag.next_decision, 5.15), "future event: movement decision and deadline kept")
+	s2.tick = 312
+	ai2.now = 5.2
+	ag.next_decision = 5.35
+	c.cmd.clear()
+	OnBallAI.drive(ai2, c, ag)
+	check(ag.options.size() > 0 and ai2.run_started_tick < 0, "due event: one re-evaluation happens and consumes the event")
+	ag.next_decision = 9.0
+	ag.commit_until = 9.0
+	ag.move_dir = Vector2.UP
+	ag.options.clear()
+	s2.tick = 313
+	c.cmd.clear()
+	OnBallAI.drive(ai2, c, ag)
+	check(ag.options.is_empty() and is_equal_approx(ag.next_decision, 9.0), "next tick: no second re-evaluation from the same event")
+	# Immediate pressure overrides a commitment once the decision timer allows it.
+	var foe := s2.players[s2.teams[1].player_ids[5]]
+	foe.pos = s2.ball.pos + Vector2(0.6, 0)
+	ag.next_decision = 0.0
+	ag.commit_until = 9.0
+	ag.options.clear()
+	c.cmd.clear()
+	OnBallAI.drive(ai2, c, ag)
+	check(ag.options.size() > 0 or c.cmd.kick != null, "imminent pressure still triggers a decision despite the commitment")
 
 
 func test_determinism() -> void:
