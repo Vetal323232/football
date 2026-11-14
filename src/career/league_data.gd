@@ -113,7 +113,17 @@ static func auto_lineup(squad: Array) -> Array:
 		var want := SLOT_POS[slot]
 		var best: Dictionary = {}
 		var best_v := -INF
+		# Eligibility before rating: while a real goalkeeper is available, only goalkeepers
+		# are considered for the goal, however low their rating.
+		var keeper_available := false
+		if want == "GK":
+			for p: Dictionary in pool:
+				if p["pos"] == "GK":
+					keeper_available = true
+					break
 		for p: Dictionary in pool:
+			if keeper_available and p["pos"] != "GK":
+				continue
 			var v := float(Attr.overall(p["attrs"], want)) * (0.6 + 0.4 * clampf(float(p.get("fitness", 1.0)), 0.0, 1.0))
 			if p["pos"] != want:
 				v -= 12.0 if want != "GK" and p["pos"] != "GK" else 60.0

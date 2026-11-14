@@ -328,6 +328,20 @@ func test_lineup_robustness() -> void:
 		eleven.append(c)
 	var el := LeagueData.auto_lineup(eleven)
 	check(el.size() == 11 and el.find("fresh") < el.find("tired"), "low fitness lowers a candidate also when scores are negative")
+	# Legal but extreme: both goalkeepers rated 1, every outfielder 99. A keeper must still play in goal.
+	var cs_low := CareerState.create("smk", 2024)
+	for lp: Dictionary in cs_low.squad_of("smk"):
+		for key: String in Attr.KEYS:
+			lp["attrs"][key] = 1 if lp["pos"] == "GK" else 99
+	var low_before: Array = cs_low.user()["lineup"].duplicate()
+	check(cs_low.lineup_valid("smk", low_before) == "", "extreme ratings: the existing line-up is legal")
+	check(cs_low.auto_lineup("smk") and cs_low.lineup_valid("smk", cs_low.user()["lineup"]) == "", "auto line-up accepts a legal team with very weak goalkeepers")
+	check(cs_low.player(cs_low.user()["lineup"][0])["pos"] == "GK", "a real goalkeeper is in goal")
+	var gk_outfield := 0
+	for slot in range(1, 11):
+		if cs_low.player(cs_low.user()["lineup"][slot])["pos"] == "GK":
+			gk_outfield += 1
+	check(gk_outfield == 0, "the second goalkeeper is not used outfield while outfielders are available")
 	check(LeagueData.auto_lineup([]).is_empty(), "empty roster: no line-up")
 	check(LeagueData.auto_lineup(cs.squad_of("smk").slice(0, 10)).is_empty(), "ten players: no partial line-up")
 	var messy: Array = cs.squad_of("smk")
@@ -447,12 +461,47 @@ func test_save_load() -> void:
 		"finished round without result": func(m: Dictionary) -> void: m["fixtures"][0]["played"] = false,
 		"transfer list not a list": func(m: Dictionary) -> void: m["transfer_list"] = 3,
 		"history not a list": func(m: Dictionary) -> void: m["history"] = 3,
+		"unknown attribute key": func(m: Dictionary) -> void: m["players"][m["clubs"]["smk"]["squad"][3]]["attrs"]["unexpected"] = {"bad": true},
+		"unknown numeric attribute key": func(m: Dictionary) -> void: m["players"][m["clubs"]["smk"]["squad"][3]]["attrs"]["luck"] = 50,
+		"fitness not a number": func(m: Dictionary) -> void: m["players"][m["clubs"]["smk"]["squad"][3]]["fitness"] = {"bad": true},
+		"fitness out of range": func(m: Dictionary) -> void: m["players"][m["clubs"]["smk"]["squad"][3]]["fitness"] = 7.5,
+		"growth for an unknown attribute": func(m: Dictionary) -> void: m["players"][m["clubs"]["smk"]["squad"][3]]["growth"] = {"luck": 0.5},
+		"duplicate pairing in one round": func(m: Dictionary) -> void:
+			m["fixtures"][5]["home"] = m["fixtures"][4]["home"]
+			m["fixtures"][5]["away"] = m["fixtures"][4]["away"],
+		"club twice in a round": func(m: Dictionary) -> void:
+			var x: String = m["fixtures"][4]["home"]
+			m["fixtures"][4]["home"] = m["fixtures"][5]["home"]
+			m["fixtures"][5]["away"] = x,
 	}
 	check(CareerState.validate(cs.data).is_empty(), "control: the unmodified state is valid")
 	for label: String in mutations:
 		var md: Dictionary = cs.data.duplicate(true)
 		(mutations[label] as Callable).call(md)
 		check(not CareerState.validate(md).is_empty(), "rejected: %s" % label)
+	# Legacy shape: optional lists missing. Accepted, defaulted on load, and usable to the season end.
+	var legacy: Dictionary = JSON.parse_string(JSON.stringify(cs.data))
+	legacy.erase("history")
+	legacy.erase("last_round_results")
+	legacy["players"][legacy["clubs"]["smk"]["squad"][3]].erase("growth")
+	legacy["players"][legacy["clubs"]["smk"]["squad"][4]]["fitness"] = 0.8
+	check(CareerState.validate(legacy).is_empty(), "legacy save without optional lists is accepted")
+	var ldir := "user://test_saves_legacy"
+	SaveManager.delete(ldir)
+	DirAccess.make_dir_recursive_absolute(ldir)
+	var lf := FileAccess.open(SaveManager.path(ldir), FileAccess.WRITE)
+	lf.store_string(JSON.stringify(legacy))
+	lf.close()
+	var lres := SaveManager.load_career(ldir)
+	var lcs: CareerState = lres["career"]
+	check(lcs != null and lcs.data["history"] is Array and lcs.data["last_round_results"] is Array, "missing optional lists are defaulted by normalization")
+	if lcs != null:
+		while not lcs.data["season_over"]:
+			lcs.complete_round(true)
+		check((lcs.data["history"] as Array).size() == 1 and lcs.start_next_season() and CareerState.validate(lcs.data).is_empty(), "a loaded legacy career finishes its season and rolls over")
+		check(lcs.match_setup_for(lcs.user_fixture(), 3) != null, "match setup works with a stored fitness value")
+		check(SaveManager.save(lcs, ldir) == "", "and can be saved again")
+	SaveManager.delete(ldir)
 	var json_copy: Variant = JSON.parse_string(JSON.stringify(cs.data))
 	check(CareerState.validate(json_copy).is_empty(), "a JSON round trip (all numbers as floats) is still valid")
 	f = FileAccess.open(SaveManager.path(dir) + ".bak", FileAccess.WRITE)

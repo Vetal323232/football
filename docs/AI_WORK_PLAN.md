@@ -32,13 +32,13 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 | 1 | QA01 | DONE | None | Failing checks produce failing commands; assertions actually assert. |
 | 2 | RULE01 | DONE | QA01 | Offside is enforced before a flagged first-time kick. |
 | 3 | RULE02 | DONE | QA01, RULE01 | Keeper foot control preserves a back-pass restriction. |
-| 4 | SAVE01 | REOPENED | QA01 | Original cases pass; four independent boundary cases still accept broken state. |
+| 4 | SAVE01 | DONE | QA01 | Nested invalid saves recover safely; review boundary cases closed (session 3). |
 | 5 | MEM01 | DONE | QA01 | Repeated matches release simulation ownership cycles. |
 | 6 | SUB01 | DONE | QA01 | Fresh substitutes do not inherit outgoing action/recovery state. |
 | 7 | INPUT01 | DONE | QA01 | Forward intent cannot select a receiver behind the aim. |
 | 8 | INPUT02 | DONE | QA01 | Initial human handoff follows the selected eligible receiver. |
 | 9 | INPUT03 | DONE | QA01 | Releasing a charged shot in pause does not fire on resume. |
-| 10 | CAREER01 | REOPENED | QA01, SAVE01 | Original robustness fixed; legal low-rated keeper eligibility still fails. |
+| 10 | CAREER01 | DONE | QA01, SAVE01 | Auto-lineup is all-or-nothing and keeper eligibility precedes rating (session 3). |
 | 11 | AI01 | DONE | QA01 | Runner notifications trigger at the intended time, once. |
 | 12 | AI02 | READY | AI01 | Dribble utility evaluates the movement that will actually execute. |
 | 13 | AI05 | TODO | AI01, AI02 | Defensive recovery holds beyond the original scenario seeds. |
@@ -368,6 +368,16 @@ Remaining acceptance (see SESSION2_REVIEW_2026-11-14.md and `tools/session2_revi
 - Extend isolated backup controls and run the expanded driver (currently 42/47, three script-error cases).
   Preserve original 32 save controls, core checks and career stress. Do not weaken tests to retain DONE.
 
+Session 3 closure of the reopened SAVE01 items (implementation after review at bb03a1a): **DONE**.
+- `missing_history`: accepted as a legacy shape; `normalize` defaults missing `history`,
+  `last_round_results` and per-player `growth`; `_award_prizes` no longer assumes the key. A loaded legacy
+  career finishes its season, rolls over and saves again (test).
+- `extra_attribute`: policy = **reject**. The attribute set is closed (`Attr.KEYS`); unknown keys fail
+  validation (backup recovery applies) and `normalize` iterates only `Attr.KEYS`. Growth keys likewise.
+- `fitness_type`: optional `fitness` must be a finite number in 0..1; normalized to float.
+- `duplicate_pair`: every club plays at most once per round and every directed pairing appears once.
+- `run_deep_audit.py` (all groups) -> **47/47, exit 0**; core tests 437/0 (14 new checks); journey OK.
+
 ## RULE02 — Preserve the back-pass history through keeper foot control
 
 Files: src/sim/match_sim.gd, _register_touch / _give_possession / _may_handle / _free_ball_contacts.
@@ -488,6 +498,11 @@ an outfielder in goal, so auto_lineup refuses even though a legal eleven exists.
 a hard constraint for slot zero, then score eligible candidates; retain out-of-position outfield choices and
 all-or-nothing rejection of impossible squads. Recheck existing 16-GK/short/no-GK/transfer controls.
 This is an adversarial legal-data robustness case, not a demonstrated ordinary UI path.
+
+Session 3 closure of the reopened CAREER01 item: **DONE**. `LeagueData.auto_lineup` applies eligibility
+before rating for the goal: while any goalkeeper is in the pool only goalkeepers are candidates for slot 0.
+`session2_review.gd --case=legal_low_keeper` passes; tests cover keepers rated 1 with outfielders rated 99
+(legal team accepted, real keeper in goal, second keeper not used outfield).
 
 ## AI05 — Diagnose and repair recovery on the extended matrix
 

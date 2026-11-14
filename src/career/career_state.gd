@@ -291,6 +291,8 @@ func _award_prizes() -> void:
 	var st := standings()
 	for i in st.size():
 		club(st[i]["club"])["budget"] = int(club(st[i]["club"])["budget"]) + (st.size() - i) * 350000
+	if not (data.get("history") is Array):
+		data["history"] = []
 	data["history"].append({"season": int(data["season"]), "champion": st[0]["club"], "user_pos": position_of(data["user_club"])})
 
 
@@ -547,6 +549,16 @@ static func validate(d: Variant) -> Array:
 				if not _int_in((av as Dictionary).get(k), 1, 99):
 					errs.append("player %s: attribute %s missing or out of 1..99" % [pid, k])
 					bad = true
+			# Policy: the attribute set is closed. Unknown keys are rejected, not silently dropped,
+			# so validation and normalization cover exactly the same domain.
+			for ak: Variant in av:
+				if not (ak is String) or not Attr.KEYS.has(ak):
+					errs.append("player %s: unknown attribute %s" % [pid, str(ak)])
+					bad = true
+		# Optional fields that the match setup consumes.
+		if p.has("fitness") and not (_is_num(p["fitness"]) and float(p["fitness"]) >= 0.0 and float(p["fitness"]) <= 1.0):
+			errs.append("player %s: fitness must be a number in 0..1" % pid)
+			bad = true
 		if p.has("growth"):
 			var gv: Variant = p["growth"]
 			if not (gv is Dictionary):
@@ -554,7 +566,7 @@ static func validate(d: Variant) -> Array:
 				bad = true
 			else:
 				for gk: Variant in gv:
-					if not (gk is String) or not _is_num(gv[gk]):
+					if not (gk is String) or not Attr.KEYS.has(gk) or not _is_num(gv[gk]) or absf(float(gv[gk])) > 10.0:
 						errs.append("player %s: growth entry invalid" % pid)
 						bad = true
 		if not bad:
@@ -621,6 +633,8 @@ static func validate(d: Variant) -> Array:
 	if fixtures.size() != n_clubs * (n_clubs - 1):
 		errs.append("fixture count %d does not match a double round-robin" % fixtures.size())
 	var fids := {}
+	var round_clubs := {}    # round -> {club: true}: a club plays once per round
+	var pair_count := {}     # "home>away" -> n: every directed pairing exactly once
 	for fv: Variant in fixtures:
 		if not (fv is Dictionary):
 			errs.append("fixture is not a record")
@@ -637,6 +651,18 @@ static func validate(d: Variant) -> Array:
 			errs.append("fixture %s references unknown club" % fid)
 		elif f["home"] == f["away"]:
 			errs.append("fixture %s: club plays itself" % fid)
+		else:
+			var pair := "%s>%s" % [f["home"], f["away"]]
+			pair_count[pair] = int(pair_count.get(pair, 0)) + 1
+			if int(pair_count[pair]) > 1:
+				errs.append("fixture %s: pairing %s appears more than once" % [fid, pair])
+			if _int_in(f.get("round"), 0, ROUNDS - 1):
+				var rc: Dictionary = round_clubs.get(int(f["round"]), {})
+				for side: String in ["home", "away"]:
+					if rc.has(f[side]):
+						errs.append("fixture %s: club %s plays twice in round %d" % [fid, f[side], int(f["round"])])
+					rc[f[side]] = true
+				round_clubs[int(f["round"])] = rc
 		if not _int_in(f.get("season"), 1, 100000) or int(f["season"]) != cur_season:
 			errs.append("fixture %s: season missing or not the current season" % fid)
 		if not (f.get("played") is bool):
@@ -689,10 +715,15 @@ static func _int_in(v: Variant, lo: int, hi: int) -> bool:
 	return _is_int(v) and int(v) >= lo and int(v) <= hi
 
 
-## JSON turns every number into float: restore integer fields after loading.
+## Call only on data that passed validate(). JSON turns every number into float: restore
+## integer fields. Optional lists missing from older saves are defaulted here (explicit
+## migration), so every loaded career has the same shape as a freshly created one.
 static func normalize(d: Dictionary) -> void:
 	for k: String in ["schema", "season", "round", "seed"]:
 		d[k] = int(d[k])
+	for opt: String in ["history", "last_round_results"]:
+		if not d.has(opt):
+			d[opt] = []
 	for cid: String in d["clubs"]:
 		d["clubs"][cid]["budget"] = int(d["clubs"][cid]["budget"])
 	for pid: String in d["players"]:
@@ -700,13 +731,17 @@ static func normalize(d: Dictionary) -> void:
 		p["age"] = int(p["age"])
 		p["number"] = int(p["number"])
 		p["apps"] = int(p.get("apps", 0))
-		for k: String in p["attrs"]:
+		for k: String in Attr.KEYS:
 			p["attrs"][k] = int(p["attrs"][k])
+		if p.has("fitness"):
+			p["fitness"] = float(p["fitness"])
+		if not p.has("growth"):
+			p["growth"] = {}
 	for f: Dictionary in d["fixtures"]:
 		f["season"] = int(f["season"])
 		f["round"] = int(f["round"])
 		f["hg"] = int(f["hg"])
 		f["ag"] = int(f["ag"])
-	for h: Dictionary in d.get("history", []):
+	for h: Dictionary in d["history"]:
 		h["season"] = int(h["season"])
 		h["user_pos"] = int(h["user_pos"])
