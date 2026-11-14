@@ -57,6 +57,11 @@ Environment:
 - `git push` was rejected (HTTP 403: the Claude GitHub App has no write access to `Vetal323232/football`).
   Commits exist only in the session container until access is granted.
 
+## Tried and reverted
+- "Break mode" (bonus + sprint for forward dribbles when attackers >= defenders ahead, last defender delays when
+  outnumbered): `attack_3v2` stayed at 4/9 and `wing_defence` / `high_loss` regressed (64/72 total). Reverted.
+  The carrier-side bonus alone is not enough; the wide receiver's choice after the first pass is the real problem.
+
 ## Next executable task
 1. Human playtest with `docs/PLAYTEST.md`; collect notes on control feel and difficulty.
 2. AI iteration on defect 2: in `OnBallAI.decide` make a carrier with a numerical advantage ahead drive at the
