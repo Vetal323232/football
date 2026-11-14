@@ -1,6 +1,7 @@
 extends SceneTree
 ## Headless AI validation: runs every diagnostic scenario with several variants and seeds.
-## Usage: godot --headless -s tools/run_scenarios.gd -- [--only=name] [--seeds=1,2,3] [--verbose]
+## Usage: godot --headless -s tools/run_scenarios.gd -- [--only=name] [--seeds=1,2,3]
+## Exit: 0 all episodes clean, 1 some episode violated an invariant, 2 invalid selection / nothing ran.
 
 
 func _init() -> void:
@@ -13,6 +14,15 @@ func _init() -> void:
 				seeds.append(int(s))
 		elif a.begins_with("--only="):
 			only = a.trim_prefix("--only=")
+	if only != "" and not ScenarioLib.NAMES.has(only):
+		printerr("unknown scenario '%s'; valid names: %s" % [only, ", ".join(ScenarioLib.NAMES)])
+		print("TOTAL 0/0 (invalid --only)")
+		quit(2)
+		return
+	if seeds.is_empty():
+		printerr("no seeds given")
+		quit(2)
+		return
 	var tuning: GameTuning = load("res://data/tuning/default_tuning.tres")
 	var total := 0
 	var passed := 0
@@ -45,4 +55,9 @@ func _init() -> void:
 					("  !! " + "; ".join(v["fail"])) if not (v["fail"] as PackedStringArray).is_empty() else ""])
 		print("  -> %d/%d episodes without violated invariants" % [s_ok, s_n])
 	print("TOTAL %d/%d" % [passed, total])
-	quit()
+	# Exit status mirrors the verdicts: 0 only if at least one episode ran and all were clean.
+	if total == 0:
+		printerr("no scenario episodes were run")
+		quit(2)
+	else:
+		quit(0 if passed == total else 1)

@@ -47,10 +47,10 @@ Read the **Active handoff** at the top of `PROGRESS.md` before resuming. Runtime
 ## Verified commands (Linux container; `godot` = Godot 4.5.1 stable)
 ```
 godot --headless --import                                   # import / parse check (also rebuilds translations)
-godot --headless -s tests/run_tests.gd                      # 300 automated checks, exit code 1 on failure
+godot --headless -s tests/run_tests.gd                      # 300 automated checks, exit code 1 on failure (-- --violate=budget|lineup self-test must fail)
 godot --headless -s tools/review_regressions.gd             # five baseline defects reproduced; currently exit 1
 python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-audit  # extended checks; currently exit 1
-godot --headless -s tools/run_scenarios.gd                  # AI validation scenarios (3 variants x 3 seeds each)
+godot --headless -s tools/run_scenarios.gd                  # AI validation scenarios; exit 1 while any episode fails (currently 67/72), 2 on bad --only
 godot --headless -s tools/run_scenarios.gd -- --seeds=44,55,66,77,88,99 # extended known seeds: 123/144
 godot --headless -s tools/run_match.gd -- --seeds=1,2,3     # full AI-vs-AI matches with metrics
 godot --headless -s tools/fuzz_human.gd                     # random-input robustness of human control

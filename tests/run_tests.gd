@@ -6,6 +6,8 @@ var _fails := 0
 var _checks := 0
 var _current := ""
 var tuning: GameTuning
+## Self-test of the harness: `-- --violate=budget|lineup` injects a violation that must make the run fail.
+var _violate := ""
 
 
 func check(cond: bool, what: String) -> void:
@@ -22,6 +24,13 @@ func group(name: String) -> void:
 
 func _init() -> void:
 	tuning = load("res://data/tuning/default_tuning.tres")
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--violate="):
+			_violate = a.trim_prefix("--violate=")
+			if _violate != "budget" and _violate != "lineup":
+				printerr("unknown --violate value '%s'" % _violate)
+				quit(2)
+				return
 	var t0 := Time.get_ticks_msec()
 	test_schedule()
 	test_standings()
@@ -225,6 +234,8 @@ func test_transfers() -> void:
 		nums[int(p["number"])] = true
 	check(not dup, "shirt numbers stay unique")
 	# Budget limit.
+	# Deliberate test mutation: remember how much money it removes from the league.
+	var injected := 10 - int(cs.user()["budget"])
 	cs.user()["budget"] = 10
 	var pid2: String = cs.data["transfer_list"][0]
 	check(cs.buy(pid2) == "TR_ERR_BUDGET", "cannot overspend")
@@ -249,13 +260,17 @@ func test_transfers() -> void:
 	check((cs.user()["squad"] as Array).size() >= CareerState.MIN_SQUAD, "squad never drops below the minimum")
 	check(cs.sell(cs.user()["squad"][2]) == "TR_ERR_MIN_SQUAD", "sale blocked at minimum squad size")
 	check(cs._gk_count("smk") >= 2, "two goalkeepers are always kept")
-	check(cs.lineup_valid("smk", cs.user()["lineup"]) == "" or true, "lineup checked")
+	if _violate == "lineup":
+		cs.user()["lineup"][3] = cs.user()["lineup"][4]
+	check(cs.lineup_valid("smk", cs.user()["lineup"]) == "", "line-up stays legal after every sale, without repair")
 	cs._repair_lineup("smk")
 	check(cs.lineup_valid("smk", cs.user()["lineup"]) == "", "a legal eleven can still be fielded")
 	var total_after := 0
 	for cid: String in cs.data["clubs"]:
 		total_after += int(cs.club(cid)["budget"])
-	check(total_after == total_before - ub + 10 or true, "money only moves between clubs")
+	if _violate == "budget":
+		total_after += 1
+	check(total_after == total_before + injected, "money only moves between clubs (league total %d -> %d, test removed %d)" % [total_before, total_after, -injected])
 	var owners := {}
 	var dup_owner := false
 	for cid: String in cs.data["clubs"]:

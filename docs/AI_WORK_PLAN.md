@@ -29,17 +29,17 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 
 | Order | ID | Status | Dependency | Result |
 | --- | --- | --- | --- | --- |
-| 1 | QA01 | READY | None | Failing checks produce failing commands; assertions actually assert. |
-| 2 | RULE01 | TODO | QA01 | Offside is enforced before a flagged first-time kick. |
+| 1 | QA01 | DONE | None | Failing checks produce failing commands; assertions actually assert. |
+| 2 | RULE01 | READY | QA01 | Offside is enforced before a flagged first-time kick. |
 | 3 | RULE02 | TODO | QA01, RULE01 | Keeper foot control preserves a back-pass restriction. |
-| 4 | SAVE01 | TODO | QA01 | Nested invalid saves recover safely; no script errors during validation. |
-| 5 | MEM01 | TODO | QA01 | Repeated matches release simulation ownership cycles. |
-| 6 | SUB01 | TODO | QA01 | Fresh substitutes do not inherit outgoing action/recovery state. |
-| 7 | INPUT01 | TODO | QA01 | Forward intent cannot select a receiver behind the aim. |
-| 8 | INPUT02 | TODO | QA01 | Initial human handoff follows the selected eligible receiver. |
-| 9 | INPUT03 | TODO | QA01 | Releasing a charged shot in pause does not fire on resume. |
+| 4 | SAVE01 | READY | QA01 | Nested invalid saves recover safely; no script errors during validation. |
+| 5 | MEM01 | READY | QA01 | Repeated matches release simulation ownership cycles. |
+| 6 | SUB01 | READY | QA01 | Fresh substitutes do not inherit outgoing action/recovery state. |
+| 7 | INPUT01 | READY | QA01 | Forward intent cannot select a receiver behind the aim. |
+| 8 | INPUT02 | READY | QA01 | Initial human handoff follows the selected eligible receiver. |
+| 9 | INPUT03 | READY | QA01 | Releasing a charged shot in pause does not fire on resume. |
 | 10 | CAREER01 | TODO | QA01, SAVE01 | Auto-lineup handles negative candidate scores and invalid roster shapes. |
-| 11 | AI01 | TODO | QA01 | Runner notifications trigger at the intended time, once. |
+| 11 | AI01 | READY | QA01 | Runner notifications trigger at the intended time, once. |
 | 12 | AI02 | TODO | AI01 | Dribble utility evaluates the movement that will actually execute. |
 | 13 | AI05 | TODO | AI01, AI02 | Defensive recovery holds beyond the original scenario seeds. |
 | 14 | AI03 | TODO | RULE01, AI01, AI02 | Numerical advantages lead to useful chances without weakening defence. |
@@ -113,6 +113,16 @@ Acceptance:
 - A screenshot run with a deliberately missing dependency fails; a successful run requires an actual image.
 - Real lineup and transfer checks pass, and a targeted intentional violation makes the appropriate check fail.
 - Explain that this task can be DONE while the correctly reported AI failures remain open.
+
+Status: **DONE** (session 2, 2026-11-14). Results on the implementation branch:
+`run_scenarios.gd` full -> TOTAL 67/72, exit 1 (the five `attack_3v2` episodes are still open under AI03);
+`--only=blocked_lane` -> 9/9, exit 0; `--only=unknown_case` -> message + exit 2; zero episodes -> exit 2.
+`tools/shot.sh`: missing dependency -> exit 2 and no image; missing scene -> exit 3; success requires engine
+exit 0, no script error and a PNG signature. `tests/run_tests.gd`: both tautologies replaced by real
+invariants (line-up legal after every sale without repair; league money conserved given the test's own
+budget mutation) -> 300 checks, 0 failed; `-- --violate=budget` and `-- --violate=lineup` each fail exactly
+that check with exit 1. Scenario predicates were not changed. The 3v2 failures are now correctly reported
+failures, not a QA01 defect.
 
 ## RULE01 — Validate a first-time touch before replacing its history
 
