@@ -1,0 +1,11 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+PASS determinism/101 | paired ticks=600 human_team=-1 (state, RNG, physics, AI/input timers, finite values)
+PASS determinism/202 | paired ticks=600 human_team=0 (state, RNG, physics, AI/input timers, finite values)
+PASS determinism/303 | paired ticks=600 human_team=-1 (state, RNG, physics, AI/input timers, finite values)
+PASS determinism/404 | paired ticks=600 human_team=0 (state, RNG, physics, AI/input timers, finite values)
+PASS determinism/505 | paired ticks=600 human_team=-1 (state, RNG, physics, AI/input timers, finite values)
+PASS determinism/606 | paired ticks=600 human_team=0 (state, RNG, physics, AI/input timers, finite values)
+PASS determinism/707 | paired ticks=600 human_team=-1 (state, RNG, physics, AI/input timers, finite values)
+PASS determinism/808 | paired ticks=600 human_team=0 (state, RNG, physics, AI/input timers, finite values)
+DEEP_AUDIT_DONE checks=8 failed=0

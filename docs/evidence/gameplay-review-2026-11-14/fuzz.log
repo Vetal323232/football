@@ -1,0 +1,15 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+seed 4 (human = team 0): 0-0 | human side: passes 3/5, shots 0, tackles 0/7 | control changes 17 | ticks with !=1 human 0 | stalls 0 | max restart wait 1.1s | finished true
+seed 5 (human = team 1): 1-0 | human side: passes 0/2, shots 0, tackles 0/16 | control changes 19 | ticks with !=1 human 0 | stalls 0 | max restart wait 1.0s | finished true
+seed 6 (human = team 0): 0-1 | human side: passes 0/2, shots 1, tackles 0/13 | control changes 15 | ticks with !=1 human 0 | stalls 0 | max restart wait 1.3s | finished true
+seed 7 (human = team 1): 0-0 | human side: passes 3/6, shots 0, tackles 0/11 | control changes 17 | ticks with !=1 human 0 | stalls 0 | max restart wait 1.0s | finished true
+seed 8 (human = team 0): 0-0 | human side: passes 3/5, shots 0, tackles 0/6 | control changes 21 | ticks with !=1 human 0 | stalls 0 | max restart wait 1.0s | finished true
+seed 9 (human = team 1): 0-0 | human side: passes 1/4, shots 0, tackles 0/11 | control changes 17 | ticks with !=1 human 0 | stalls 0 | max restart wait 1.1s | finished true
+seed 10 (human = team 0): 0-0 | human side: passes 2/3, shots 0, tackles 0/13 | control changes 15 | ticks with !=1 human 0 | stalls 0 | max restart wait 1.1s | finished true
+seed 11 (human = team 1): 1-0 | human side: passes 0/2, shots 0, tackles 0/8 | control changes 12 | ticks with !=1 human 0 | stalls 0 | max restart wait 1.0s | finished true
+seed 12 (human = team 0): 0-0 | human side: passes 0/2, shots 0, tackles 0/6 | control changes 13 | ticks with !=1 human 0 | stalls 0 | max restart wait 1.1s | finished true
+seed 13 (human = team 1): 1-0 | human side: passes 0/4, shots 1, tackles 1/11 | control changes 15 | ticks with !=1 human 0 | stalls 0 | max restart wait 1.0s | finished true
+seed 14 (human = team 0): 0-0 | human side: passes 1/3, shots 0, tackles 0/11 | control changes 22 | ticks with !=1 human 0 | stalls 0 | max restart wait 1.1s | finished true
+seed 15 (human = team 1): 0-0 | human side: passes 3/3, shots 2, tackles 0/14 | control changes 17 | ticks with !=1 human 0 | stalls 0 | max restart wait 1.1s | finished true
+FUZZ OK

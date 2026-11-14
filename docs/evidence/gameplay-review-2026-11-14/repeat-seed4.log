@@ -1,0 +1,12 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+=== seed 4: Хозяева 1-0 Гости | ticks 23206 | 13.0s wall (30x realtime)
+  ХОЗ: poss 47% | pass 54/64 (84%) | shots 6 (on 3, xG 0.82) | goals 1 | int 7 | tackles 1/2 | turnovers 19 | offs 0 | corners 0 | throws 2 | gk 0 | saves 5
+     phases: BUILD_UP  8%, PROGRESSION 21%, CHANCE 10%, ATT_TRANS  8%, ORG_DEF 32%, DEF_TRANS 18%, SET_PIECE  2% | conflicts 0 | width 43m depth 36m
+  ГОС: poss 53% | pass 64/73 (88%) | shots 8 (on 7, xG 1.03) | goals 0 | int 8 | tackles 3/5 | turnovers 21 | offs 0 | corners 0 | throws 2 | gk 1 | saves 2
+     phases: BUILD_UP  7%, PROGRESSION 18%, CHANCE 15%, ATT_TRANS  9%, ORG_DEF 30%, DEF_TRANS 18%, SET_PIECE  2% | conflicts 0 | width 43m depth 37m
+  ball crowd avg 2.69 max 7 | swarm 1.5% | min teammate gap avg 5.7m | thirds 32/51/17% | ping-pong 1 | stalls 0
+  shots avg dist 18.0m, long(>28m) 0 | restarts { "kickoff": 3, "throw_in": 4, "goal_kick": 1 } | max restart wait 1.2s | max keeper hold 1.3s
+  possession losses (zone of losing team : cause): att3:clear 1, att3:lob 6, att3:pass 3, att3:save 8, att3:shot 4, mid3:? 1, mid3:clear 8, mid3:lob 1, mid3:pass 7, own3:lob 1
+  kicks: { "pass": 109, "cross": 11, "lob": 10, "shoot": 9, "clear": 15, "through": 3, "first-time": 5 } | decisions T0 { "pass": 48, "lob": 7, "dribble": 390, "shoot": 5, "hold": 4, "clear": 8, "cross": 3, "through": 1 } | T1 { "hold": 2, "pass": 53, "dribble": 477, "cross": 8, "clear": 7, "shoot": 4, "through": 2, "lob": 3 }
+TOTAL over 1 matches (levels 70 vs 70): home wins 1, draws 0, away wins 0 | goals 1:0 | shots/match 14.0 | stalls 0 | assignment conflicts 0

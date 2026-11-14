@@ -1,5 +1,37 @@
 # Gameplay improvement brainstorm
 
+## New pass after testing 3d08f8b and the user's manual feedback
+
+Tests/repair brief were prepared first; this section is the subsequent brainstorm. Detailed contracts for
+the selected small slice: [HUMAN_GAMEPLAY_SPEC.md](HUMAN_GAMEPLAY_SPEC.md). Only the queue owns status.
+The played user build is unpinned: treat the reported precision/control frustration seriously without
+claiming every current bot is perfect or that random-input fuzz established human playability.
+
+| Priority | Idea / user-facing benefit | Owner | Cost / risk / decision |
+| --- | --- | --- | --- |
+| First | Hold to approach/contain; Q to tackle. The player chooses whom to confront rather than manually calculating the last metre. | U03 / INPUT04 | M; must preserve manual escape, shared physics and a chance to evade. Selected next slice. |
+| First | Short assisted approach after receiver handoff plus explicit held pursuit of a loose ball. | U04 / INPUT05 | M; no magnetic ball or automatic possession. Selected next slice. |
+| First | Distinct landing/intercept/control cues and an honest next-switch preview. | Existing V01/V03/U01 | S–M; avoid clutter or a marker that predicts final rest instead of first landing. Selected via V01. |
+| First | Bounded, stable ball-reading uncertainty and difficulty profiles with readable late corrections. | T10 / AI06 | M–L; preserve tactical competence, determinism and the user's teammates. Selected next slice. |
+| Next | Press after passing to request a return/run, with a blocked return producing another sensible action. | Existing T01/T05 | M; avoid a forced wall-pass loop and key overload. Existing approved T01 first, extra commands remain optional. |
+| Next | First touch into space and deliberate shielding under pressure. | Existing B01; B06 shielding extension | L; B01 is approved, a new shield action stays backlog until receiving assistance works. No immunity from tackles. |
+| Next | Five-minute duel laboratory: receive, defend 1v1, escape 2v1; immediate retry with varied starts. | Existing P01, PLAY01 fixtures | M; use production AI and bounded/reward-free practice until PC03 integration. No second drill framework. |
+| Next | Explain one failed action using recorded facts: receiver, interception, body angle, mistimed tackle. | U05; existing P02 replay | M–L; factual feedback only, not a fabricated explanation from an LLM. Start with event labels; replay later. |
+| Later | Optional second-defender pressure with clear stamina/shape cost and release. | T11 | M–L; may expose the centre and automate defence too much. Backlog until single-player containment is accepted. |
+| Later | Personal control calibration suggesting Manual/Semi-assisted and a difficulty after practice. | U06 | M; opt-in suggestions only, no hidden live rubber-banding or forced win/loss targets. Backlog. |
+
+Chosen progression: repair remaining mechanics/defence, deliver the four first-slice directions, then test a
+real human match before further career expansion. Existing B01/B04 can follow the basic control slice before
+PC work; avoid turning every brainstorm row into immediate implementation. Career remains approved scope.
+Detailed Blender models, aerial contests, online play and a larger economy do not resolve the present
+precision/control problem and remain later work. Stronger AI alone is not the definition of a better game.
+
+References checked 2026-11-14: EA FC 26 accessibility (visual aids/controls) and KONAMI Smart Assist
+(assisted Match-up with manual correction), linked in HUMAN_GAMEPLAY_SPEC.md. All proposed exact controls,
+profiles and feature ordering are our design choices, not claims those games implement our specification.
+
+## Earlier idea register and retained rationale
+
 Current scope is tracked in [AI_WORK_PLAN.md](AI_WORK_PLAN.md), the single queue; this file is the idea
 register and design rationale, not a second status list. The 2026-11-14 consolidation adds the agreed
 [player career](PLAYER_CAREER_SPEC.md) and the selected additional match directions below. None is
@@ -48,9 +80,9 @@ not by a larger number of classes, options, animations or tests.
 
 ## Current scope and overlaps
 
-Follow the queue phases: existing audit repairs, V01/T01, PC00–PC09 player career, then selected shared
-match improvements B01/B04/T07/T08/P01. Manual Windows gates recur at runnable checkpoints. This ordering
-extends the earlier two-item proposal; it does not mark any work complete or erase the remaining ideas.
+Follow the current queue phases, updated after human feedback: repairs, human-playable control/readability
+slice, combinations/first touch/shot preparation, then player career and remaining team-style/drill work.
+Manual Windows gates recur at runnable checkpoints. Historical ordering below does not override the queue.
 
 The subsequent ten-direction discussion maps as follows, so an idea is not implemented twice under a new name:
 

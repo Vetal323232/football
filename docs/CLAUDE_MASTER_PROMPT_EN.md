@@ -4,6 +4,8 @@ This is the single current execution request. Task status and acceptance live in
 [AI_WORK_PLAN.md](AI_WORK_PLAN.md); architecture navigation in [PROJECT_MAP.md](PROJECT_MAP.md).
 The approved player-career extension is [PLAYER_CAREER_SPEC.md](PLAYER_CAREER_SPEC.md).
 Earlier audits and the original BRIEF remain evidence/background, not competing work orders.
+Repair detail: [CLAUDE_BUGFIX_PROMPT_EN.md](CLAUDE_BUGFIX_PROMPT_EN.md). Subsequent feature slice:
+[HUMAN_GAMEPLAY_SPEC.md](HUMAN_GAMEPLAY_SPEC.md). Both use the same queue and are not parallel work orders.
 
 ## Goal and scope
 
@@ -20,8 +22,9 @@ Do not implement every brainstorm item at once. The queue distinguishes required
 ## Join or resume without losing context
 
 The published handoff branch is `codex/deep-audit-claude-brief` in `Vetal323232/football`.
-The latest independent review incorporates Claude's implementation through bbe7dbb; see the Active handoff
-and SESSION2_REVIEW_2026-11-14.md. SAVE01/CAREER01 are reopened; keep their existing repairs. Earlier
+The latest independent review incorporates Claude's implementation through 3d08f8b; see the Active handoff
+and GAMEPLAY_REVIEW_2026-11-14.md. SAVE01/CAREER01 pass; AI02 is reopened for recovery/sudden-pressure
+boundaries. Preserve normal-gait improvements and all accepted repairs. Earlier
 consolidation references 87501a5/7265450 and gameplay a47746e are historical references,
 not instructions to reset a newer branch. Inspect actual branch, HEAD, status, relevant commits and local
 instructions first. Preserve the user's and other contributors' uncommitted work.
@@ -54,10 +57,13 @@ IMPROVEMENT_IDEAS.md is the idea register. Do not create another independent TOD
 Start with the first ready task, retaining all IDs:
 
 - Foundation: QA01, RULE01/02, SAVE01, MEM01, SUB01, INPUT01/02/03, CAREER01.
-- Tactical repair: AI01/02/05/03/04; preserve production AI and compare unchanged scenario predicates.
-- First improvement slice: V01 readability and the T01 give-and-go/third-man experiment.
+- Tactical repair: finish AI02 residuals, AI05/03/04; follow CLAUDE_BUGFIX_PROMPT_EN.md and unchanged predicates.
+- Human-playable slice: V01 flight/control readability, INPUT04 held containment, INPUT05 receiving/loose-ball
+  approach, AI06 bounded perception. Follow HUMAN_GAMEPLAY_SPEC.md; human feedback outranks stronger bots.
+  None of these features is implemented or accepted by an AI-only score.
+- Then T01 give-and-go, B01 first touch and B04 shot preparation; deliver a named playable checkpoint.
 - Player career: PC00–PC09, in dependency order, with a runnable tested checkpoint after each increment.
-- Further selected match improvements: B01 first touch, B04 shot preparation, T07 styles, T08 rotations, P01 drills.
+- Further selected match improvements: T07 styles, T08 rotations, P01 drills.
 - PLAY01 is actual Windows/human acceptance, repeated for changed modes. Its unavailable environment must be
   recorded, but it does not block independent automated work or authorize a claim of full release acceptance.
 
@@ -98,6 +104,8 @@ must be sufficient for another session/colleague to resume.
 ## Checks and evidence
 
 Use Godot 4.5.1; check the binary version rather than assuming the PATH binary is correct.
+Current independent checkpoint: core 442/0; previous strict 47/47; expanded strict 47/49 (two AI02 boundaries).
+Matrices: 63/72, 129/144, 88/96, fresh review 78/96 (3v2 1/12). See current review for individual results.
 The historical baseline is 300 core checks (two old tautologies), 67/72 legacy episodes, 123/144 extended
 known episodes, five failing review regressions, and 11/37 strict audit subprocess cases passing.
 These are not new successes, and different denominators cannot be added together. Full details are in
@@ -113,13 +121,15 @@ godot --headless -s tools/review_regressions.gd
 python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-audit
 godot --headless -s tools/run_scenarios.gd
 godot --headless -s tools/run_scenarios.gd -- --seeds=44,55,66,77,88,99
+godot --headless -s tools/run_scenarios.gd -- --seeds=107,131,167,199
+godot --headless -s tools/run_scenarios.gd -- --seeds=211,257,313,373
 godot --headless -s tools/run_match.gd -- --seeds=1,2,3,4,5,6,7,8 --duration=360
 godot --headless -s tools/fuzz_human.gd -- --seeds=4,5,6,7,8,9,10,11,12,13,14,15 --duration=30
 godot --headless -s tools/career_journey.gd -- --played=3 --duration=60
 ```
 
-Select targeted review/edge cases with their documented `--case=NAME`. Until QA01, scenario/screenshot
-exit codes are unreliable; require completed verdicts and real artifacts. The strict Python audit also
+Select targeted review/edge/gameplay cases with their documented `--case=NAME`. QA01 is repaired, but
+still require completed verdicts and real artifacts. The strict Python audit also
 rejects script errors/absent completion markers. Keep expected unresolved failures visible by ID.
 Future player-career tests/journey named in the spec must be created and validated during PC tasks; they
 are not runnable baseline commands. Never report future test counts as passed.

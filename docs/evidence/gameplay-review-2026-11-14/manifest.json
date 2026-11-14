@@ -1,0 +1,297 @@
+{
+  "implementation_sha": "3d08f8b150aeadef10081d69a0fce0f050f991c0",
+  "engine": "4.5.1.stable.official.f62fdbde1",
+  "environment": "Linux headless",
+  "sources": {
+    "tools/gameplay_review.gd": "050dcd8eb1c44423e16b6c5f18add3a84141eb354a4c97e33d869028f8531f1d",
+    "tools/run_deep_audit.py": "aa442a79dcfa20188c15bd52ded0b787de472a342a084a2355fcb43e2ec5bb86"
+  },
+  "reused_exact_revision_logs": {
+    "core.log": "Independent 442/0 run immediately before this task at exact SHA 3d08f8b",
+    "review.log": "Independent 5/5 run at exact SHA 3d08f8b",
+    "legacy.log": "Independent 63/72 run at exact SHA 3d08f8b"
+  },
+  "files": {
+    "audit.log": {
+      "bytes": 1615,
+      "sha256": "b46d602be98bcae535db7e2e9e5e0c52436a4b936820bc58a7af2c73747a781c"
+    },
+    "core.log": {
+      "bytes": 878,
+      "sha256": "a73183a6bdc1c2985f70089d2d1a31a7582ae5a53c8a5dab12401a2c21d0e7b7"
+    },
+    "extended.log": {
+      "bytes": 17747,
+      "sha256": "a376700c76621450d489df2a450d0d210a0bcb9b73cf53f70293771cb556c1f5"
+    },
+    "fresh.log": {
+      "bytes": 12434,
+      "sha256": "0a4814453177691188b7a8921db961eeb4c9a311c0d7bc7eb49ebc23b14311b2"
+    },
+    "fuzz.log": {
+      "bytes": 2171,
+      "sha256": "c17037280353f681854179380e7b92e15b7c2e7f943a297cee4a28b5f6c290e4"
+    },
+    "import.log": {
+      "bytes": 6358,
+      "sha256": "d5628cc54d25c7534849cc1aee2d82651ae93c6cbb5e5171820f4eed85c387ab"
+    },
+    "journey.log": {
+      "bytes": 1457,
+      "sha256": "24985a56f1777d65b99b446f043ac6b8a096a1fe6db4a3f2ea8ced46d50093bc"
+    },
+    "known-review.log": {
+      "bytes": 12109,
+      "sha256": "6061f9b3b74f96b2dad7b894a04ceb357c5c8f7d324fa2c7fc1ec53e8e9bfdc3"
+    },
+    "legacy.log": {
+      "bytes": 9320,
+      "sha256": "f36a120507d388bc3b6a0f501cca67a128052a144d4629ad7ea750d69c6064da"
+    },
+    "match-runs.json": {
+      "bytes": 1942,
+      "sha256": "3b3ac264e4aaa1428130a2f6421b1212e91ec3b9af9a4758bdc9a3c831ba66de"
+    },
+    "matches.log": {
+      "bytes": 12147,
+      "sha256": "98f46bf9e7b32bad8aea672a7c10d43dbc3130e24f0614f3c083e74474dac446"
+    },
+    "repeat-seed4.log": {
+      "bytes": 1677,
+      "sha256": "8445ea7e243234d4dacf7d1ae2e949479d340261c7fbe1704a215405916c2099"
+    },
+    "repeat-seed5-1.log": {
+      "bytes": 1687,
+      "sha256": "febea2dee4079e195ad773210b1c9f193c167ae94cad5f13961ec79b580de557"
+    },
+    "repeat-seed5-2.log": {
+      "bytes": 1687,
+      "sha256": "c82c227b4b7efffdb82bacdf296ebd7505330ab7822064e48a4048e9cae6bbf1"
+    },
+    "review.log": {
+      "bytes": 496,
+      "sha256": "967f6363b822afae186f15b4dfeab28e1b3ad6c73a3e3850c236f82cdcd431fc"
+    },
+    "runs.json": {
+      "bytes": 1445,
+      "sha256": "58832eb0219f8b592b5c95508d7ad76beffadfb6fb92d6beca67fa18da7032cd"
+    },
+    "strict/edge_backpass_feet.log": {
+      "bytes": 193,
+      "sha256": "6d3290b54436151d54f7f786f2e5e2e2420144ebe03497c57ffc05da440c6bb3"
+    },
+    "strict/edge_camera_input.log": {
+      "bytes": 271,
+      "sha256": "0c004b2c4c06b3285e1586bba694f04b486543275eed1016a2602c27a0e5fe23"
+    },
+    "strict/edge_career_stress.log": {
+      "bytes": 675,
+      "sha256": "2672beef6dec3a4addfafa68159cc3a0a7458beb9233ad531c7f33596ceead7d"
+    },
+    "strict/edge_determinism.log": {
+      "bytes": 967,
+      "sha256": "72899d40c5632fbb94dc3366ae1a8e13d43ec83224894c3354cf5e90024b2379"
+    },
+    "strict/edge_keeper_only_lineup.log": {
+      "bytes": 227,
+      "sha256": "226ee9b7ca96ee91fb7d0a7d1fe699d96cf158b70b42b7d3f1b49d92d8686848"
+    },
+    "strict/edge_match_lifetime.log": {
+      "bytes": 312,
+      "sha256": "58004f393ba949f720362f2aa2391cf87878a1262c566685466d3807ca8bdd89"
+    },
+    "strict/edge_pass_handoff.log": {
+      "bytes": 317,
+      "sha256": "94e8bb68de8e2123f997fbf9b6072c4186ab7034ae357520d31ab4cf0ac84f33"
+    },
+    "strict/edge_pause_policy.log": {
+      "bytes": 404,
+      "sha256": "8010362b115cd72624a16f79a6805eba55eef9a83fa50d26950188081877aaa9"
+    },
+    "strict/edge_pause_shot.log": {
+      "bytes": 293,
+      "sha256": "fefd162ad91759facf4fd45a7591ffa6880fe6fac0bcc9024c827a39b6fbde7d"
+    },
+    "strict/edge_substitution_state.log": {
+      "bytes": 208,
+      "sha256": "3922a3162326102f0cdf678f2d9d88ea45b5c58c99069e6fc080481bfc75a4d0"
+    },
+    "strict/gameplay_carry_recovery.log": {
+      "bytes": 220,
+      "sha256": "2308f3be5072d1be9f54dc2f3161b94284e46321b97669fde6275f70bd5f0e09"
+    },
+    "strict/gameplay_urgent_pressure.log": {
+      "bytes": 215,
+      "sha256": "cae462a95742a892f3bde581d71acbb705c807dea314b6059f5996fbbbf643eb"
+    },
+    "strict/review_duplicate_pair.log": {
+      "bytes": 338,
+      "sha256": "194911040c75fc21b3e691f5abe71aa089aa80639fab781dd2c327fb12489ddd"
+    },
+    "strict/review_extra_attribute.log": {
+      "bytes": 200,
+      "sha256": "76983e99d1895d28e49fb5e64538294c66025c9763cf9342d48773a74f62c5c0"
+    },
+    "strict/review_fitness_type.log": {
+      "bytes": 198,
+      "sha256": "146e9184af8033c3a0bc42306c7ad33d6f7ce0b179c97ae5d3ed295b9961ca21"
+    },
+    "strict/review_legal_low_keeper.log": {
+      "bytes": 208,
+      "sha256": "ff05a9493a8b45de5f60f217993eaa37566315e96d27cd4b3f5c2f27ee0e4d69"
+    },
+    "strict/review_missing_history.log": {
+      "bytes": 175,
+      "sha256": "febdf4bb1c66f2d31614a7536b57c3a90b70b8cd1fc2a06f54d05f658420b5bd"
+    },
+    "strict/save_age_missing.log": {
+      "bytes": 211,
+      "sha256": "3481869c838476b41ef02980e7f4f22a78a9da56e41ed673d329f36ae092ebfd"
+    },
+    "strict/save_attr_missing.log": {
+      "bytes": 223,
+      "sha256": "9cbe083d8498e9b875444454b6fd17b7413ba2704084bf38b41f296953819148"
+    },
+    "strict/save_attr_range.log": {
+      "bytes": 221,
+      "sha256": "b50b17be2bf4aa7f20897683c30f7240d28e0948e83fa5f1e423cbb3fd47f9ff"
+    },
+    "strict/save_attrs_type.log": {
+      "bytes": 216,
+      "sha256": "b2071fdd0804865126d4ecaeb388160f972ca7e83050702556cf5b761b683f55"
+    },
+    "strict/save_both_invalid.log": {
+      "bytes": 205,
+      "sha256": "91f4525efb8fc400f39a63b0abecd16d91c0004e780121cda1495064692d359b"
+    },
+    "strict/save_broken_json.log": {
+      "bytes": 180,
+      "sha256": "0e22f8e22244b62934015dfccc31c46e2bbf242fc600d65eebe3d19160a994e1"
+    },
+    "strict/save_club_null.log": {
+      "bytes": 191,
+      "sha256": "8bcf69aaad5ed0bb1450cabdeb6bfc683292ed6912b2eb22e042028d08511529"
+    },
+    "strict/save_duplicate_fixture.log": {
+      "bytes": 227,
+      "sha256": "4e0e00da0084b3deb468dc6d5c2859390ff5ad0201a42c904e045b2499c0a356"
+    },
+    "strict/save_fixture_played_type.log": {
+      "bytes": 220,
+      "sha256": "561862f6cc6e6896697bba67d265378dcdde30067288b5bb4e05f2b1313feb7f"
+    },
+    "strict/save_fixture_score_negative.log": {
+      "bytes": 228,
+      "sha256": "31817c6e99fbd34c39c84ed956a5f5389a3175acd45ece30fb09ce638ac85b2a"
+    },
+    "strict/save_fixture_season_missing.log": {
+      "bytes": 239,
+      "sha256": "36163c511ad1b471848b2e9663d747775bd37946e529d17203c984aedca1de4f"
+    },
+    "strict/save_fixture_self_match.log": {
+      "bytes": 212,
+      "sha256": "4a28f2058e2c68cf1d29c3628c1b2803ff0b839f8c243d43d02efda4e8195da1"
+    },
+    "strict/save_history_type.log": {
+      "bytes": 191,
+      "sha256": "4e88463a31c32c9e7e8e331eeed220ac8e43a5ebbffa6f0b7a3c71e6ef4006d7"
+    },
+    "strict/save_lineup_duplicate.log": {
+      "bytes": 206,
+      "sha256": "6b466d0809c666642ea0586cf64710c99cd4520d718eed700ad4cab51421f3a6"
+    },
+    "strict/save_lineup_empty.log": {
+      "bytes": 207,
+      "sha256": "c6b87556c8618158376cb39630da24937269fc620ac0ec18ad16bcc5c0525932"
+    },
+    "strict/save_lineup_no_keeper.log": {
+      "bytes": 216,
+      "sha256": "b37dcad1f0678511103ce8bd7764dd5ee9411d75d7b37f616b7b9302d10c09aa"
+    },
+    "strict/save_missing_backup.log": {
+      "bytes": 207,
+      "sha256": "a282198779133b2f519b9a4d96d0b24ba18659276304e91a476f1fee78537c1f"
+    },
+    "strict/save_missing_player.log": {
+      "bytes": 210,
+      "sha256": "3a919fbd576def0daea4ef9885ae47941a3bbd97f94b2cbba15a16d5fcad9396"
+    },
+    "strict/save_missing_schema.log": {
+      "bytes": 190,
+      "sha256": "4d342965c13ade4baa5612487ad1160563443b64fbee3bf030a974a62de90f1b"
+    },
+    "strict/save_negative_budget.log": {
+      "bytes": 225,
+      "sha256": "1c75f066a83513192d8591f6d99d7ab348fe6527443fccb5918c17d26aee5398"
+    },
+    "strict/save_player_null.log": {
+      "bytes": 198,
+      "sha256": "b2764bdf6a86f4dc7a25a97be482ed526478da74d3db9a3c8fcfd5d2306e9412"
+    },
+    "strict/save_root_array.log": {
+      "bytes": 192,
+      "sha256": "e13306367c4b04e06120aa59c9f2d57d83552600d78b5124d80e9ea0d7cc66fb"
+    },
+    "strict/save_round_high.log": {
+      "bytes": 201,
+      "sha256": "8e8ed1c4327e3533543f6113010ac88501b558bc92d4820da825c07c9088ceb2"
+    },
+    "strict/save_round_negative.log": {
+      "bytes": 205,
+      "sha256": "4e115d08933b10973ffa902402ea51fcaf6a8ef833618ee24d835b37d6d00a74"
+    },
+    "strict/save_round_string.log": {
+      "bytes": 203,
+      "sha256": "54991bacbb41baff12f2a19acdc4b96fddd91b175798ec9da285b95d51d9225a"
+    },
+    "strict/save_season_over_type.log": {
+      "bytes": 203,
+      "sha256": "a680618ce0bc31b462464d31dda1bf9d5a0670c0565d9f4389fd0df2fa1dd13f"
+    },
+    "strict/save_season_zero.log": {
+      "bytes": 202,
+      "sha256": "c7315128fa2164f9f5596659a31ae5a60380e3758dbd7fbed59b09fea0f732cf"
+    },
+    "strict/save_squad_type.log": {
+      "bytes": 211,
+      "sha256": "4715d793d21bda6c0490bb1fb9e3ceed06d36c7878a4b0bd3dfbdee3ee0c176c"
+    },
+    "strict/save_transfer_list_type.log": {
+      "bytes": 197,
+      "sha256": "072036d2cf6f57b9b633cf877040fe70e6510af90f9d757151b278e742d34d88"
+    },
+    "strict/save_unsupported_schema.log": {
+      "bytes": 200,
+      "sha256": "00a923c85f6617e88367ff754ea65e658c8e844ad0370d8361f8827d8c29365d"
+    },
+    "strict/save_valid.log": {
+      "bytes": 164,
+      "sha256": "442d77a10165b744fc39ecb983220fe4c0cbded15c9944abcd4b1563fb8036ba"
+    },
+    "strict/save_wrong_players_container.log": {
+      "bytes": 202,
+      "sha256": "edcae657951e7ec3c437e7dd4b0b3280930f3063f99c16918b7d8d5358d7c671"
+    },
+    "strict/summary.json": {
+      "bytes": 23286,
+      "sha256": "6b0be3f2f217ada62db17fe2c54d3f16daed79b90613adbe5397831252db661c"
+    },
+    "strong-away.log": {
+      "bytes": 5807,
+      "sha256": "fe976282429394f216e451e2ed63f11efd254c511fb29a88e4f6bab39d3ae13f"
+    },
+    "strong-home.log": {
+      "bytes": 5824,
+      "sha256": "aebc0a78ac9fc9284585a0c671422f490d5a641fc3a5ec2a5807f9c4a0520c81"
+    },
+    "transition.log": {
+      "bytes": 18265,
+      "sha256": "392ae28df8e0424c3aba6491639890f5880f30c1eb14ac74c5e82f465b2cc339"
+    }
+  },
+  "limitations": [
+    "No new Windows execution/export, human acceptance, visual render or GPU/audio verification",
+    "Scenario holdouts now known; do not relabel them unseen after tuning",
+    "Report discrepancies preserved; repeat controls do not establish cross-platform identity"
+  ]
+}

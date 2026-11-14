@@ -8,6 +8,9 @@ Evidence baseline: gameplay commit a47746e, Godot 4.5.1, 2026-11-14.
 Read [PROJECT_MAP.md](PROJECT_MAP.md) and [CODE_REVIEW_2026-11-14.md](CODE_REVIEW_2026-11-14.md).
 The extended findings and saved logs are in [DEEP_AUDIT_2026-11-14.md](DEEP_AUDIT_2026-11-14.md).
 The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTER_PROMPT_EN.md).
+Latest review: [GAMEPLAY_REVIEW_2026-11-14.md](GAMEPLAY_REVIEW_2026-11-14.md), implementation 3d08f8b.
+Repair detail: [CLAUDE_BUGFIX_PROMPT_EN.md](CLAUDE_BUGFIX_PROMPT_EN.md). Subsequent control slice:
+[HUMAN_GAMEPLAY_SPEC.md](HUMAN_GAMEPLAY_SPEC.md). These are task specifications, not additional queues.
 
 ## Operating contract
 
@@ -40,41 +43,46 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 | 9 | INPUT03 | DONE | QA01 | Releasing a charged shot in pause does not fire on resume. |
 | 10 | CAREER01 | DONE | QA01, SAVE01 | Auto-lineup is all-or-nothing and keeper eligibility precedes rating (session 3). |
 | 11 | AI01 | DONE | QA01 | Runner notifications trigger at the intended time, once. |
-| 12 | AI02 | DONE | AI01 | Dribble utility evaluates the movement that will actually execute. |
-| 13 | AI05 | READY | AI01, AI02 | Defensive recovery holds beyond the original scenario seeds. |
+| 12 | AI02 | REOPENED | AI01 | Normal gait correction retained; recovery cap and sudden-pressure scheduling remain. |
+| 13 | AI05 | TODO | AI01, AI02 | Defensive recovery holds beyond the original scenario seeds. |
 | 14 | AI03 | TODO | RULE01, AI01, AI02 | Numerical advantages lead to useful chances without weakening defence. |
 | 15 | AI04 | TODO | AI01, AI02, INPUT02 | Safe runs behind are served and received; unsafe alternatives are rejected. |
 | 16 | V01 | TODO | QA01; independent presentation work can start earlier | Ball, camera and stadium are readable in motion. |
-| 17 | T01 | TODO | AI03, AI04, INPUT02 | Give-and-go/third-man experiment extends existing support logic. |
-| 18 | PLAY01 | MANUAL / UNVERIFIED | Runnable Windows build; final behaviour revision | Human control, visual motion and hardware performance have actual evidence. |
-| 19 | PC00 | TODO | QA01, SAVE01, MEM01, SUB01, CAREER01 | Mode/identity/save contracts and a compatible player-career state foundation. |
-| 20 | PC01 | TODO | PC00, RULE01, RULE02, INPUT01, INPUT02, INPUT03 | Stable-UID control, bench entry/exit and off-ball input on the common engine. |
-| 21 | PC02 | TODO | PC01 | Per-UID participation, role-aware ratings, form/trust/reputation inputs. |
-| 22 | PC03 | TODO | PC02 | Slow bounded development, weekly training and once-only rewards. |
-| 23 | PC04 | TODO | PC03 | Coach selection, competition for minutes and an understandable recovery path. |
-| 24 | PC05 | TODO | PC00, PC04 | A bounded multi-league world, age cohorts and shared competition calendar. |
-| 25 | PC06 | TODO | PC03, PC04, PC05 | Explainable offers, renewals, transfers, loans and legal next-season paths. |
-| 26 | PC07 | TODO | PC05, PC06 | U21/senior selection, qualifiers/finals and correct return to club. |
-| 27 | PC08 | TODO | PC04, PC06, PC07, V01 | Complete keyboard career hub, actual event history and playable weekly loop. |
-| 28 | PC09 | TODO | PC08 | Multi-season, migration, reward, contract and national integration acceptance. |
-| 29 | B01 | TODO | AI02, INPUT01, INPUT03, V01 | Directional first touch makes receiving useful and responsive. |
-| 30 | B04 | TODO | INPUT03, AI02 | Deliberate shot preparation, including a controllable powerful low shot. |
-| 31 | T07 | TODO | AI03, AI05, PC05 | Distinct understandable team styles with measured on-field differences. |
-| 32 | T08 | TODO | AI03, AI05, T01 | Coordinated overlaps/inside movements with compensation behind the ball. |
-| 33 | P01 | TODO | PC03, PC08 | Three playable production-AI drills with bounded training credit. |
+| 17 | INPUT04 | TODO | INPUT03, V01 | Held defensive approach/containment with immediate manual escape. |
+| 18 | INPUT05 | TODO | INPUT02, INPUT04 | Bounded receiver/loose-ball approach using the same held action. |
+| 19 | AI06 | TODO | AI02, AI05, INPUT04, INPUT05 | Bounded deterministic ball-reading uncertainty and independent difficulty/assist profiles. |
+| 20 | T01 | TODO | AI03, AI04, INPUT02 | Give-and-go/third-man experiment extends existing support logic. |
+| 21 | B01 | TODO | AI02, INPUT01, INPUT03, INPUT05, V01 | Directional first touch makes receiving useful and responsive. |
+| 22 | B04 | TODO | INPUT03, AI02 | Deliberate shot preparation, including a controllable powerful low shot. |
+| 23 | PLAY01 | USER FEEDBACK / OPEN | Runnable changed Windows build; control slice | User reports poor playability on an unpinned build; verify improvements on a named revision. |
+| 24 | PC00 | TODO | QA01, SAVE01, MEM01, SUB01, CAREER01 | Mode/identity/save contracts and a compatible player-career state foundation. |
+| 25 | PC01 | TODO | PC00, RULE01, RULE02, INPUT01, INPUT02, INPUT03, INPUT04, INPUT05 | Stable-UID control, bench entry/exit and off-ball input on the common engine. |
+| 26 | PC02 | TODO | PC01 | Per-UID participation, role-aware ratings, form/trust/reputation inputs. |
+| 27 | PC03 | TODO | PC02 | Slow bounded development, weekly training and once-only rewards. |
+| 28 | PC04 | TODO | PC03 | Coach selection, competition for minutes and an understandable recovery path. |
+| 29 | PC05 | TODO | PC00, PC04 | A bounded multi-league world, age cohorts and shared competition calendar. |
+| 30 | PC06 | TODO | PC03, PC04, PC05 | Explainable offers, renewals, transfers, loans and legal next-season paths. |
+| 31 | PC07 | TODO | PC05, PC06 | U21/senior selection, qualifiers/finals and correct return to club. |
+| 32 | PC08 | TODO | PC04, PC06, PC07, V01 | Complete keyboard career hub, actual event history and playable weekly loop. |
+| 33 | PC09 | TODO | PC08 | Multi-season, migration, reward, contract and national integration acceptance. |
+| 34 | T07 | TODO | AI03, AI05, PC05 | Distinct understandable team styles with measured on-field differences. |
+| 35 | T08 | TODO | AI03, AI05, T01 | Coordinated overlaps/inside movements with compensation behind the ball. |
+| 36 | P01 | TODO | PC03, PC08 | Three playable production-AI drills with bounded training credit. |
 
 TODO tasks become ready when dependencies are complete. Independent correctness fixes can be advanced if a
-higher task is genuinely blocked; record why. The five original review regressions now pass. Independent
-session-2 review reopened SAVE01/CAREER01 with five additional cases: see SESSION2_REVIEW_2026-11-14.md.
-Keep accepted repairs intact. The expanded strict driver reports 42/47; this is not a regression of the
-original 42 cases. Priority is SAVE01, CAREER01, then AI02; PC00 waits for reopened dependencies.
+higher task is genuinely blocked; record why. SAVE01/CAREER01 and the five original regressions now pass.
+At 3d08f8b two gameplay probes reopen AI02; strict gate is 47/49 (old 47 still pass).
+Preserve accepted repairs. Three new queued tasks address the user's control/fairness feedback; the rest
+of the brainstorm stays backlog. Priority is repair, human-playable match slice, then career expansion.
 
 ## Phases and readiness
 
-1. Complete correctness and tactical repair (orders 1–15), then V01/T01. Preserve all legacy checks.
-2. Build PC00–PC09 in small increments, reusing that repaired foundation. The new mode is required scope,
+1. Complete correctness and tactical repair, then V01/INPUT04/INPUT05/AI06. Preserve old checks and the
+   production physics. Test the human control slice before making opponent intelligence the only goal.
+2. Complete T01/B01/B04 and deliver a named playable checkpoint for PLAY01, then build PC00–PC09 in
+   small increments reusing that foundation. The new mode is required scope,
    not merely another optional brainstorm item. Do not stop at a character editor or one match.
-3. Apply the selected additional match improvements B01/B04/T07/T08/P01. Implement them once in shared
+3. Apply remaining selected match improvements T07/T08/P01. Implement them once in shared
    mechanics; all relevant modes benefit. PC05 can assign existing TeamTactics values before T07 refinement.
 4. PLAY01 is a recurring human/Windows gate at runnable checkpoints and the final changed revision. If that
    environment is unavailable, keep it open and continue independent ready automated work. Never label the
@@ -82,7 +90,7 @@ original 42 cases. Priority is SAVE01, CAREER01, then AI02; PC00 waits for reope
 
 Dependency satisfaction enables a task; this priority order selects among ready tasks. If a higher task is
 genuinely blocked, record the reason and take an independent ready task. Preserve completed colleague work.
-No session is expected to finish all 33 entries before a token limit; every session must leave a resumable
+No session is expected to finish all 36 entries before a token limit; every session must leave a resumable
 checkpoint and continue as far as its actual capacity allows.
 
 The remaining ideas in IMPROVEMENT_IDEAS.md stay backlog: in particular B02/B03, T02–T06, T09, B05,
@@ -213,7 +221,13 @@ Acceptance:
 - Resolve the five named blocked-lane regressions without changing predicates or weakening defenders;
   trace remaining failures explicitly. Compare all known matrices and reserve new seeds/geometry before tuning.
 
-Status: **DONE** (session 3), with defensive regressions handed to AI05 (below).
+Status: **REOPENED** after independent gameplay review. Retain the session-3 normal-gait correction below.
+Remaining contracts: `tools/gameplay_review.gd --case=carry_recovery` reports helper 1.488 versus real cap
+1.6 m/s; `--case=urgent_pressure` holds a stale command with ETA=0 while 0.1 s remains on the ordinary
+deadline. See CLAUDE_BUGFIX_PROMPT_EN.md: match recovery branches/validity and implement bounded
+urgent-entry reconsideration without planning every tick. Retain normal-pressure and runner-event controls.
+
+Session-3 implementation evidence (normal actionable states; defensive regressions remain AI05):
 - Shared helper `SimQuery.carry_speed / carry_time` mirrors `_move_players` (jog_ratio, dribble_speed_ratio,
   stamina gate, recovery cap, current velocity, accel/decel). `OnBallAI.decide` scores a jog and a sprint
   candidate per direction with their real times and commands the gait it scored (`dribble_sprint_min_stamina`,
@@ -249,6 +263,8 @@ Reproduce:
 
 Baseline: 4/9. In seed 11 the winger repeatedly prefers outward dribbles and reaches the corner without a shot.
 PROGRESS.md records an already reverted break-mode experiment; investigate its failure before retrying it.
+Current independent 3d08f8b: legacy 4/9, known extended 13/18, previous review 9/12, fresh review
+211/257/313/373 only 1/12. These fresh seeds are now known; reserve new seed/geometry controls before tuning.
 
 Work:
 
@@ -373,7 +389,8 @@ Acceptance:
 - Run the normal multi-season stress control and preserve IDs, integer state and ownership. Fractional
   JSON growth values have an explicit 1e-5 round-trip tolerance in the audit; do not confuse formatting with corruption.
 
-Status: **REOPENED** by independent review at bbe7dbb. Original session-2 implementation:
+Historical status: reopened at bbe7dbb, closed in session 3 below. Current status **DONE**.
+Original session-2 implementation:
 `CareerState.validate` rewritten for untrusted data: container/field type,
 range and cross-reference is checked before typed access (season/round/season_over consistency, player and
 club records, 11-man line-up with keeper, fixture season/round/score/played consistency, lists).
@@ -381,7 +398,7 @@ club records, 11-man line-up with keeper, fixture season/round/score/played cons
 review `save_integrity` passes; 24 validation checks added to `test_save_load` (342 core checks, 0 failed);
 `deep_audit.gd --case=career_stress` 8 careers x 3 seasons clean; `career_journey.gd` OK.
 
-Remaining acceptance (see SESSION2_REVIEW_2026-11-14.md and `tools/session2_review.gd`):
+Historical remaining acceptance (closed by session 3 below; see SESSION2_REVIEW_2026-11-14.md):
 - `missing_history`: reject or explicitly default/migrate the missing field before returning a career;
   finishing a season must not fail after load.
 - `extra_attribute`: validation and normalization must cover the same domain; malformed unknown attrs
@@ -389,7 +406,7 @@ Remaining acceptance (see SESSION2_REVIEW_2026-11-14.md and `tools/session2_revi
 - `fitness_type`: validate consumed optional fields (fitness finite and physically bounded when present).
 - `duplicate_pair`: validate per-round club participation and directed-pair multiplicity; unique IDs and
   fixture count alone are insufficient. Keep legitimate partial current-round state legal.
-- Extend isolated backup controls and run the expanded driver (currently 42/47, three script-error cases).
+- Extend isolated backup controls and run the expanded driver (42/47 at that historical checkpoint).
   Preserve original 32 save controls, core checks and career stress. Do not weaken tests to retain DONE.
 
 Session 3 closure of the reopened SAVE01 items (implementation after review at bb03a1a): **DONE**.
@@ -508,7 +525,8 @@ Acceptance:
 - Standard lineup generation, transfers, keeper protection and normal career stress still pass.
 - Label this robustness case honestly; the audit did not demonstrate an ordinary UI route to the 16-GK roster.
 
-Status: **REOPENED** by independent review at bbe7dbb. Original session-2 implementation:
+Historical status: reopened at bbe7dbb, closed in session 3 below. Current status **DONE**.
+Original session-2 implementation:
 `LeagueData.auto_lineup` contract: exactly 11 unique ids or `[]` (never partial),
 malformed/duplicate entries ignored, best candidate chosen with `-INF` start (negative scores allowed), fitness
 applied before the position penalty. `CareerState.auto_lineup` / `_repair_lineup` are all-or-nothing and
@@ -516,7 +534,7 @@ return bool; the UI shows `LINEUP_INVALID` on refusal. `deep_audit.gd --case=kee
 script error; `run_deep_audit.py` -> **42/42, exit 0**. New `test_lineup_robustness` (12 checks; the 16-GK
 roster is adversarial and has no UI route). Career stress and journey still pass.
 
-Remaining acceptance: `tools/session2_review.gd -- --case=legal_low_keeper` fails with a legal squad,
+Historical remaining acceptance (closed by session 3 below): the low-keeper probe failed with a legal squad,
 two actual keepers at attributes 1 and outfield players at 99 (all schema-valid): finite penalties select
 an outfielder in goal, so auto_lineup refuses even though a legal eleven exists. Make goalkeeper eligibility
 a hard constraint for slot zero, then score eligible candidates; retain out-of-position outfield choices and
@@ -538,7 +556,11 @@ Reproduce:
     godot --headless -s tools/probe_scn.gd -- --name=high_loss --variant=1 --seed=44 --secs=8 --duties
     godot --headless -s tools/probe_scn.gd -- --name=wing_defence --variant=2 --seed=88 --secs=8 --duties
 
-Baseline high_loss 14/18, wing_defence 17/18. Root cause is not yet established.
+Current 3d08f8b high_loss: 6/9 legacy, 11/18 extended, 8/12 previous review, 7/12 fresh.
+Wing defence: 8/9, 17/18, 12/12, 11/12. `gameplay_review.gd --case=transition_trace` shows v0/11
+leaving DEF_TRANS after four seconds while several zone/protect players still jog 7–15 m behind moving
+anchors at t=5–7 s. Only four are goal-side at the end. This supports a contributing recovery mechanism,
+not a proven universal root cause. Inspect persistence, anchor motion, press/cover and engagement together.
 Acceptance:
 
 - Explain each failing episode with time-series positions, phase/duty changes, available cover and threats.
@@ -550,6 +572,10 @@ Acceptance:
 
 ## V01 / T01 — First match-improvement slice
 
+V01 scope is now expanded by HUMAN_GAMEPLAY_SPEC.md section 4: landing versus intercept versus current
+shadow, controlled player and next-switch preview, visibility/camera/radar. Presentation toggles alone must
+leave sim/RNG snapshots identical. Implement before INPUT04 so assisted intention is readable.
+
 Detailed hypotheses and extension points: [IMPROVEMENT_IDEAS.md](IMPROVEMENT_IDEAS.md).
 
 V01: compare camera/ball/stadium/radar readability at 720p and 1080p, both halves and near/far touchlines.
@@ -560,6 +586,34 @@ T01: extend the existing passer memory, support duties and next-option evaluatio
 third-man experiment. Open return lane, tracked passer and blocked return require distinct useful choices.
 No compulsory ping-pong or scripted success. Recheck input handoff, offside, overloads, recovery and match
 variety. Keep only an evidenced improvement; a well-documented rejected experiment is an honest result.
+
+## INPUT04 — Held defensive approach and containment
+
+Contract: HUMAN_GAMEPLAY_SPEC.md sections 1–2. Add one explicit held action (proposed Space), separate
+from Q tackle. Move the controlled outfielder into a useful goal-side approach and brake/contain nearby.
+Manual input wins immediately; release, pause/focus, switch/substitute identity, possession/restart/full-time
+boundaries cancel/rearm safely. Shared physical speed/stamina/contact/cooldown rules apply. No guaranteed
+takeaway, teleport or whole-team control rewrite. Manual/Semi-assisted presets have Russian help.
+Verify both sides/halves, front/side/behind, moving/lost target and actual motion; assistance-off preserves
+the old command path. Initial slice excludes automatic tackling and a full key-rebinding framework.
+
+## INPUT05 — Bounded receiving and loose-ball approach
+
+Contract: HUMAN_GAMEPLAY_SPEC.md section 3. Reuse INPUT04's held action for a reachable free-ball intercept,
+plus bounded initial movement help after TEAM receiver handoff in Semi-assisted mode. Manual direction,
+kick intent, opponent contact, timeout and identity boundaries cancel appropriately. Do not magnetize the
+ball, enlarge contacts, change flight or guarantee receipt. Test rolling/lofted/deflected/unreachable balls,
+height limits, manual escape and actual contacts. PC01 later retains stable-UID locked control.
+
+## AI06 — Bounded pursuit perception and independent assistance profiles
+
+Contract: HUMAN_GAMEPLAY_SPEC.md section 5. Introduce deterministic cached ball-reading estimates,
+bounded observation/reaction and stable uncertainty, starting with pursuit only. Keep authoritative physics
+exact, tactical coordination competent and aids independent from opponent difficulty. No future-input reads,
+future collision knowledge, score-based boosts or per-frame random twitching. React to new deflections with
+a delay; use named tunables/seeded stream ownership and dispose caches. Measure sensing/update/interception
+at each profile, both sides, with easy reception controls and tactical counterchecks. No test-only perception
+bypass. Human PLAY01 still determines playability; no player-career mode is claimed implemented.
 
 ## PC00 — Player-career state, identity and save foundation
 
@@ -753,6 +807,10 @@ viable so the user need not repeat mini-games to continue a slow career. Verify 
 
 ## PLAY01 — Windows and human gameplay acceptance
 
+Status: **USER FEEDBACK / OPEN**. User played an unpinned build and reports frustrating manual pursuit,
+unclear flight and overly precise AI. After V01/INPUT04/INPUT05/AI06 deliver a named build and compare
+presets with receive/pickup/defend checks. Do not replace human comfort with an AI-only win-rate target.
+
 Use docs/PLAYTEST.md on the actual Windows executable. Record machine/build version, keyboard layout,
 settings and observations. Check movement, pass direction, switching, shot charging, tackle timing, teammate
 support, difficulty, animation in motion, camera, sound, pause/substitution and career continuation.
@@ -764,5 +822,5 @@ as those features land. Convert observed problems into reproduced tasks before m
 ## Starting request for Claude Code
 
 Use [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTER_PROMPT_EN.md). It defines the full read order, baseline,
-architecture, scope, work sequence, commands, evidence rules and release gates. Start with QA01 and
+architecture, scope, work sequence, commands, evidence rules and release gates. Resume the Active handoff and
 continue through ready tasks. Preserve regressions and report remaining failures honestly.

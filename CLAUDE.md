@@ -14,8 +14,9 @@ Read the **Active handoff** at the top of `PROGRESS.md` before resuming. Runtime
   specification extend it. The idea register is backlog except for entries explicitly in the queue.
 - Evidence and confirmed findings: `docs/CODE_REVIEW_2026-11-14.md` (baseline gameplay commit `a47746e`).
 - Extended audit, saved logs and new defects: `docs/DEEP_AUDIT_2026-11-14.md`; ranked ideas: `docs/IMPROVEMENT_IDEAS.md`.
-- Latest independent review: `docs/SESSION2_REVIEW_2026-11-14.md` (implementation bbe7dbb).
-  SAVE01 and CAREER01 are reopened for boundary cases; other accepted repairs stay intact.
+- Latest independent review: `docs/GAMEPLAY_REVIEW_2026-11-14.md` (implementation 3d08f8b).
+  SAVE01/CAREER01 pass; AI02 has two residual boundary failures. Detail: CLAUDE_BUGFIX_PROMPT_EN.md.
+  After repairs, HUMAN_GAMEPLAY_SPEC.md defines the small human-control/readability slice before career.
 - Start with the first ready task in that queue; reproduce it, implement it, verify it, then update status.
 - Context/token limits require a resumable checkpoint in PROGRESS.md: exact branch/revision, dirty files,
   completed/open acceptance, commands/results/evidence and one concrete next action. Preserve colleague work;
@@ -24,8 +25,8 @@ Read the **Active handoff** at the top of `PROGRESS.md` before resuming. Runtime
   Keep their expectations; document remaining failures while completing unrelated tasks.
 - Behavioural success and process exit status must both be checked. Never treat an exit code alone as AI quality.
 - `tools/run_deep_audit.py` runs isolated corruption/state/determinism/career checks and catches script errors.
-  Baseline was 11/37; the old expanded set is 42/42. Including five independent boundary cases: 42/47.
-  `--group review` selects these five known failures; retain them in the final cross-system gate.
+  Baseline was 11/37; all previous 47 cases now pass. Two new gameplay probes give 47/49, exit 1.
+  `--group gameplay` selects these failures; `--group review` now passes. Retain all in the final gate.
 - Owners of a `MatchSim` must call `dispose()` when done (ownership cycles; see MEM01).
 
 ## Rules
@@ -39,7 +40,8 @@ Read the **Active handoff** at the top of `PROGRESS.md` before resuming. Runtime
 
 - Talk to the user in Russian. Code identifiers and technical docs in English. Game UI in Russian via `tr()` keys in `locale/strings.csv`.
 - Priority: match correctness/control and AI, then the approved player-career loop alongside compatible club
-  career, then the selected additional match improvements. See queue dependencies; manual Windows gates
+  career. After repairs prioritize V01/INPUT04/INPUT05/AI06, then combinations/first touch/shot preparation
+  and a named playable checkpoint. See queue dependencies; manual Windows gates
   stay open when unavailable but do not block independent automated work. No Rust/engine rewrite.
 - Simulation (`src/sim`, `src/ai`, `src/input`) is pure `RefCounted` code, fixed step 60 Hz, deterministic per seed. No scene nodes, no `randf()` (use `sim.rng`), no wall-clock time. Presentation (`src/view`, `src/ui`) only reads sim state.
 - One authority for the ball: `MatchSim`. Controllers (TeamAI, HumanController) only write `PlayerCommand`. AI and human share all mechanics.
@@ -60,10 +62,11 @@ Read the **Active handoff** at the top of `PROGRESS.md` before resuming. Runtime
 godot --headless --import                                   # import / parse check (also rebuilds translations)
 godot --headless -s tests/run_tests.gd                      # 442 automated checks, exit code 1 on failure (-- --violate=budget|lineup self-test must fail)
 godot --headless -s tools/review_regressions.gd             # five desired-behaviour checks; all pass
-python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-audit  # now 42/47, exit 1; SAVE01/CAREER01 reopened
-python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-boundary --group review # five boundary cases
+python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-audit  # 47/49, exit 1; AI02 residuals
+python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-boundary --group gameplay # two new cases
 godot --headless -s tools/run_scenarios.gd                  # AI validation scenarios; exit 1 while any episode fails (currently 63/72), 2 on bad --only
 godot --headless -s tools/run_scenarios.gd -- --seeds=44,55,66,77,88,99 # extended known seeds: 129/144, exit 1
+godot --headless -s tools/run_scenarios.gd -- --seeds=211,257,313,373 # latest review: 78/96; now known data
 godot --headless -s tools/run_match.gd -- --seeds=1,2,3     # full AI-vs-AI matches with metrics
 godot --headless -s tools/fuzz_human.gd                     # random-input robustness of human control
 godot --headless -s tools/career_journey.gd                 # career end-to-end through the real match engine

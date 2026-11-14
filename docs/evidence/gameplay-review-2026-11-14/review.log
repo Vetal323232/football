@@ -1,0 +1,8 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+PASS offside_first_touch | initially_flagged=true state=RESTART_SETUP offsides=1 shots=0
+PASS run_trigger | now_tick=300 future_event=312 pressure_eta=2.60 command=(0.0, -1.0) kick=false
+PASS forward_pass | receiver=-1 target=(16.5, 0.0) direction=(1.0, 0.0)
+PASS lifetime | released_match_sims_still_alive=0/12
+PASS save_integrity | validation_errors=1 recovered=true loaded_round=0
+REVIEW REGRESSIONS: 5 checks, 0 failed

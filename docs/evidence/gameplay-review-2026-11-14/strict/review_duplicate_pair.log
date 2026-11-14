@@ -1,0 +1,4 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+duplicate_pair errors=["fixture s1_r01_m2: pairing smk>vvt appears more than once", "fixture s1_r01_m2: club smk plays twice in round 0", "fixture s1_r01_m2: club vvt plays twice in round 0"] home=smk away=vvt
+SESSION2_CASE_DONE {"case":"duplicate_pair","ok":true}

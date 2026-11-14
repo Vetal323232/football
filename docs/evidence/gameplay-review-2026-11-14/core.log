@@ -1,0 +1,32 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+- schedule
+- standings
+- one-time result application
+- transfers
+- line-up selection robustness
+- development
+- save / load
+- season rollover
+- attributes affect execution
+- ball physics
+- goals
+- ball out and restarts
+- offside
+- possession
+- tackles
+- halves, clock, pause
+- controlled-player handoff
+- pass assistance direction
+- handoff to the selected receiver
+- idle human at a restart
+- goalkeeper
+- back-pass rule
+- substitutions
+- dribble forecast matches executed movement
+    carry forecast: worst straight error 0.019 s (pace 0.90 stamina 0.10 sprint v0 5: predicted 0.90 s, executed 0.92 s); cases 54
+    carry forecast: worst turning error 0.162 s (sprint from velocity (0.0, 5.0): predicted 1.35 s, executed 1.18 s)
+- runner event timing
+- determinism
+- teardown
+442 checks, 0 failed, 6.3s

@@ -1,0 +1,115 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+=== buildup_pressure — Розыгрыш под прессингом
+  v0 seed 211: OK   | pass options p>=0.6 at first decision: 1; completed passes 3; ball x -33 -> 32
+  v0 seed 257: OK   | pass options p>=0.6 at first decision: 2; completed passes 2; ball x -33 -> 31
+  v0 seed 313: OK   | pass options p>=0.6 at first decision: 6; completed passes 6; ball x -33 -> 15
+  v0 seed 373: OK   | pass options p>=0.6 at first decision: 3; completed passes 1; ball x -33 -> -9
+  v1 seed 211: OK   | pass options p>=0.6 at first decision: 2; completed passes 3; ball x -33 -> 5
+  v1 seed 257: OK   | pass options p>=0.6 at first decision: 4; completed passes 4; ball x -34 -> 6
+  v1 seed 313: OK   | pass options p>=0.6 at first decision: 2; completed passes 2; ball x -33 -> 41
+  v1 seed 373: FAIL | pass options p>=0.6 at first decision: 2; completed passes 2; ball x -34 -> -4  !! lost the ball in own third at t=0.9s
+  v2 seed 211: OK   | pass options p>=0.6 at first decision: 1; completed passes 2; ball x -34 -> -26
+  v2 seed 257: OK   | pass options p>=0.6 at first decision: 3; completed passes 2; ball x -34 -> 37
+  v2 seed 313: OK   | pass options p>=0.6 at first decision: 3; completed passes 2; ball x -34 -> 35
+  v2 seed 373: OK   | pass options p>=0.6 at first decision: 3; completed passes 2; ball x -34 -> 35
+  -> 11/12 episodes without violated invariants
+=== blocked_lane — Перекрытая линия передачи
+  v0 seed 211: OK   | first action: kick kind 0 to #8 at 0.3s
+  v0 seed 257: OK   | first action: kick kind 0 to #8 at 0.3s
+  v0 seed 313: OK   | first action: kick kind 0 to #8 at 0.3s
+  v0 seed 373: OK   | first action: kick kind 0 to #8 at 0.3s
+  v1 seed 211: OK   | first action: kick kind 0 to #10 at 0.3s; lane open: pass to striker chosen
+  v1 seed 257: OK   | first action: kick kind 0 to #10 at 0.3s; lane open: pass to striker chosen
+  v1 seed 313: OK   | first action: kick kind 0 to #10 at 0.3s; lane open: pass to striker chosen
+  v1 seed 373: OK   | first action: kick kind 0 to #10 at 0.3s; lane open: pass to striker chosen
+  v2 seed 211: OK   | first action: kick kind 0 to #8 at 0.3s
+  v2 seed 257: OK   | first action: kick kind 0 to #8 at 0.3s
+  v2 seed 313: OK   | first action: kick kind 0 to #8 at 0.3s
+  v2 seed 373: OK   | first action: kick kind 0 to #8 at 0.3s
+  -> 12/12 episodes without violated invariants
+=== attack_3v2 — Атака 3 в 2
+  v0 seed 211: FAIL | shots 0 (xG 0.00), goals 0, passes 6, min lane separation avg 15.0m  !! no shot within the time limit
+  v0 seed 257: FAIL | shots 0 (xG 0.00), goals 0, passes 5, min lane separation avg 13.5m  !! no shot within the time limit
+  v0 seed 313: FAIL | shots 0 (xG 0.00), goals 0, passes 2, min lane separation avg 16.3m  !! no shot within the time limit
+  v0 seed 373: FAIL | shots 0 (xG 0.00), goals 0, passes 4, min lane separation avg 12.2m  !! no shot within the time limit
+  v1 seed 211: OK   | shots 2 (xG 0.57), goals 1, passes 2, min lane separation avg 12.6m
+  v1 seed 257: FAIL | shots 0 (xG 0.00), goals 0, passes 6, min lane separation avg 13.4m  !! no shot within the time limit
+  v1 seed 313: FAIL | shots 0 (xG 0.00), goals 0, passes 4, min lane separation avg 10.4m  !! no shot within the time limit
+  v1 seed 373: FAIL | shots 0 (xG 0.00), goals 0, passes 4, min lane separation avg 13.7m  !! no shot within the time limit
+  v2 seed 211: FAIL | shots 0 (xG 0.00), goals 0, passes 4, min lane separation avg 12.3m  !! no shot within the time limit
+  v2 seed 257: FAIL | shots 0 (xG 0.00), goals 0, passes 4, min lane separation avg 12.3m  !! no shot within the time limit
+  v2 seed 313: FAIL | shots 0 (xG 0.00), goals 0, passes 5, min lane separation avg 12.0m  !! no shot within the time limit
+  v2 seed 373: FAIL | shots 0 (xG 0.00), goals 0, passes 5, min lane separation avg 8.4m  !! no shot within the time limit
+  -> 1/12 episodes without violated invariants
+=== wing_defence — Соперник с мячом на фланге
+  v0 seed 211: OK   | exactly one presser 98%, cover set 98%, >=2 central defenders 100%, 3+ defenders within 5m of ball 0%, shots conceded 0
+  v0 seed 257: OK   | exactly one presser 97%, cover set 97%, >=2 central defenders 100%, 3+ defenders within 5m of ball 0%, shots conceded 0
+  v0 seed 313: OK   | exactly one presser 97%, cover set 97%, >=2 central defenders 100%, 3+ defenders within 5m of ball 0%, shots conceded 0
+  v0 seed 373: OK   | exactly one presser 96%, cover set 96%, >=2 central defenders 100%, 3+ defenders within 5m of ball 0%, shots conceded 0
+  v1 seed 211: OK   | exactly one presser 97%, cover set 97%, >=2 central defenders 100%, 3+ defenders within 5m of ball 0%, shots conceded 1
+  v1 seed 257: OK   | exactly one presser 97%, cover set 97%, >=2 central defenders 100%, 3+ defenders within 5m of ball 0%, shots conceded 0
+  v1 seed 313: OK   | exactly one presser 97%, cover set 97%, >=2 central defenders 100%, 3+ defenders within 5m of ball 0%, shots conceded 1
+  v1 seed 373: OK   | exactly one presser 97%, cover set 97%, >=2 central defenders 100%, 3+ defenders within 5m of ball 0%, shots conceded 1
+  v2 seed 211: OK   | exactly one presser 97%, cover set 97%, >=2 central defenders 100%, 3+ defenders within 5m of ball 0%, shots conceded 0
+  v2 seed 257: OK   | exactly one presser 98%, cover set 98%, >=2 central defenders 100%, 3+ defenders within 5m of ball 0%, shots conceded 0
+  v2 seed 313: FAIL | exactly one presser 98%, cover set 98%, >=2 central defenders 25%, 3+ defenders within 5m of ball 0%, shots conceded 0  !! centre abandoned
+  v2 seed 373: OK   | exactly one presser 97%, cover set 97%, >=2 central defenders 100%, 3+ defenders within 5m of ball 0%, shots conceded 0
+  -> 11/12 episodes without violated invariants
+=== high_loss — Потеря мяча высоко
+  v0 seed 211: OK   | one presser/chaser 92%, players goal-side at end 5, ball x at end -14, B shots 0 (xG 0.00), swarm 0%
+  v0 seed 257: OK   | one presser/chaser 91%, players goal-side at end 6, ball x at end -10, B shots 0 (xG 0.00), swarm 0%
+  v0 seed 313: FAIL | one presser/chaser 93%, players goal-side at end 4, ball x at end -14, B shots 0 (xG 0.00), swarm 0%  !! too few players recovered behind the ball
+  v0 seed 373: OK   | one presser/chaser 90%, players goal-side at end 5, ball x at end -10, B shots 0 (xG 0.00), swarm 0%
+  v1 seed 211: OK   | one presser/chaser 93%, players goal-side at end 6, ball x at end -10, B shots 0 (xG 0.00), swarm 0%
+  v1 seed 257: OK   | one presser/chaser 90%, players goal-side at end 9, ball x at end 4, B shots 0 (xG 0.00), swarm 0%
+  v1 seed 313: FAIL | one presser/chaser 96%, players goal-side at end 4, ball x at end -20, B shots 0 (xG 0.00), swarm 0%  !! too few players recovered behind the ball
+  v1 seed 373: FAIL | one presser/chaser 93%, players goal-side at end 4, ball x at end -15, B shots 0 (xG 0.00), swarm 0%  !! too few players recovered behind the ball
+  v2 seed 211: FAIL | one presser/chaser 94%, players goal-side at end 3, ball x at end -20, B shots 0 (xG 0.00), swarm 0%  !! too few players recovered behind the ball
+  v2 seed 257: FAIL | one presser/chaser 94%, players goal-side at end 4, ball x at end -16, B shots 0 (xG 0.00), swarm 0%  !! too few players recovered behind the ball
+  v2 seed 313: OK   | one presser/chaser 79%, players goal-side at end 9, ball x at end 22, B shots 0 (xG 0.00), swarm 0%
+  v2 seed 373: OK   | one presser/chaser 91%, players goal-side at end 5, ball x at end -9, B shots 0 (xG 0.00), swarm 0%
+  -> 7/12 episodes without violated invariants
+=== run_behind — Забегание за спину защите
+  v0 seed 211: OK   | run made: true, through/lofted ball played: true, offside calls 0, ball x -3 -> 34
+  v0 seed 257: OK   | run made: true, through/lofted ball played: false, offside calls 0, ball x -4 -> 35
+  v0 seed 313: OK   | run made: true, through/lofted ball played: false, offside calls 0, ball x -4 -> -8
+  v0 seed 373: OK   | run made: true, through/lofted ball played: false, offside calls 0, ball x -4 -> 33
+  v1 seed 211: OK   | run made: true, through/lofted ball played: true, offside calls 0, ball x -4 -> 31
+  v1 seed 257: OK   | run made: true, through/lofted ball played: true, offside calls 0, ball x -3 -> 32
+  v1 seed 313: OK   | run made: true, through/lofted ball played: false, offside calls 0, ball x -4 -> -4
+  v1 seed 373: OK   | run made: true, through/lofted ball played: false, offside calls 0, ball x -4 -> 11
+  v2 seed 211: OK   | run made: true, through/lofted ball played: true, offside calls 0, ball x -3 -> 45
+  v2 seed 257: OK   | run made: true, through/lofted ball played: true, offside calls 0, ball x -4 -> 26
+  v2 seed 313: OK   | run made: true, through/lofted ball played: true, offside calls 0, ball x -3 -> 31
+  v2 seed 373: OK   | run made: true, through/lofted ball played: true, offside calls 0, ball x -4 -> 36
+  -> 12/12 episodes without violated invariants
+=== shot_rebound — Удар и отскок
+  v0 seed 211: OK   | shots 1, keeper moved 5.2m, rebound event: true, outcome: loose, stalls 0
+  v0 seed 257: OK   | shots 2, keeper moved 5.2m, rebound event: true, outcome: goal, stalls 0
+  v0 seed 313: OK   | shots 1, keeper moved 5.2m, rebound event: true, outcome: claimed by #10, stalls 0
+  v0 seed 373: OK   | shots 1, keeper moved 5.2m, rebound event: true, outcome: loose, stalls 0
+  v1 seed 211: OK   | shots 1, keeper moved 3.6m, rebound event: false, outcome: goal, stalls 0
+  v1 seed 257: OK   | shots 2, keeper moved 5.5m, rebound event: true, outcome: goal, stalls 0
+  v1 seed 313: OK   | shots 1, keeper moved 4.0m, rebound event: false, outcome: goal, stalls 0
+  v1 seed 373: OK   | shots 2, keeper moved 5.4m, rebound event: true, outcome: goal, stalls 0
+  v2 seed 211: OK   | shots 1, keeper moved 2.1m, rebound event: false, outcome: goal, stalls 0
+  v2 seed 257: OK   | shots 1, keeper moved 2.0m, rebound event: false, outcome: goal, stalls 0
+  v2 seed 313: OK   | shots 1, keeper moved 2.3m, rebound event: false, outcome: goal, stalls 0
+  v2 seed 373: OK   | shots 1, keeper moved 2.0m, rebound event: false, outcome: goal, stalls 0
+  -> 12/12 episodes without violated invariants
+=== human_support — Партнёр под управлением человека
+  v0 seed 211: OK   | options p>=0.6 offered to the human at pass time: 4; control hand-offs 2; ticks where AI overrode human input 0; players without duty (samples) 10
+  v0 seed 257: OK   | options p>=0.6 offered to the human at pass time: 4; control hand-offs 2; ticks where AI overrode human input 0; players without duty (samples) 10
+  v0 seed 313: OK   | options p>=0.6 offered to the human at pass time: 4; control hand-offs 2; ticks where AI overrode human input 0; players without duty (samples) 10
+  v0 seed 373: OK   | options p>=0.6 offered to the human at pass time: 4; control hand-offs 2; ticks where AI overrode human input 0; players without duty (samples) 10
+  v1 seed 211: OK   | options p>=0.6 offered to the human at pass time: 3; control hand-offs 2; ticks where AI overrode human input 0; players without duty (samples) 10
+  v1 seed 257: OK   | options p>=0.6 offered to the human at pass time: 4; control hand-offs 2; ticks where AI overrode human input 0; players without duty (samples) 10
+  v1 seed 313: OK   | options p>=0.6 offered to the human at pass time: 5; control hand-offs 1; ticks where AI overrode human input 0; players without duty (samples) 10
+  v1 seed 373: OK   | options p>=0.6 offered to the human at pass time: 5; control hand-offs 2; ticks where AI overrode human input 0; players without duty (samples) 10
+  v2 seed 211: OK   | options p>=0.6 offered to the human at pass time: 4; control hand-offs 2; ticks where AI overrode human input 0; players without duty (samples) 10
+  v2 seed 257: OK   | options p>=0.6 offered to the human at pass time: 4; control hand-offs 2; ticks where AI overrode human input 0; players without duty (samples) 10
+  v2 seed 313: OK   | options p>=0.6 offered to the human at pass time: 5; control hand-offs 2; ticks where AI overrode human input 0; players without duty (samples) 10
+  v2 seed 373: OK   | options p>=0.6 offered to the human at pass time: 4; control hand-offs 2; ticks where AI overrode human input 0; players without duty (samples) 10
+  -> 12/12 episodes without violated invariants
+TOTAL 78/96

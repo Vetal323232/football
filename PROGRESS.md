@@ -1,8 +1,43 @@
 # Progress
 
-Last update: 2026-11-14, Claude session 3 (review boundary cases closed, AI02 done). Engine Godot 4.5.1-stable, GL Compatibility.
+Last update: 2026-11-14, independent gameplay audit followed by a human-control brainstorm. Godot 4.5.1, GL Compatibility.
 
 ## Active handoff
+
+- **Implementation reviewed:** `claude/new-session-yr8bm1` @ `3d08f8b150aeadef10081d69a0fce0f050f991c0`.
+  Review/handoff: `codex/deep-audit-claude-brief` (contains that implementation); local review branch
+  `codex/gameplay-audit-and-human-controls`. No runtime/tuning changes or feature implementation by reviewer.
+- **Single queue:** docs/AI_WORK_PLAN.md. Single entry: docs/CLAUDE_MASTER_PROMPT_EN.md. Current evidence:
+  docs/GAMEPLAY_REVIEW_2026-11-14.md. Repair detail: docs/CLAUDE_BUGFIX_PROMPT_EN.md.
+- **Active:** no runtime WIP. **Next: AI02 REOPENED**, then AI05/AI03/AI04. Preserve accepted normal-gait
+  correction and SAVE01/CAREER01 repairs. Old 47 strict cases pass; two new gameplay boundaries fail.
+- **Reproductions:** carry_recovery -> forecast 1.488 versus actual cap 1.6 m/s; urgent_pressure -> ETA 0,
+  no reconsideration while ordinary deadline has 0.1 s left. See tools/gameplay_review.gd and strict wrapper.
+- **Independent checks:** core 442/0 and review 5/5 (saved exact-revision runs reused); full strict **47/49**,
+  exit 1, no script errors. Import clean; input fuzz seeds 4..15/30 s and career journey 3x60 s both OK.
+- **Scenarios:** legacy 63/72; known extended 129/144; previous review 88/96; fresh 211/257/313/373
+  **78/96**, with 3v2 **1/12**. All are now known data; reserve new seeds/geometry before tuning.
+- **Full matches:** eight seeds 1..8, 360 s, 70v70 -> 3W/3D/2L, 7:8, 15.1 shots/match, 0 stalls/conflicts.
+  Eight 180 s strength controls on fresh seeds, swapped sides -> stronger 7W/1L, 13:4, no stalls/conflicts.
+- **Recovery trace:** high_loss v0/11 changes to ORG_DEF after four seconds; t=5–7 s zone/protect joggers
+  remain 7–15 m behind moving anchors. Four goal-side at end. Treat as contributing mechanism, not sole cause.
+- **Evidence discrepancy:** some Claude per-scenario rows/full-match scores differ from independent logs.
+  Seed 4 repeats 1:0; seed 5 repeats 2:2 here. No established nondeterminism cause; preserve exact outputs.
+- **Human feedback:** user played an unpinned build; pursuit/flight feel unfair and impractical with manual
+  keyboard steering. PLAY01 is USER FEEDBACK / OPEN, not accepted latest-build testing.
+- **After repairs:** V01 readability/landing cue, INPUT04 held containment, INPUT05 receiver/loose-ball help,
+  AI06 bounded perception; contracts in docs/HUMAN_GAMEPLAY_SPEC.md. Then T01/B01/B04 and a playable
+  checkpoint before career expansion. PC mode remains approved but unimplemented. Other ideas stay backlog.
+- **Evidence:** docs/evidence/gameplay-review-2026-11-14/manifest.json, strict/summary.json and per-run logs.
+- **Limitations:** no new Windows build/execution, visual render, human session, GPU/audio acceptance.
+  Existing audio shutdown/substitute appearance residuals remain; old Windows EXE predates fixes.
+- **Publication/WIP:** diagnostics/docs/evidence committed on the handoff branch; no pending runtime changes.
+  Do not reset newer local Claude work or claim automatic notification to another session.
+- **Concrete next action:** Godot 4.5.1 -> `python3 tools/run_deep_audit.py --godot godot --out
+  /tmp/openpitch-gameplay --group gameplay`, then inspect carry_speed vs _move_players and the two
+  OnBallAI.drive deadline conditions; close AI02 residuals with bounded negative/positive controls.
+
+## Claude session-3 handoff (historical, before independent gameplay review)
 
 - **Implementation branch:** `claude/new-session-yr8bm1`, contains reviewed handoff `codex/deep-audit-claude-brief`
   @ `bb03a1a` (fast-forward) plus session-3 commits; published to origin. Queue authority: `docs/AI_WORK_PLAN.md`.

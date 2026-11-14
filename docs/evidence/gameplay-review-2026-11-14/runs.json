@@ -1,0 +1,64 @@
+[
+  {
+    "name": "import",
+    "command": [
+      "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+      "--headless",
+      "--import"
+    ],
+    "exit": 0,
+    "script_error": false
+  },
+  {
+    "name": "audit",
+    "command": [
+      "python3",
+      "tools/run_deep_audit.py",
+      "--godot",
+      "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+      "--out",
+      "docs/evidence/gameplay-review-2026-11-14/strict"
+    ],
+    "exit": 1,
+    "script_error": false
+  },
+  {
+    "name": "extended",
+    "command": [
+      "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+      "--headless",
+      "-s",
+      "tools/run_scenarios.gd",
+      "--",
+      "--seeds=44,55,66,77,88,99"
+    ],
+    "exit": 1,
+    "script_error": false
+  },
+  {
+    "name": "known-review",
+    "command": [
+      "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+      "--headless",
+      "-s",
+      "tools/run_scenarios.gd",
+      "--",
+      "--seeds=107,131,167,199"
+    ],
+    "exit": 1,
+    "script_error": false
+  },
+  {
+    "name": "fresh",
+    "command": [
+      "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+      "--headless",
+      "-s",
+      "tools/run_scenarios.gd",
+      "--",
+      "--seeds=211,257,313,373"
+    ],
+    "exit": 1,
+    "script_error": false
+  }
+]

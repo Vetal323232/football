@@ -1,6 +1,32 @@
 # AI validation
 
-## Current baseline (session 3, after AI01 + AI02; predicates unchanged)
+## Latest independent checkpoint: 3d08f8b (gameplay review)
+
+See GAMEPLAY_REVIEW_2026-11-14.md and docs/evidence/gameplay-review-2026-11-14/ for exact outputs.
+Previous 47 strict cases pass; two new AI02 model/scheduling cases expand the gate to 47/49, exit 1.
+Core 442/0; original review 5/5; fuzz/journey OK. Runtime and tuning unchanged by this review.
+
+| Scenario | Legacy /9 | Known extended /18 | Previous review /12 | Fresh 211/257/313/373 /12 |
+| --- | --- | --- | --- | --- |
+| buildup_pressure | 9 | 16 | 11 | 11 |
+| blocked_lane | 9 | 18 | 12 | 12 |
+| attack_3v2 | 4 | 13 | 9 | 1 |
+| wing_defence | 8 | 17 | 12 | 11 |
+| high_loss | 6 | 11 | 8 | 7 |
+| run_behind (legacy intent only) | 9 | 18 | 12 | 12 |
+| shot_rebound | 9 | 18 | 12 | 12 |
+| human_support | 9 | 18 | 12 | 12 |
+| Total | 63/72 | 129/144 | 88/96 | 78/96 |
+
+The fresh seeds were selected before this review; now they are known. Eight 70v70 six-minute matches give
+3W/3D/2L, 7:8, 15.1 shots/match, middle third 43–52%, tackle attempts 0–6/team, 0 stalls/conflicts.
+Eight three-minute side-swapped 84/62 controls on the fresh seeds: stronger team 7W/1L, 13:4.
+Some individual table/match results differ from Claude's summary below despite matching matrix totals;
+retain both provenance labels. Seed 4/5 repeat controls agree with the independent batch here; the cause of
+cross-report differences is not established. Do not claim nondeterminism from this alone.
+Human feedback on an unpinned build is negative for pursuit/flight readability; new control acceptance is open.
+
+## Claude session-3 report (historical, not the latest independent measurement)
 
 Commands: `tools/run_scenarios.gd` (legacy seeds 11/22/33), `-- --seeds=44,55,66,77,88,99`,
 `-- --seeds=107,131,167,199`, `tools/run_match.gd -- --seeds=1,2,3,4,5,6,7,8 --duration=360 [--levels=84,62]`.
@@ -24,7 +50,7 @@ Dribble forecast vs execution: worst 0.019 s on 54 straight cases. Runner event:
 
 Open defects at this baseline: defensive recovery after a high loss (AI05), 3v2 on legacy seeds (AI03),
 through balls behind the line rarely played and offside rarely tested (AI04), tackle attempts rare (AI05).
-Everything below this section is the historical session-1 record (commit a47746e).
+Sections below retain earlier reports; use each heading/commit for provenance, not as current task status.
 
 
 ## Current independent checkpoint: bbe7dbb (2026-11-14)

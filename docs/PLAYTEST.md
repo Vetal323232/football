@@ -1,5 +1,25 @@
 # Manual playtest (about 10 minutes)
 
+## Latest user feedback and the next checkpoint
+
+The user has played a build (revision/seed/settings not recorded) and reports that pursuing/intercepting
+the ball manually feels impractical against precise bots, and that the flight destination is hard to read.
+They want a held approach/defending command. This is negative human feedback, not acceptance of 3d08f8b.
+The new V01/INPUT04/INPUT05/AI06 slice is specified in HUMAN_GAMEPLAY_SPEC.md and is not implemented yet.
+
+When that slice is available, record the actual build/commit and compare Manual/Semi-assisted:
+
+1. Receive a rolling and a lofted pass; can you identify the destination and take control without guessing?
+2. Hold assistance to approach a loose ball, then steer away with WASD: does manual input take over immediately?
+3. Hold assistance against a dribbler; can you contain, choose a Q tackle and recover from a miss?
+4. Stop holding assistance, switch players, pause/resume and lose/regain focus: no stale pursuit or ghost action.
+5. Play briefly at easy/normal difficulty on both sides: describe one fair challenge and one confusing episode.
+
+These are future checks, not results already observed. Win percentage is optional evidence, not a quota.
+Do not request a long report before resolving reproducible faults. Existing checks below still apply.
+
+## Existing baseline checklist
+
 Things that automated checks cannot judge: control feel, animation, camera, fun.
 Please note anything that feels wrong next to the step number.
 

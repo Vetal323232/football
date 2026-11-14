@@ -1,7 +1,7 @@
 # Project map
 
-Updated against implementation bbe7dbb03990c1480bbdb94268b2575ca179891b on 2026-11-14.
-Latest independent findings: [SESSION2_REVIEW_2026-11-14.md](SESSION2_REVIEW_2026-11-14.md).
+Updated against implementation 3d08f8b150aeadef10081d69a0fce0f050f991c0 on 2026-11-14.
+Latest independent findings: [GAMEPLAY_REVIEW_2026-11-14.md](GAMEPLAY_REVIEW_2026-11-14.md).
 Current runtime paths below exist at that revision. The player-career section explicitly marks proposed
 integration boundaries; it does not claim the new mode or those files already exist.
 Use this document for navigation. Confirmed defects and evidence are in [the code review](CODE_REVIEW_2026-11-14.md);
@@ -70,7 +70,7 @@ TeamAI.take_run_event consumes a due runner notification once; on_restart discar
 | Concern | File and entry points | Important relationship |
 | --- | --- | --- |
 | Match state, clock, physics, legal contacts | [match_sim.gd](../src/sim/match_sim.gd): step, _move_players, _try_kick, _register_touch, _possession, _rules | Commands are executed here; rules must inspect the correct pre-touch history. |
-| Shared movement/reach estimates | [sim_query.gd](../src/sim/sim_query.gd): time_to_reach, opp_arrival, offside_line_local | Predictions must agree with actual command speed and physical limits. |
+| Shared movement/reach estimates | [sim_query.gd](../src/sim/sim_query.gd): carry_speed/carry_time, time_to_reach, opp_arrival, offside_line_local | Normal-gait carry forecasts repaired; recovery branch still inconsistent. |
 | Ball flight and rolling | [ball_state.gd](../src/sim/ball_state.gd): advance, roll_time, roll_speed_for; [sim_ball.gd](../src/sim/sim_ball.gd) | The same integrator supports actual movement and trajectory prediction. |
 | Team phase and assignments | [team_ai.gd](../src/ai/team_ai.gd): _replan, _update_side, _plan_attack, _plan_defend | Assigns carrier, receiver, presser, cover, runner, support and marking duties. |
 | Numerical advantage and transitions | team_ai.gd: _counter_chance, _update_side, _plan_attack | counter_on is currently latched when possession changes; it is not a general continuously refreshed overload detector. |
@@ -132,7 +132,8 @@ user://saves/career.json is the normal save, with a .bak backup. Test corrupt sa
 | tools/deep_audit.gd | Eight deterministic pairs, eight three-season careers, substitution/back-pass/pause/handoff/auto-lineup regressions; select with --case=NAME |
 | tools/audit_save_case.gd | 32 isolated valid/corrupt save cases, one per process; select with --case=NAME |
 | tools/session2_review.gd | Five independent boundary regressions: missing history, extra attribute, fitness type, fixture pairing and legal keeper selection; --case=NAME |
-| tools/run_deep_audit.py | Pinned strict driver with logs/JSON/error checks; old 42/42 pass, expanded 42/47; --group review selects new cases |
+| tools/run_deep_audit.py | Pinned strict driver; old 47/47 pass, expanded 47/49; --group gameplay selects the new cases |
+| tools/gameplay_review.gd | carry_recovery / urgent_pressure regressions; transition_trace observes production defence without replanning for logs |
 | tools/probe_run_event.gd | Observes existing carrier decisions near runner events without rerunning the planner |
 | tools/probe_scn.gd | Event and duty trace for a specific scenario |
 | tools/run_match.gd and src/ai/match_report.gd | Full-match observations; metrics are diagnostic evidence rather than an automatic quality verdict |
@@ -152,8 +153,9 @@ expected failures and completion criteria.
 | INPUT02 | HumanController.update | TeamAI._ball_claims can choose another intercept receiver; preserve user intent without disabling AI interception planning. |
 | INPUT03 | match_view.set_paused / _sample_input | HumanController.charging/shot_charge, release events, window focus; UI edges and normal charged shots. |
 | SUB01 | MatchSim.substitute | SimPlayer transient fields, AIAgent memory, participants, PlayerRig.refresh_identity, bench/limits. |
-| CAREER01 | LeagueData.auto_lineup | Negative-score crash repaired; hard GK eligibility still needed for a legal low-rated keeper. CareerState auto/repair return bool, preserving state on failure. |
-| SAVE01 | CareerState.validate then normalize | Broad validation repaired; missing history, extra attrs, fitness and schedule multiplicity remain. SaveManager._read must not return a broken career after a normalization error. |
+| CAREER01 | LeagueData.auto_lineup | Negative-score crash and hard GK eligibility repaired; auto/repair preserve state on failure. |
+| SAVE01 | CareerState.validate then normalize | Optional lists migrated; closed attrs, fitness and schedule multiplicity checked; prior boundary tests pass. |
+| AI02 residuals | SimQuery.carry_speed, OnBallAI.drive | Recovery execution versus forecast; urgent entry versus ordinary decision deadline. |
 | AI05 | TeamAI._update_side / _plan_defend | Recovery time series, press/cover commitment, mark targets, scenario observation timing; not yet a proven single cause. |
 | V01 | match_camera / ball_view / pitch_view / HUD | Settings and translations; presentation changes must leave simulation snapshots identical. |
 | T01 | TeamAI attack targets / AIAgent passer memory / OnBallAI._next_option | Existing support and runner duties, KickPlanner feasibility, offside and human handoff; no second coordinator. |
@@ -162,6 +164,8 @@ Historical logs and four actual rendered captures: `docs/evidence/deep-audit-202
 The current queue identifies approved follow-on ideas. Remaining entries in `IMPROVEMENT_IDEAS.md` stay backlog.
 
 ## Player career integration map (planned; PC00–PC09)
+
+The earlier SAVE01 defect baseline is repaired through session 3; the current review reopens AI02 only.
 
 These are candidate ownership boundaries, **not existing files or a requirement to generate empty modules**.
 Prefer a focused extension of existing functions where it stays clear. Update this map to actual paths only
@@ -195,15 +199,30 @@ Critical cross-mode relationships:
   national callups are neither a transfer nor another active club membership.
 - The current fixed ROUNDS/single-league iteration must stay valid for old saves. PC05 introduces explicit
   competition/date coordination; changing one constant is not a multi-league calendar implementation.
-- Current save validation is defective (SAVE01). Establish that gate before adding migration/world fields;
+- Current save validation passes the existing controls (SAVE01). Preserve that gate when adding migration/world fields;
   isolate the player slot and validate every new reference/ledger/container before normalization.
 
 ## Selected gameplay extensions and idea ownership
 
+### Human-control slice (proposed, not implemented)
+
+Contract: HUMAN_GAMEPLAY_SPEC.md. Existing owners below are real; future methods/tunables must be mapped
+after implementation rather than treated as already available. The single queue supplies status/order.
+
+| Concern | Existing owners | Queue |
+| --- | --- | --- |
+| Held approach, manual override, action reset | InputFrame, HumanController.update/reset_actions, Game._register_input/settings, match_view._sample_input/set_paused | INPUT04 |
+| Receive/loose-ball movement | HumanController handoff, TeamAI.intercept/SimQuery shared read-only geometry, MatchSim contact execution | INPUT05; PC01 later enforces UID policy |
+| Landing/intercept/next-switch cues | ball_view, HUD, match_camera, HumanController._manual_switch; use read-only selection/prediction helpers | V01, existing V03/U01 ideas |
+| Bounded pursuit perception | TeamTactics, TeamAI._ball_claims/_drive_chase, SimQuery/ball-path estimate, explicit seeded cache disposal | AI06 |
+
+Do not move authoritative ball physics into the view or give assistance physical bonuses. No full second
+team planner, new world DB or duplicate career loop is required for this slice.
+
 | Direction | Existing extension points | Queue / scope |
 | --- | --- | --- |
 | Give-and-go / third man | AIAgent passer memory, TeamAI support targets, OnBallAI._next_option | T01, first improvement slice |
-| Directional first touch | MatchSim._free_ball_contacts/_give_possession, InputFrame/PlayerCommand, player_rig | B01 after the career slice; shared mechanics |
+| Directional first touch | MatchSim._free_ball_contacts/_give_possession, InputFrame/PlayerCommand, player_rig | B01 after basic human controls, before career expansion; shared mechanics |
 | Prepared powerful low shot | HumanController._shot, KickPlanner.plan_shot, shared execution, input/help | B04; preserve INPUT03 and player-locked controls |
 | Team style | TeamTactics, TeamAI phase/utility, menu/world metadata | T07; PC05 can use existing tactic values before refinement |
 | Attacking rotations | TeamAI._plan_attack/_refresh_attack_target, rest-defence assignments and _plan_defend | T08; extend the current compensation mechanism |
