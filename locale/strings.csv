@@ -77,3 +77,68 @@ SET_SHADOWS,Тени,Shadows
 ON,Вкл,On
 OFF,Выкл,Off
 CONTROLS_MENU_NOTE,"В меню: стрелки / W S — выбор, ◄ ► — значение, Enter — подтвердить, Esc — назад","Menus: arrows - select, left/right - change value, Enter - confirm, Esc - back"
+CAREER_CONTINUE,Продолжить карьеру,Continue career
+CAREER_NEW,Новая карьера,New career
+CAREER_NEW_WARNING,Новая карьера заменит текущее сохранение (старое останется резервной копией).,A new career replaces the current save (the old one is kept as a backup).
+CAREER_PICK_CLUB,Выберите клуб,Choose your club
+CLUB_LEVEL,уровень,level
+BUDGET,Бюджет,Budget
+SEASON,Сезон,Season
+ROUND,Тур,Round
+TABLE_POS,Место,Position
+NEXT_MATCH,Следующий матч,Next match
+TEAM_STRENGTH,Сила составов,Line-up strength
+PLAY_MATCH,Играть матч,Play match
+SIM_MATCH,Симулировать свой матч,Simulate my match
+LINEUP,Состав,Line-up
+TABLE,Таблица,Table
+FIXTURES,Календарь,Fixtures
+TRANSFERS,Трансферы,Transfers
+SAVE_AND_EXIT,Сохранить и выйти в меню,Save and exit to menu
+ROUND_RESULTS,Результаты тура,Results of round
+SEASON_CHAMPION,Чемпион,Champion
+SEASON_YOUR_POS,Ваше место,Your position
+SEASON_NEXT,Начать следующий сезон,Start next season
+T_CLUB,Клуб,Club
+T_P,И,P
+T_W,В,W
+T_D,Н,D
+T_L,П,L
+T_GF,ЗГ,GF
+T_GA,ПГ,GA
+T_GD,РГ,GD
+T_PTS,О,Pts
+TABLE_NOTE,"Победа — 3 очка, ничья — 1. При равенстве: разница голов, забитые голы.","Win 3 points, draw 1. Tie-break: goal difference, goals scored."
+AGE,возр.,age
+LINEUP_HINT,"Выберите позицию, затем игрока на замену. Первая позиция — вратарь.","Pick a slot, then the player for it. Slot one must be a goalkeeper."
+LINEUP_PICK_FOR,Игрок на позицию,Player for slot
+LINEUP_BENCH,Запас,Bench
+LINEUP_AUTO,Лучший состав автоматически,Auto-pick best eleven
+LINEUP_INVALID,Состав некорректен: проверьте вратаря и 11 игроков.,Invalid line-up: check the goalkeeper and eleven players.
+LINEUP_ERR_COUNT,В составе должно быть 11 игроков.,The line-up needs eleven players.
+LINEUP_ERR_PLAYER,Игрок не из вашего клуба или выбран дважды.,Player not in your squad or picked twice.
+LINEUP_ERR_GK,На позиции вратаря должен стоять вратарь.,The goalkeeper slot needs a goalkeeper.
+TRANSFERS_BUY,Трансферы: покупка,Transfers: buy
+TRANSFERS_SELL,Трансферы: продажа,Transfers: sell
+SQUAD_SIZE,Игроков в клубе,Squad size
+MIN,минимум,minimum
+TR_BOUGHT,Куплен,Bought
+TR_SOLD,Продан,Sold
+TR_ERR_NOT_LISTED,Игрок не выставлен на трансфер.,Player is not on the transfer list.
+TR_ERR_OWN,Этот игрок недоступен для сделки.,This player is not available for the deal.
+TR_ERR_AMOUNT,Некорректная сумма сделки.,Invalid transfer amount.
+TR_ERR_BUDGET,Недостаточно средств.,Not enough money.
+TR_ERR_SQUAD_FULL,В клубе нет свободных мест.,Your squad is full.
+TR_ERR_SELLER,Клуб не может отпустить игрока.,The selling club cannot release him.
+TR_ERR_MIN_SQUAD,"Нельзя продать: останется слишком мало игроков (нужно не меньше 16 и два вратаря).","Cannot sell: the squad would be too small (16 players and two goalkeepers are required)."
+TR_ERR_NO_BUYER,Нет клуба с достаточным бюджетом.,No club can afford him.
+SAVE_FAILED,Не удалось сохранить,Save failed
+SAVE_RECOVERED,Основное сохранение повреждено — загружена резервная копия предыдущего тура.,The main save was damaged - the backup from the previous round was loaded.
+SAVE_CORRUPT_NONE,Сохранение повреждено и резервной копии нет. Начните новую карьеру.,The save is damaged and no backup exists. Please start a new career.
+DIAG_VARIANT,Вариант условий,Variant
+DIAG_HELP,"Сценарий расставляет игроков и мяч; дальше играет обычный ИИ. F3 — оверлей, Tab — выбрать игрока, Esc — пауза.","A scenario only arranges players and ball; the normal AI plays on. F3 overlay, Tab selects a player, Esc pauses."
+DIAG_RESULT,Итог эпизода,Episode verdict
+DIAG_OK,условия выполнены,criteria met
+DIAG_FAIL,нарушены инварианты,invariants violated
+DIAG_NEXT_SEED,Ещё раз (другой seed),Again (new seed)
+DIAG_NEXT_VARIANT,Следующий вариант,Next variant

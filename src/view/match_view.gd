@@ -19,6 +19,9 @@ var speed := 1
 var _edges := InputFrame.new()
 var _celebrate_team := -1
 var _frame_ms: Array[float] = []
+var _scn_ticks := 0
+var _scn_obs := {}
+var _scn_done := false
 
 
 func _ready() -> void:
@@ -32,9 +35,18 @@ func _ready() -> void:
 	if Game.cli.has("speed"):
 		speed = int(Game.cli["speed"])
 	sun.shadow_enabled = bool(Game.settings["shadows"])
+	if Game.cli.has("scenario"):
+		setup = ScenarioLib.make_setup(str(Game.cli["scenario"]), int(Game.cli.get("variant", "0")), int(Game.cli.get("seed", "11")))
+		if Game.cli.has("autoplay"):
+			setup.human_team = -1
 	sim = MatchSim.new()
 	sim.event.connect(_on_event)
 	sim.init_match(setup, Game.tuning)
+	if setup.scenario != "":
+		ScenarioLib.apply(sim, setup.scenario, setup.variant)
+		_scn_ticks = int(float(ScenarioLib.DURATION[setup.scenario]) * 60.0)
+		debug.visible = true
+		hud.call("show_banner", "%s\n%s %d, seed %d" % [ScenarioLib.TITLES[setup.scenario], tr("DIAG_VARIANT"), setup.variant + 1, setup.seed], 2.5)
 	_build_rigs()
 	hud.call("bind", sim)
 	debug.set("sim", sim)
@@ -49,7 +61,7 @@ func _ready() -> void:
 		r.tick()
 	ball_view.call("snap", sim.ball)
 	cam.call("snap_to", Vector3(sim.ball.pos.x, 0, sim.ball.pos.y))
-	debug.visible = Game.cli.has("debug")
+	debug.visible = Game.cli.has("debug") or setup.scenario != ""
 	Sfx.crowd(true)
 
 
@@ -144,6 +156,12 @@ func _physics_process(_delta: float) -> void:
 	for i in speed:
 		if sim.human != null:
 			_sample_input()
+		if _scn_ticks > 0 and not _scn_done:
+			ScenarioLib.observe(sim, sim.setup.scenario, _scn_obs)
+			if sim.setup.scenario == "shot_rebound" or (sim.setup.scenario == "human_support" and Game.cli.has("scripted")):
+				ScenarioLib.drive_inputs(sim, sim.setup.scenario, _scn_obs)
+			if int(_scn_obs.get("ticks", 0)) >= _scn_ticks:
+				_scenario_finished()
 		sim.step()
 		for r in rigs:
 			r.tick()
@@ -246,6 +264,22 @@ func _finish() -> void:
 		"human_team": sim.setup.human_team,
 	}
 	menus.call("show_result")
+
+
+func _scenario_finished() -> void:
+	_scn_done = true
+	var v := ScenarioLib.judge(sim, sim.setup.scenario, sim.setup.variant, _scn_obs)
+	var ok: bool = v["ok"] and (v["fail"] as PackedStringArray).is_empty()
+	var text := "%s: %s\n%s" % [tr("DIAG_RESULT"), tr("DIAG_OK") if ok else tr("DIAG_FAIL"), "\n".join(v["notes"])]
+	if not ok:
+		text += "\n!! " + "; ".join(v["fail"])
+	menus.call("show_scenario_result", text)
+	paused = true
+
+
+func next_scenario_run(delta_variant: int) -> void:
+	var s := ScenarioLib.make_setup(sim.setup.scenario, posmod(sim.setup.variant + delta_variant, 3), sim.setup.seed + (1 if delta_variant == 0 else 0))
+	Game.start_match(s, Game.return_scene)
 
 
 func restart_match() -> void:

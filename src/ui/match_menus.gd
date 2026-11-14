@@ -171,3 +171,28 @@ func show_result() -> void:
 	if sim.setup.fixture_id == "":
 		v.add_child(UIKit.button(tr("RESULT_REMATCH"), func() -> void: view.call("restart_match")))
 	cont.grab_focus()
+
+
+func show_scenario_result(text: String) -> void:
+	_clear(_result)
+	_result = Control.new()
+	_result.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_result.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_root.add_child(_result)
+	var panel := UIKit.panel(20)
+	UIKit.place(panel, 0.5, 1.0, 0.5, 1.0, -520, -330, 520, -230)
+	panel.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_result.add_child(panel)
+	var v := UIKit.vbox(8)
+	panel.add_child(v)
+	var l := UIKit.label(text, 18)
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.custom_minimum_size = Vector2(1000, 0)
+	v.add_child(l)
+	var h := UIKit.hbox(10)
+	v.add_child(h)
+	var again := UIKit.button(tr("DIAG_NEXT_SEED"), func() -> void: view.call("next_scenario_run", 0), 240)
+	h.add_child(again)
+	h.add_child(UIKit.button(tr("DIAG_NEXT_VARIANT"), func() -> void: view.call("next_scenario_run", 1), 240))
+	h.add_child(UIKit.button(tr("BACK"), func() -> void: view.call("leave_match"), 200))
+	again.grab_focus()
