@@ -8,6 +8,8 @@ var human_team := -1          ## -1 = AI vs AI
 var difficulty := 1
 var teams: Array = [{}, {}]   ## see make_team()
 var fixture_id := ""          ## career fixture this match belongs to ("" for exhibition)
+var scenario := ""            ## diagnostic scenario name ("" for a normal match)
+var variant := 0
 
 
 ## players: Array of 11 Dictionaries in formation slot order:

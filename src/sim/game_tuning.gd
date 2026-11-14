@@ -109,11 +109,14 @@ extends Resource
 @export var value_base := 0.004
 @export var value_progress := 0.15
 @export var value_xg := 0.9
+@export var value_goal_pull := 0.12
 @export var loss_cost_scale := 0.5
 @export var intercept_react := 0.22
 @export var pass_margin_bias := 0.12
 @export var pass_margin_soft := 0.2
 @export var hold_decay := 0.012
+@export var dribble_margin_bias := 0.15
+@export var carry_bonus := 0.015
 @export var impatience_gain := 0.03
 @export var shot_min_xg := 0.025
 @export var goal_value := 2.6

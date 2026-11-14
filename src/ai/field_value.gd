@@ -24,7 +24,8 @@ static func xg_pos(lp: Vector2) -> float:
 static func value(lp: Vector2, tn: GameTuning) -> float:
 	var sx := clampf((lp.x + Pitch.HALF_L) / Pitch.LENGTH, 0.0, 1.0)
 	var central := 1.0 - 0.25 * absf(lp.y) / Pitch.HALF_W
-	return tn.value_base + tn.value_progress * pow(sx, 1.6) * central + tn.value_xg * xg_pos(lp)
+	var gd := Vector2(Pitch.HALF_L - lp.x, lp.y).length()
+	return tn.value_base + tn.value_progress * pow(sx, 1.6) * central + tn.value_xg * xg_pos(lp) + tn.value_goal_pull * exp(-gd / 20.0)
 
 
 ## Cost of losing the ball here = what the opponent gains by having it here.

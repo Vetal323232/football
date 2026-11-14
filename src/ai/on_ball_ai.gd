@@ -204,10 +204,13 @@ static func decide(ai: TeamAI, p: SimPlayer, ag: AIAgent, restart: bool, t_press
 		var m_far := SimQuery.opp_arrival(sim, q, opp, 0.15) - t_me
 		var m_mid := SimQuery.opp_arrival(sim, p.pos + dir * 3.0, opp, 0.15) - t_me * 0.5
 		var mm := minf(m_far, m_mid + 0.15)
-		var pd := FieldValue.sigmoid((mm + 0.05) / 0.3) * (0.72 + 0.28 * p.control)
+		var pd := FieldValue.sigmoid((mm + tn.dribble_margin_bias) / 0.3) * (0.72 + 0.28 * p.control)
 		var ql := ai.local(q)
 		var ev_d := pd * FieldValue.value(ql, tn) - (1.0 - pd) * loss_here
 		ev_d += (imp * tn.impatience_gain * 0.5 + tn.progress_bonus * 0.4) * clampf((ql.x - lp.x) / 6.0, -1.0, 1.0) * pd
+		# Open grass ahead: carry the ball and commit a defender before releasing it.
+		if absf(ang) < 0.7 and SimQuery.nearest_opponent_dist(sim, q, opp) > 7.0:
+			ev_d += tn.carry_bonus
 		if ag.move_dir.length() > 0.5 and ag.move_dir.normalized().dot(dir) > 0.9:
 			ev_d += 0.002
 		ev_d += sim.rng.randfn(0.0, noise)

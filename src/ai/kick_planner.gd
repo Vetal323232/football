@@ -159,14 +159,17 @@ static func plan_lob(sim: MatchSim, passer: SimPlayer, recv: SimPlayer, target_o
 	var opp_t := SimQuery.opp_arrival(sim, tgt, 1 - passer.team, react)
 	var space := opp_t - maxf(flight, t_recv)
 	var m := space + 0.2
-	# A defender right in front of the kicker can block the launch.
+	# A defender in front of the kicker can block the ball while it is still low.
 	var dir := (tgt - from).normalized()
 	for id in sim.teams[1 - passer.team].player_ids:
 		var o: SimPlayer = sim.players[id]
 		var rel := o.pos - from
-		var along := rel.dot(dir)
-		if along > 0.0 and along < 2.5 and absf(rel.cross(dir)) < 0.8:
-			m -= 0.6
+		var along := rel.dot(dir) - o.vel.dot(dir) * 0.15
+		if along > 0.0 and along < 9.0 and absf(rel.cross(dir)) < 1.1 + along * 0.08:
+			var ta := along / maxf(req.speed, 1.0)
+			var h_at := req.vh * ta - 0.5 * tn.gravity * ta * ta
+			if h_at < 2.1:
+				m -= 1.2
 	var late := maxf(0.0, t_recv - flight - 0.3)
 	var p := _p_from_margin(m, tn) * _accuracy(d, passer.passing) * 0.86 * clampf(1.0 - late, 0.0, 1.0)
 	return {"req": req, "p": p, "t": flight, "target": tgt, "space": space, "margin": m}
