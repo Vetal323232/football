@@ -1,0 +1,13 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+extra_attribute errors=[]
+actual_load recovered=false error= career_present=true
+SESSION2_CASE_DONE {"case":"extra_attribute","ok":false}
+SCRIPT ERROR: Invalid call. Nonexistent 'int' constructor.
+          at: normalize (res://src/career/career_state.gd:704)
+          GDScript backtrace (most recent call first):
+              [0] normalize (res://src/career/career_state.gd:704)
+              [1] _read (res://src/career/save_manager.gd:58)
+              [2] load_career (res://src/career/save_manager.gd:64)
+              [3] _load_mutated (res://tools/session2_review.gd:93)
+              [4] _run (res://tools/session2_review.gd:39)

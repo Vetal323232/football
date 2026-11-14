@@ -1,0 +1,6 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+PASS pause_policy | normal=true early=false frozen=true held_fire=false charging_while_held=false release_fire=false fresh=true leaked=false blur_pause=true blur_fire=false
+DEEP_AUDIT_DONE checks=1 failed=0
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+     at: cleanup (core/object/object.cpp:2514)

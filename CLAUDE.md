@@ -14,6 +14,8 @@ Read the **Active handoff** at the top of `PROGRESS.md` before resuming. Runtime
   specification extend it. The idea register is backlog except for entries explicitly in the queue.
 - Evidence and confirmed findings: `docs/CODE_REVIEW_2026-11-14.md` (baseline gameplay commit `a47746e`).
 - Extended audit, saved logs and new defects: `docs/DEEP_AUDIT_2026-11-14.md`; ranked ideas: `docs/IMPROVEMENT_IDEAS.md`.
+- Latest independent review: `docs/SESSION2_REVIEW_2026-11-14.md` (implementation bbe7dbb).
+  SAVE01 and CAREER01 are reopened for boundary cases; other accepted repairs stay intact.
 - Start with the first ready task in that queue; reproduce it, implement it, verify it, then update status.
 - Context/token limits require a resumable checkpoint in PROGRESS.md: exact branch/revision, dirty files,
   completed/open acceptance, commands/results/evidence and one concrete next action. Preserve colleague work;
@@ -22,10 +24,18 @@ Read the **Active handoff** at the top of `PROGRESS.md` before resuming. Runtime
   Keep their expectations; document remaining failures while completing unrelated tasks.
 - Behavioural success and process exit status must both be checked. Never treat an exit code alone as AI quality.
 - `tools/run_deep_audit.py` runs isolated corruption/state/determinism/career checks and catches script errors.
-  Baseline was 11/37; now 42/42. Any new failure is a defect, not an optional green-check exclusion.
+  Baseline was 11/37; the old expanded set is 42/42. Including five independent boundary cases: 42/47.
+  `--group review` selects these five known failures; retain them in the final cross-system gate.
 - Owners of a `MatchSim` must call `dispose()` when done (ownership cycles; see MEM01).
 
 ## Rules
+
+- Colleague handoff: before stopping, publish a coherent commit or name the exact unpublished/WIP files.
+  In PROGRESS.md record implementation SHA, task ID, changes/reasons, exact checks/evidence, open acceptance,
+  failed approaches and one next action. Use DONE / REOPENED / UNVERIFIED honestly; reviewer acceptance is
+  separate from implementation. Update map ownership when it changes. Read only changes since the last
+  reviewed SHA plus affected callers; reread broadly when those callers/contracts changed. GitHub is the
+  shared record, not a live channel to another agent. Never claim the colleague was notified automatically.
 
 - Talk to the user in Russian. Code identifiers and technical docs in English. Game UI in Russian via `tr()` keys in `locale/strings.csv`.
 - Priority: match correctness/control and AI, then the approved player-career loop alongside compatible club
@@ -50,7 +60,8 @@ Read the **Active handoff** at the top of `PROGRESS.md` before resuming. Runtime
 godot --headless --import                                   # import / parse check (also rebuilds translations)
 godot --headless -s tests/run_tests.gd                      # 421 automated checks, exit code 1 on failure (-- --violate=budget|lineup self-test must fail)
 godot --headless -s tools/review_regressions.gd             # five desired-behaviour checks; all pass
-python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-audit  # extended checks; 42/42, exit 0
+python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-audit  # now 42/47, exit 1; SAVE01/CAREER01 reopened
+python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-boundary --group review # five boundary cases
 godot --headless -s tools/run_scenarios.gd                  # AI validation scenarios; exit 1 while any episode fails (currently 67/72), 2 on bad --only
 godot --headless -s tools/run_scenarios.gd -- --seeds=44,55,66,77,88,99 # extended known seeds: 122/144, exit 1
 godot --headless -s tools/run_match.gd -- --seeds=1,2,3     # full AI-vs-AI matches with metrics

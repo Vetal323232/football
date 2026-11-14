@@ -1,7 +1,8 @@
 # Project map
 
-Verified against gameplay commit a47746eba365d3a3a1ffc6693069dc2cab484505 on 2026-11-14.
-Current runtime paths below exist at that baseline. The player-career section explicitly marks proposed
+Updated against implementation bbe7dbb03990c1480bbdb94268b2575ca179891b on 2026-11-14.
+Latest independent findings: [SESSION2_REVIEW_2026-11-14.md](SESSION2_REVIEW_2026-11-14.md).
+Current runtime paths below exist at that revision. The player-career section explicitly marks proposed
 integration boundaries; it does not claim the new mode or those files already exist.
 Use this document for navigation. Confirmed defects and evidence are in [the code review](CODE_REVIEW_2026-11-14.md);
 the ordered implementation tasks are in [AI_WORK_PLAN.md](AI_WORK_PLAN.md).
@@ -27,7 +28,8 @@ Keep CLAUDE.md concise. Update this map when ownership or paths change; update t
 - [src/ui/main_menu.gd](../src/ui/main_menu.gd): quick match, watch match, settings, career entry, diagnostics.
 - [src/career/league_data.gd](../src/career/league_data.gd): builds club squads and MatchSetup team dictionaries.
 - [src/view/match_view.gd](../src/view/match_view.gd): _ready constructs MatchSim from Game.pending_setup;
-  _physics_process samples input and advances the simulation; _process animates/interpolates its state.
+  _physics_process samples input and advances the simulation; _process animates/interpolates its state;
+  _exit_tree calls sim.dispose. set_paused resets edges/shot actions; focus-out pauses human matches.
 - match_view._finish stores Game.last_result; leave_match returns to Game.return_scene.
 - [src/ui/career_hub.gd](../src/ui/career_hub.gd): _absorb_match_result applies the result once, completes the round,
   clears the pending result, and autosaves.
@@ -57,6 +59,11 @@ coordinates. The view maps simulation (x, y, height) to Godot (x, height, y).
 
 Use sim.rng for simulation randomness. Observing existing agent.options is safe; calling OnBallAI.decide again
 just to log its candidates consumes randomness and changes behaviour.
+
+MatchSim.dispose is idempotent and required when an owner releases a match. It disconnects event listeners,
+disposes TeamAI/HumanController and drops back-references. MatchReport.detach releases its own sim reference.
+Substitution resets SimPlayer transient state and replaces the slot's AIAgent; UID changes, slot ID stays.
+TeamAI.take_run_event consumes a due runner notification once; on_restart discards pending notifications.
 
 ## Where each football decision lives
 
@@ -118,18 +125,20 @@ user://saves/career.json is the normal save, with a .bak backup. Test corrupt sa
 | Command/script | What it establishes |
 | --- | --- |
 | godot --headless --import | Import/parser/class-registration check |
-| tests/run_tests.gd | Core logic assertions; baseline 300 checks, including two tautologies documented in QA01 |
-| tools/run_scenarios.gd | Eight diagnostic scenario verdicts; currently exits 0 even when verdicts fail |
+| tests/run_tests.gd | 421 checks at bbe7dbb; old tautologies repaired; budget/lineup deliberate violations exit 1 |
+| tools/run_scenarios.gd | Eight scenario verdicts; exit 1 on failures, 2 on unknown/empty selection |
 | src/ai/scenario_lib.gd | Scenario setup, observations, injected diagnostic input and success predicates |
-| tools/review_regressions.gd | Five new failing behavioural regressions from this review; correctly returns exit 1 when they fail |
+| tools/review_regressions.gd | Five original review regressions now pass; failure exits 1 |
 | tools/deep_audit.gd | Eight deterministic pairs, eight three-season careers, substitution/back-pass/pause/handoff/auto-lineup regressions; select with --case=NAME |
-| tools/audit_save_case.gd | Thirty isolated valid/corrupt save cases, one per process; select with --case=NAME |
-| tools/run_deep_audit.py | Python 3 stdlib driver: engine pin, 60-second per-case bounds, logs/JSON, completion/error checks; baseline 11/37 subprocess cases pass |
+| tools/audit_save_case.gd | 32 isolated valid/corrupt save cases, one per process; select with --case=NAME |
+| tools/session2_review.gd | Five independent boundary regressions: missing history, extra attribute, fitness type, fixture pairing and legal keeper selection; --case=NAME |
+| tools/run_deep_audit.py | Pinned strict driver with logs/JSON/error checks; old 42/42 pass, expanded 42/47; --group review selects new cases |
+| tools/probe_run_event.gd | Observes existing carrier decisions near runner events without rerunning the planner |
 | tools/probe_scn.gd | Event and duty trace for a specific scenario |
 | tools/run_match.gd and src/ai/match_report.gd | Full-match observations; metrics are diagnostic evidence rather than an automatic quality verdict |
 | tools/fuzz_human.gd | Random-input robustness, not human control feel |
 | tools/career_journey.gd | Headless career progression and save/load |
-| tools/shot.sh | Xvfb screenshot wrapper; its current error handling is part of QA01 |
+| tools/shot.sh | Checks dependencies, engine status, script errors and PNG signature; missing dependency exits 2 |
 | docs/PLAYTEST.md | Human control, animation and difficulty checks |
 
 Use Godot 4.5.1 for comparisons with the recorded baseline. See AI_WORK_PLAN.md for exact commands, dependencies,
@@ -143,8 +152,8 @@ expected failures and completion criteria.
 | INPUT02 | HumanController.update | TeamAI._ball_claims can choose another intercept receiver; preserve user intent without disabling AI interception planning. |
 | INPUT03 | match_view.set_paused / _sample_input | HumanController.charging/shot_charge, release events, window focus; UI edges and normal charged shots. |
 | SUB01 | MatchSim.substitute | SimPlayer transient fields, AIAgent memory, participants, PlayerRig.refresh_identity, bench/limits. |
-| CAREER01 | LeagueData.auto_lineup | Best candidate initial score -1 versus penalized negative scores; CareerState._repair_lineup and UI error contracts. |
-| SAVE01 | CareerState.validate then normalize | SaveManager._read trusts validation; reject nested types before casts/iteration. Test isolated primary and backup. |
+| CAREER01 | LeagueData.auto_lineup | Negative-score crash repaired; hard GK eligibility still needed for a legal low-rated keeper. CareerState auto/repair return bool, preserving state on failure. |
+| SAVE01 | CareerState.validate then normalize | Broad validation repaired; missing history, extra attrs, fitness and schedule multiplicity remain. SaveManager._read must not return a broken career after a normalization error. |
 | AI05 | TeamAI._update_side / _plan_defend | Recovery time series, press/cover commitment, mark targets, scenario observation timing; not yet a proven single cause. |
 | V01 | match_camera / ball_view / pitch_view / HUD | Settings and translations; presentation changes must leave simulation snapshots identical. |
 | T01 | TeamAI attack targets / AIAgent passer memory / OnBallAI._next_option | Existing support and runner duties, KickPlanner feasibility, offside and human handoff; no second coordinator. |
@@ -200,5 +209,5 @@ Critical cross-mode relationships:
 | Attacking rotations | TeamAI._plan_attack/_refresh_attack_target, rest-defence assignments and _plan_defend | T08; extend the current compensation mechanism |
 | Playable drills | ScenarioLib, diagnostic_menu, MatchSetup, weekly training ledger | P01; replayability must not duplicate training rewards |
 
-This handoff only changes documentation; all these future code/test paths must be checked against actual HEAD
-before use. Keep historical audit links, current task status and proposed design distinct when resuming.
+Player-career paths remain proposed. The review changes diagnostics/docs only; check actual HEAD before use.
+Keep historical evidence, current task status and proposed design distinct when resuming.

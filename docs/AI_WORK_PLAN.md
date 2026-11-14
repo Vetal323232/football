@@ -32,13 +32,13 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 | 1 | QA01 | DONE | None | Failing checks produce failing commands; assertions actually assert. |
 | 2 | RULE01 | DONE | QA01 | Offside is enforced before a flagged first-time kick. |
 | 3 | RULE02 | DONE | QA01, RULE01 | Keeper foot control preserves a back-pass restriction. |
-| 4 | SAVE01 | DONE | QA01 | Nested invalid saves recover safely; no script errors during validation. |
+| 4 | SAVE01 | REOPENED | QA01 | Original cases pass; four independent boundary cases still accept broken state. |
 | 5 | MEM01 | DONE | QA01 | Repeated matches release simulation ownership cycles. |
 | 6 | SUB01 | DONE | QA01 | Fresh substitutes do not inherit outgoing action/recovery state. |
 | 7 | INPUT01 | DONE | QA01 | Forward intent cannot select a receiver behind the aim. |
 | 8 | INPUT02 | DONE | QA01 | Initial human handoff follows the selected eligible receiver. |
 | 9 | INPUT03 | DONE | QA01 | Releasing a charged shot in pause does not fire on resume. |
-| 10 | CAREER01 | DONE | QA01, SAVE01 | Auto-lineup handles negative candidate scores and invalid roster shapes. |
+| 10 | CAREER01 | REOPENED | QA01, SAVE01 | Original robustness fixed; legal low-rated keeper eligibility still fails. |
 | 11 | AI01 | DONE | QA01 | Runner notifications trigger at the intended time, once. |
 | 12 | AI02 | READY | AI01 | Dribble utility evaluates the movement that will actually execute. |
 | 13 | AI05 | TODO | AI01, AI02 | Defensive recovery holds beyond the original scenario seeds. |
@@ -64,11 +64,10 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 | 33 | P01 | TODO | PC03, PC08 | Three playable production-AI drills with bounded training credit. |
 
 TODO tasks become ready when dependencies are complete. Independent correctness fixes can be advanced if a
-higher task is genuinely blocked; record why. All five new review regressions currently fail by design on the
-reviewed gameplay code. Their failure is an existing defect, not a regression introduced by the map.
-The extended queue prioritizes save/lifecycle/input correctness before tactical tuning so later evidence
-rests on reliable state. All tasks above remain open at this documentation consolidation; no gameplay fix
-or player-career implementation was delivered by this handoff.
+higher task is genuinely blocked; record why. The five original review regressions now pass. Independent
+session-2 review reopened SAVE01/CAREER01 with five additional cases: see SESSION2_REVIEW_2026-11-14.md.
+Keep accepted repairs intact. The expanded strict driver reports 42/47; this is not a regression of the
+original 42 cases. Priority is SAVE01, CAREER01, then AI02; PC00 waits for reopened dependencies.
 
 ## Phases and readiness
 
@@ -193,6 +192,12 @@ src/sim/sim_player.gd and game_tuning.gd where appropriate.
 Evidence: candidate ETA assumes top_speed * dribble_speed_ratio, but a non-sprint command actually uses an
 additional jog_ratio multiplier. Sprint is chosen after estimating the candidate.
 
+Independent review at bbe7dbb confirms blocked-lane regressions: v2 seeds 77/88/99, plus v0/107 and v2/199.
+At v2/77 the carrier is tackled at 2.25 s without passing; new-seed cases pass into the blocked lane.
+Inspect commitment AND decision deadlines under closing pressure (`urgent` does not bypass the
+`now < next_decision` term). The speed-model mismatch is evidence, not a proven sole cause.
+Review seeds 107/131/167/199 give 85/96 overall versus historical 89/96; they are now known data.
+
 Implement consistent candidates/estimates for jog and sprint, taking current velocity, acceleration, stamina,
 recovery state and dribbling into account. Share a small physical helper where it removes inconsistent copies;
 avoid creating a parallel movement engine.
@@ -205,6 +210,8 @@ Acceptance:
 - Human/AI physical execution limits remain shared.
 - Run all legacy scenarios and report the new baseline before changing utility weights.
 - Any changed decisions are traced to the model correction rather than an unrelated bundle of tuning changes.
+- Resolve the five named blocked-lane regressions without changing predicates or weakening defenders;
+  trace remaining failures explicitly. Compare all known matrices and reserve new seeds/geometry before tuning.
 
 ## AI03 — Exploit 3v2 without sacrificing football quality
 
@@ -342,12 +349,24 @@ Acceptance:
 - Run the normal multi-season stress control and preserve IDs, integer state and ownership. Fractional
   JSON growth values have an explicit 1e-5 round-trip tolerance in the audit; do not confuse formatting with corruption.
 
-Status: **DONE** (session 2). `CareerState.validate` rewritten for untrusted data: every container/field type,
+Status: **REOPENED** by independent review at bbe7dbb. Original session-2 implementation:
+`CareerState.validate` rewritten for untrusted data: container/field type,
 range and cross-reference is checked before typed access (season/round/season_over consistency, player and
 club records, 11-man line-up with keeper, fixture season/round/score/played consistency, lists).
 `run_deep_audit.py --group save` -> **32/32** (30 original + `both_invalid`, `missing_backup`), no script errors;
 review `save_integrity` passes; 24 validation checks added to `test_save_load` (342 core checks, 0 failed);
 `deep_audit.gd --case=career_stress` 8 careers x 3 seasons clean; `career_journey.gd` OK.
+
+Remaining acceptance (see SESSION2_REVIEW_2026-11-14.md and `tools/session2_review.gd`):
+- `missing_history`: reject or explicitly default/migrate the missing field before returning a career;
+  finishing a season must not fail after load.
+- `extra_attribute`: validation and normalization must cover the same domain; malformed unknown attrs
+  cannot raise an int constructor error or bypass backup recovery. Document reject/discard policy.
+- `fitness_type`: validate consumed optional fields (fitness finite and physically bounded when present).
+- `duplicate_pair`: validate per-round club participation and directed-pair multiplicity; unique IDs and
+  fixture count alone are insufficient. Keep legitimate partial current-round state legal.
+- Extend isolated backup controls and run the expanded driver (currently 42/47, three script-error cases).
+  Preserve original 32 save controls, core checks and career stress. Do not weaken tests to retain DONE.
 
 ## RULE02 — Preserve the back-pass history through keeper foot control
 
@@ -455,12 +474,20 @@ Acceptance:
 - Standard lineup generation, transfers, keeper protection and normal career stress still pass.
 - Label this robustness case honestly; the audit did not demonstrate an ordinary UI route to the 16-GK roster.
 
-Status: **DONE** (session 2). `LeagueData.auto_lineup` contract: exactly 11 unique ids or `[]` (never partial),
+Status: **REOPENED** by independent review at bbe7dbb. Original session-2 implementation:
+`LeagueData.auto_lineup` contract: exactly 11 unique ids or `[]` (never partial),
 malformed/duplicate entries ignored, best candidate chosen with `-INF` start (negative scores allowed), fitness
 applied before the position penalty. `CareerState.auto_lineup` / `_repair_lineup` are all-or-nothing and
 return bool; the UI shows `LINEUP_INVALID` on refusal. `deep_audit.gd --case=keeper_only_lineup` passes without
 script error; `run_deep_audit.py` -> **42/42, exit 0**. New `test_lineup_robustness` (12 checks; the 16-GK
 roster is adversarial and has no UI route). Career stress and journey still pass.
+
+Remaining acceptance: `tools/session2_review.gd -- --case=legal_low_keeper` fails with a legal squad,
+two actual keepers at attributes 1 and outfield players at 99 (all schema-valid): finite penalties select
+an outfielder in goal, so auto_lineup refuses even though a legal eleven exists. Make goalkeeper eligibility
+a hard constraint for slot zero, then score eligible candidates; retain out-of-position outfield choices and
+all-or-nothing rejection of impossible squads. Recheck existing 16-GK/short/no-GK/transfer controls.
+This is an adversarial legal-data robustness case, not a demonstrated ordinary UI path.
 
 ## AI05 — Diagnose and repair recovery on the extended matrix
 

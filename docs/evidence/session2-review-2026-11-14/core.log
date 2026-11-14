@@ -1,0 +1,29 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+- schedule
+- standings
+- one-time result application
+- transfers
+- line-up selection robustness
+- development
+- save / load
+- season rollover
+- attributes affect execution
+- ball physics
+- goals
+- ball out and restarts
+- offside
+- possession
+- tackles
+- halves, clock, pause
+- controlled-player handoff
+- pass assistance direction
+- handoff to the selected receiver
+- idle human at a restart
+- goalkeeper
+- back-pass rule
+- substitutions
+- runner event timing
+- determinism
+- teardown
+421 checks, 0 failed, 5.8s

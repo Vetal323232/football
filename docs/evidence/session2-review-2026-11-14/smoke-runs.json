@@ -1,0 +1,39 @@
+[
+  {
+    "name": "menu_smoke",
+    "command": [
+      "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+      "--headless",
+      "--quit-after",
+      "120"
+    ],
+    "exit": 0,
+    "script_error": false
+  },
+  {
+    "name": "match_smoke",
+    "command": [
+      "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+      "--headless",
+      "--quit-after",
+      "120",
+      "res://scenes/match.tscn"
+    ],
+    "exit": 0,
+    "script_error": false
+  },
+  {
+    "name": "shot_missing_dependency",
+    "command": [
+      "env",
+      "GODOT=/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+      "XVFB_RUN=openpitch_missing_dependency",
+      "bash",
+      "tools/shot.sh",
+      "res://scenes/match.tscn",
+      "/tmp/openpitch-review2-never-produced.png"
+    ],
+    "exit": 2,
+    "script_error": false
+  }
+]

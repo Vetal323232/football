@@ -21,13 +21,14 @@ SAVE_CASES = ["valid", "broken_json", "root_array", "missing_schema", "unsupport
               "fixture_score_negative", "fixture_season_missing", "fixture_played_type", "fixture_self_match",
               "transfer_list_type", "history_type", "both_invalid", "missing_backup"]
 EDGE_CASES = ["determinism", "career_stress", "substitution_state", "backpass_feet", "pause_shot", "pass_handoff", "keeper_only_lineup", "match_lifetime", "camera_input", "pause_policy"]
+REVIEW_CASES = ["missing_history", "extra_attribute", "fitness_type", "duplicate_pair", "legal_low_keeper"]
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--godot", default="godot")
     parser.add_argument("--out", type=pathlib.Path, required=True)
-    parser.add_argument("--group", choices=["all", "save", "edge"], default="all")
+    parser.add_argument("--group", choices=["all", "save", "edge", "review"], default="all")
     args = parser.parse_args()
     binary = shutil.which(args.godot)
     if not binary:
@@ -41,6 +42,8 @@ def main():
         cases += [("save/" + name, "tools/audit_save_case.gd", name, "SAVE_CASE_DONE") for name in SAVE_CASES]
     if args.group in ("all", "edge"):
         cases += [("edge/" + name, "tools/deep_audit.gd", name, "DEEP_AUDIT_DONE") for name in EDGE_CASES]
+    if args.group in ("all", "review"):
+        cases += [("review/" + name, "tools/session2_review.gd", name, "SESSION2_CASE_DONE") for name in REVIEW_CASES]
     results = []
     for name, script, case, sentinel in cases:
         command = [binary, "--headless", "-s", script, "--", "--case=" + case]

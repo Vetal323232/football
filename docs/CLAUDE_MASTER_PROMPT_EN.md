@@ -20,7 +20,9 @@ Do not implement every brainstorm item at once. The queue distinguishes required
 ## Join or resume without losing context
 
 The published handoff branch is `codex/deep-audit-claude-brief` in `Vetal323232/football`.
-At this consolidation its head was 87501a5; gameplay was still a47746e. These are historical references,
+The latest independent review incorporates Claude's implementation through bbe7dbb; see the Active handoff
+and SESSION2_REVIEW_2026-11-14.md. SAVE01/CAREER01 are reopened; keep their existing repairs. Earlier
+consolidation references 87501a5/7265450 and gameplay a47746e are historical references,
 not instructions to reset a newer branch. Inspect actual branch, HEAD, status, relevant commits and local
 instructions first. Preserve the user's and other contributors' uncommitted work.
 
@@ -137,6 +139,13 @@ paths, unresolved failures and **one concrete next action**. Before a context st
 or clearly labelled WIP plus exact dirty files; do not mark unverified WIP DONE or discard another person's work.
 Use the existing checkpoint fields; archive expanded narrative below the current block instead of growing
 another progress file. Update map paths after real ownership changes, not to pretend planned modules exist.
+
+Colleague communication uses committed repository records. At handoff state what changed and why, exact
+tested revision, task acceptance still open, evidence and failed approaches worth avoiding. Separate implemented,
+self-tested, independently reviewed and human-unverified claims. Read the delta since the last reviewed SHA
+and affected callers, then expand context only as needed; a summary never replaces inspecting changed code.
+Do not claim a live connection or automatic notification to the other agent. Quality and enjoyable human
+gameplay outrank throughput; keep large art/Blender work deferred until gameplay review supports it.
 
 Publish coherent increments on the accessible working branch. If permission/network blocks publishing,
 preserve commits/patch/bundle and give exact restoration steps; report the real blocker. Do not merge the

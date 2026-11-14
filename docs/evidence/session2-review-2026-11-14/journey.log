@@ -1,0 +1,18 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+career created: user club Заречье, budget 4500000, squad 20
+bought Даниил Берестов (ovr 75) for 700000 and put him at striker; budget now 3800000
+round 1: ЗАР 0-0 СКР | bought player on pitch: true | applied true, duplicate rejected true | apps 0->1 | save '' reload identical true | round now 1, position 5
+round 2: ЗАР 0-0 СМК | bought player on pitch: true | applied true, duplicate rejected true | apps 1->2 | save '' reload identical true | round now 2, position 5
+round 3: КСМ 1-0 ЗАР | bought player on pitch: true | applied true, duplicate rejected true | apps 2->3 | save '' reload identical true | round now 3, position 5
+season 1 final table:
+  1. Северный Маяк      P14 W11 D2 L1  25:7 (+18)  35 pts
+  2. Штормград          P14 W10 D1 L3  24:10 (+14)  31 pts
+  3. Старая Крепость    P14 W6 D4 L4  18:8 (+10)  22 pts
+  4. Утёс               P14 W7 D1 L6  30:21 (+9)  22 pts
+  5. Космопорт          P14 W5 D4 L5  15:17 (-2)  19 pts
+  6. Заречье            P14 W3 D3 L8  8:21 (-13)  12 pts
+  7. Вольный Ветер      P14 W2 D3 L9  9:30 (-21)  9 pts
+  8. Янтарный Берег     P14 W2 D2 L10  6:21 (-15)  8 pts
+rollover: season 2 round 0, fixtures 56, first id s2_r01_m1, validation errors 0, history [{ "champion": "smk", "season": 1, "user_pos": 6 }]
+JOURNEY OK

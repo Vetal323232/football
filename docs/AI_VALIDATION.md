@@ -1,5 +1,20 @@
 # AI validation
 
+## Current independent checkpoint: bbe7dbb (2026-11-14)
+
+See [SESSION2_REVIEW_2026-11-14.md](SESSION2_REVIEW_2026-11-14.md) and its saved evidence for full details.
+Unchanged predicates: legacy 67/72; known extended seeds 122/144 (old 123/144); fresh review seeds
+107/131/167/199 85/96 (old 89/96). Those fresh seeds are now known validation data. Blocked-lane regressions
+and 3v2/recovery defects remain open under AI02/AI03/AI05; run-behind still uses an insufficient legacy
+intent predicate (AI04). Eight 70v70 six-minute matches: 4 home wins/1 draw/3 away wins, goals 11:11,
+10.9 shots/match, 0 stalls/conflicts, middle-third 57–65%, zero offsides. More shots/goals are not human
+acceptance. Runner-event timing: 2.75 average/4 max decisions in the following 0.5 s over nine episodes.
+Other independent checks: core 421/0 failed; original review 5/5; existing strict audit 42/42. Five new
+boundary regressions expand the strict gate to 42/47 and reopen SAVE01/CAREER01, not tactical tasks.
+Windows execution, human play feel, GPU and new visual rendering remain unverified by this review.
+
+## Historical validation below (gameplay a47746e)
+
 All numbers below come from actual headless runs of the production AI on 2026-11-14 with Godot 4.5.1
 (`data/tuning/default_tuning.tres` as committed). Nothing here was judged by a human watching the game at
 full frame rate — see "Needs human playtesting".

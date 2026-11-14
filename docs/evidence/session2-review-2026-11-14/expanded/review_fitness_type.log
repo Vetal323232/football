@@ -1,0 +1,12 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+fitness_type errors=[]
+actual_load recovered=false error= career_present=true
+SESSION2_CASE_DONE {"case":"fitness_type","ok":false}
+SCRIPT ERROR: Invalid call. Nonexistent 'float' constructor.
+          at: _match_player (res://src/career/league_data.gd:142)
+          GDScript backtrace (most recent call first):
+              [0] _match_player (res://src/career/league_data.gd:142)
+              [1] team_setup (res://src/career/league_data.gd:132)
+              [2] match_setup_for (res://src/career/career_state.gd:204)
+              [3] _run (res://tools/session2_review.gd:47)

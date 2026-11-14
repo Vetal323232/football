@@ -1,0 +1,18 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+   0.0s ball(-5,-4) owner=6 att=[true,false] T0#7:CARRY T1#6:COVER T1#10:PRESS
+   0.5s ball(-4,-4) owner=6 att=[true,false] T0#7:CARRY T1#6:COVER T1#10:PRESS
+   1.0s ball(-3,-7) owner=6 att=[true,false] T0#7:CARRY T1#6:COVER T1#10:PRESS
+   1.5s ball(-2,-9) owner=6 att=[true,false] T0#7:CARRY T1#6:COVER T1#10:PRESS
+   2.0s ball(-2,-10) owner=6 att=[true,false] T0#7:CARRY T1#6:COVER T1#10:PRESS
+ 2.25 tackle T1 #10 ST { "player": 20, "won": true }
+   2.5s ball(-3,-10) owner=-1 att=[true,false] T0#7:CHASE T1#6:COVER T1#10:CHASE
+ 2.82 claim T0 #7 LCM { "player": 6 }
+   3.0s ball(-3,-10) owner=6 att=[true,false] T0#7:CARRY T1#6:COVER T1#10:PRESS
+ 3.05 possession T1 #10 ST { "team": 1, "player": 20 }
+ 3.05 claim T1 #10 ST { "player": 20 }
+ 3.43 tackle T0 #7 LCM { "player": 6, "won": true }
+   3.5s ball(-3,-11) owner=-1 att=[false,true] T0#6:COVER T0#7:CHASE T1#10:CHASE
+ 4.00 claim T1 #10 ST { "player": 20 }
+   4.0s ball(-4,-12) owner=20 att=[false,true] T0#6:COVER T0#7:CHASE T1#10:CHASE
+   4.5s ball(-6,-12) owner=20 att=[false,true] T0#6:COVER T0#7:PRESS T1#10:CARRY

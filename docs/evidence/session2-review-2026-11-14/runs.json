@@ -1,0 +1,119 @@
+[
+  {
+    "name": "core",
+    "command": [
+      "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+      "--headless",
+      "-s",
+      "tests/run_tests.gd"
+    ],
+    "exit": 0,
+    "seconds": 6.53,
+    "script_error": false,
+    "lifetime_warning": false
+  },
+  {
+    "name": "review",
+    "command": [
+      "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+      "--headless",
+      "-s",
+      "tools/review_regressions.gd"
+    ],
+    "exit": 0,
+    "seconds": 0.53,
+    "script_error": false,
+    "lifetime_warning": false
+  },
+  {
+    "name": "deep",
+    "command": [
+      "python3",
+      "tools/run_deep_audit.py",
+      "--godot",
+      "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+      "--out",
+      "/workspace/scratch/bda689312d47/football-review2/docs/evidence/session2-review-2026-11-14/deep"
+    ],
+    "exit": 0,
+    "seconds": 24.96,
+    "script_error": false,
+    "lifetime_warning": false
+  },
+  {
+    "name": "legacy",
+    "command": [
+      "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+      "--headless",
+      "-s",
+      "tools/run_scenarios.gd"
+    ],
+    "exit": 1,
+    "seconds": 17.18,
+    "script_error": false,
+    "lifetime_warning": false
+  },
+  {
+    "name": "extended",
+    "command": [
+      "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+      "--headless",
+      "-s",
+      "tools/run_scenarios.gd",
+      "--",
+      "--seeds=44,55,66,77,88,99"
+    ],
+    "exit": 1,
+    "seconds": 33.83,
+    "script_error": false,
+    "lifetime_warning": false
+  },
+  {
+    "name": "matches",
+    "command": [
+      "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+      "--headless",
+      "-s",
+      "tools/run_match.gd",
+      "--",
+      "--seeds=1,2,3,4,5,6,7,8",
+      "--duration=360"
+    ],
+    "exit": 0,
+    "seconds": 103.12,
+    "script_error": false,
+    "lifetime_warning": false
+  },
+  {
+    "name": "fuzz",
+    "command": [
+      "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+      "--headless",
+      "-s",
+      "tools/fuzz_human.gd",
+      "--",
+      "--seeds=4,5,6,7,8,9,10,11,12,13,14,15",
+      "--duration=30"
+    ],
+    "exit": 0,
+    "seconds": 13.18,
+    "script_error": false,
+    "lifetime_warning": false
+  },
+  {
+    "name": "journey",
+    "command": [
+      "/workspace/scratch/bda689312d47/work/godot_4.5.1/Godot_v4.5.1-stable_linux.x86_64",
+      "--headless",
+      "-s",
+      "tools/career_journey.gd",
+      "--",
+      "--played=3",
+      "--duration=60"
+    ],
+    "exit": 0,
+    "seconds": 6.67,
+    "script_error": false,
+    "lifetime_warning": false
+  }
+]

@@ -1,0 +1,11 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+actual_load recovered=false error= career_present=true
+missing_history errors=[] usable_history=false
+SESSION2_CASE_DONE {"case":"missing_history","ok":false}
+SCRIPT ERROR: Invalid access to property or key 'history' on a base object of type 'Dictionary'.
+          at: CareerState._award_prizes (res://src/career/career_state.gd:294)
+          GDScript backtrace (most recent call first):
+              [0] _award_prizes (res://src/career/career_state.gd:294)
+              [1] complete_round (res://src/career/career_state.gd:285)
+              [2] _run (res://tools/session2_review.gd:28)
