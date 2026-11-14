@@ -1,2 +1,79 @@
 keys,ru,en
 GAME_TITLE,Open Pitch,Open Pitch
+HUD_HALF_1,1-й тайм,1st half
+HUD_HALF_2,2-й тайм,2nd half
+GOAL,ГОЛ!,GOAL!
+OWN_GOAL,автогол,own goal
+OFFSIDE,Офсайд,Offside
+HALF_TIME,Перерыв,Half-time
+FULL_TIME,Матч окончен,Full time
+HINT_RESTART,"Стандарт: направление — WASD, J — пас, L — вразрез, I — навес, K — удар","Restart: aim with WASD, J pass, L through, I lob, K shot"
+CONTROLS_TEXT,"WASD / стрелки — движение
+Shift — ускорение (тратит силы)
+J — короткий пас
+K — удар (удерживать и отпустить)
+L — пас вразрез
+I — навес / заброс
+E — сменить игрока
+Q — отбор
+Esc — пауза    F1 — подсказка
+F3 — диагностика ИИ","WASD / arrows - move
+Shift - sprint (uses stamina)
+J - short pass
+K - shot (hold and release)
+L - through ball
+I - lofted pass / cross
+E - switch player
+Q - tackle
+Esc - pause    F1 - help
+F3 - AI diagnostics"
+PAUSE_TITLE,Пауза,Paused
+PAUSE_RESUME,Продолжить,Resume
+PAUSE_SUBS,Замены,Substitutions
+PAUSE_RESTART,Начать матч заново,Restart match
+PAUSE_QUIT,Выйти из матча,Leave match
+PAUSE_QUIT_NOTE,Выход из матча карьеры: матч не будет засчитан и останется в расписании.,Leaving a career match: it will not count and stays in the schedule.
+SUBS_PICK_OUT,Кого заменить?,Who comes off?
+SUBS_PICK_IN,Кто выходит вместо,Who replaces
+STAMINA,форма,fitness
+OVR,рейтинг,OVR
+BACK,Назад,Back
+CONTINUE,Продолжить,Continue
+RESULT_REMATCH,Сыграть ещё раз,Play again
+STAT_POSSESSION,Владение,Possession
+STAT_SHOTS,Удары,Shots
+STAT_ON_TARGET,В створ,On target
+STAT_XG,Ожидаемые голы (xG),Expected goals (xG)
+STAT_PASSES,Передачи,Passes
+STAT_INTERCEPTIONS,Перехваты,Interceptions
+STAT_TACKLES,Отборы,Tackles
+STAT_CORNERS,Угловые,Corners
+STAT_OFFSIDES,Офсайды,Offsides
+MENU_SUBTITLE,Офлайн-футбол 11 на 11 и карьера клуба,Offline 11v11 football and club career
+MENU_QUICK,Быстрый матч,Quick match
+MENU_CAREER,Карьера,Career
+MENU_WATCH,Смотреть матч ИИ,Watch AI match
+MENU_DIAG,Диагностика ИИ,AI diagnostics
+MENU_SETTINGS,Настройки,Settings
+MENU_CONTROLS,Управление,Controls
+MENU_QUIT,Выход,Quit
+QUICK_HOME,Хозяева,Home
+QUICK_AWAY,Гости,Away
+QUICK_SIDE,Ваша команда,Your team
+QUICK_SIDE_HOME,Хозяева,Home
+QUICK_SIDE_AWAY,Гости,Away
+QUICK_START,Начать матч,Start match
+SET_DIFFICULTY,Сложность,Difficulty
+DIFF_EASY,Лёгкая,Easy
+DIFF_NORMAL,Средняя,Normal
+DIFF_HARD,Высокая,Hard
+SET_MINUTES,Длительность матча (мин),Match length (min)
+SET_MASTER,Общая громкость (%),Master volume (%)
+SET_SFX,Звуки игры (%),Game sounds (%)
+SET_CROWD,Трибуны (%),Crowd (%)
+SET_FULLSCREEN,Полный экран,Fullscreen
+SET_VSYNC,Вертикальная синхронизация,V-Sync
+SET_SHADOWS,Тени,Shadows
+ON,Вкл,On
+OFF,Выкл,Off
+CONTROLS_MENU_NOTE,"В меню: стрелки / W S — выбор, ◄ ► — значение, Enter — подтвердить, Esc — назад","Menus: arrows - select, left/right - change value, Enter - confirm, Esc - back"
