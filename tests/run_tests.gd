@@ -60,6 +60,7 @@ func _init() -> void:
 	test_keeper()
 	test_backpass()
 	test_substitution()
+	test_carry_forecast()
 	test_run_event()
 	test_determinism()
 	group("teardown")
@@ -1526,6 +1527,81 @@ func test_substitution() -> void:
 	sim.state = MatchSim.State.FULL_TIME
 	tm.subs_made = 0
 	check(not sim.substitute(human_team, tm.player_ids[7], 0), "no substitution after full time")
+
+
+## Measure how long the real movement step needs for the ball carrier to advance `dist`.
+func _measure_carry(pace: float, stamina: float, sprint: bool, v_start: Vector2, dir: Vector2, dist: float) -> Array:
+	var sim := new_sim()
+	open_play(sim, Vector2.ZERO)
+	var p := sim.players[sim.teams[0].player_ids[7]]
+	p.pace = pace
+	p.stamina = stamina
+	p.fitness = 1.0
+	p.pos = Vector2(-10, 0)
+	p.vel = v_start
+	p.facing = dir
+	sim.ball.owner = p.id
+	sim.ball.pos = p.pos + dir * 0.5
+	sim.ball.vel = v_start
+	var predicted := SimQuery.carry_time(p, dir, dist, sprint, tuning)
+	var start := p.pos
+	var ticks := 0
+	while (p.pos - start).dot(dir) < dist and ticks < 600:
+		p.cmd.clear()
+		p.cmd.move = dir
+		p.cmd.sprint = sprint
+		sim.tick += 1
+		sim._update_timers()
+		sim._move_players()
+		sim._ball_step()
+		sim._possession()
+		ticks += 1
+	return [predicted, ticks * MatchSim.DT, sim.ball.owner == p.id]
+
+
+func test_carry_forecast() -> void:
+	group("dribble forecast matches executed movement")
+	var worst := 0.0
+	var worst_case := ""
+	var n := 0
+	for pace: float in [0.15, 0.5, 0.9]:
+		for stamina: float in [1.0, 0.45, 0.1]:
+			for sprint: bool in [false, true]:
+				for v0: float in [0.0, 3.0, 5.0]:
+					var r := _measure_carry(pace, stamina, sprint, Vector2(v0, 0), Vector2.RIGHT, 6.0)
+					var err := absf(float(r[0]) - float(r[1]))
+					n += 1
+					if err > worst:
+						worst = err
+						worst_case = "pace %.2f stamina %.2f %s v0 %.0f: predicted %.2f s, executed %.2f s" % [pace, stamina, "sprint" if sprint else "jog", v0, r[0], r[1]]
+	print("    carry forecast: worst straight error %.3f s (%s); cases %d" % [worst, worst_case, n])
+	check(worst <= 0.15, "straight 6 m carry: prediction within 0.15 s of execution over %d cases (worst %.3f s: %s)" % [n, worst, worst_case])
+	# The two gaits really differ, and the old sprint-speed assumption does not describe a jog.
+	var jog := _measure_carry(0.5, 1.0, false, Vector2.ZERO, Vector2.RIGHT, 6.0)
+	var spr := _measure_carry(0.5, 1.0, true, Vector2.ZERO, Vector2.RIGHT, 6.0)
+	check(float(jog[1]) > float(spr[1]) + 0.2, "jogging 6 m takes clearly longer than sprinting (%.2f s vs %.2f s)" % [jog[1], spr[1]])
+	var pl := SimPlayer.new()
+	pl.pace = 0.5
+	var old_model := 6.0 / (pl.top_speed(tuning) * tuning.dribble_speed_ratio) + 0.15
+	check(absf(old_model - float(jog[1])) > 0.25, "the previous single-speed estimate (%.2f s) was wrong for a jog (%.2f s)" % [old_model, jog[1]])
+	# An exhausted player cannot buy sprint speed.
+	var tired := SimPlayer.new()
+	tired.pace = 0.5
+	tired.stamina = 0.0
+	check(is_equal_approx(SimQuery.carry_speed(tired, true, tuning), SimQuery.carry_speed(tired, false, tuning)), "without stamina the sprint gait equals the jog")
+	# Turning: the helper approximates shedding sideways speed. Separate, looser bound (0.35 s):
+	# the real step blends acceleration with direction change and the ball has to be brought round.
+	var worst_turn := 0.0
+	var turn_case := ""
+	for sprint: bool in [false, true]:
+		for v: Vector2 in [Vector2(0, 5), Vector2(-4, 0), Vector2(3, 4), Vector2(-3, -4)]:
+			var r2 := _measure_carry(0.5, 1.0, sprint, v, Vector2.RIGHT, 6.0)
+			var e2 := absf(float(r2[0]) - float(r2[1]))
+			if e2 > worst_turn:
+				worst_turn = e2
+				turn_case = "%s from velocity %s: predicted %.2f s, executed %.2f s" % ["sprint" if sprint else "jog", v, r2[0], r2[1]]
+	print("    carry forecast: worst turning error %.3f s (%s)" % [worst_turn, turn_case])
+	check(worst_turn <= 0.35, "turning 6 m carry: prediction within 0.35 s (worst %.3f s: %s)" % [worst_turn, turn_case])
 
 
 func test_run_event() -> void:

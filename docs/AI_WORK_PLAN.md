@@ -40,8 +40,8 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 | 9 | INPUT03 | DONE | QA01 | Releasing a charged shot in pause does not fire on resume. |
 | 10 | CAREER01 | DONE | QA01, SAVE01 | Auto-lineup is all-or-nothing and keeper eligibility precedes rating (session 3). |
 | 11 | AI01 | DONE | QA01 | Runner notifications trigger at the intended time, once. |
-| 12 | AI02 | READY | AI01 | Dribble utility evaluates the movement that will actually execute. |
-| 13 | AI05 | TODO | AI01, AI02 | Defensive recovery holds beyond the original scenario seeds. |
+| 12 | AI02 | DONE | AI01 | Dribble utility evaluates the movement that will actually execute. |
+| 13 | AI05 | READY | AI01, AI02 | Defensive recovery holds beyond the original scenario seeds. |
 | 14 | AI03 | TODO | RULE01, AI01, AI02 | Numerical advantages lead to useful chances without weakening defence. |
 | 15 | AI04 | TODO | AI01, AI02, INPUT02 | Safe runs behind are served and received; unsafe alternatives are rejected. |
 | 16 | V01 | TODO | QA01; independent presentation work can start earlier | Ball, camera and stadium are readable in motion. |
@@ -212,6 +212,30 @@ Acceptance:
 - Any changed decisions are traced to the model correction rather than an unrelated bundle of tuning changes.
 - Resolve the five named blocked-lane regressions without changing predicates or weakening defenders;
   trace remaining failures explicitly. Compare all known matrices and reserve new seeds/geometry before tuning.
+
+Status: **DONE** (session 3), with defensive regressions handed to AI05 (below).
+- Shared helper `SimQuery.carry_speed / carry_time` mirrors `_move_players` (jog_ratio, dribble_speed_ratio,
+  stamina gate, recovery cap, current velocity, accel/decel). `OnBallAI.decide` scores a jog and a sprint
+  candidate per direction with their real times and commands the gait it scored (`dribble_sprint_min_stamina`,
+  `dribble_sprint_control` in GameTuning). The old constant `top_speed * ratio + 0.15 s` estimate and the
+  post-hoc sprint rule are gone. No utility weight was changed.
+- Forecast vs execution (`test_carry_forecast`): 54 straight 6 m cases (pace 0.15/0.5/0.9, stamina 1.0/0.45/0.1,
+  jog/sprint, v0 0/3/5) worst error **0.019 s** (bound 0.15); turning cases worst **0.162 s** (bound 0.35:
+  the helper only approximates shedding sideways speed and bringing the ball round). Old estimate was off by
+  more than 0.25 s for a jog.
+- Named blocked-lane regressions (v2 seeds 77/88/99, v0/107, v2/199): all pass; `blocked_lane` 18/18 extended, 12/12 review seeds.
+- New baseline, predicates unchanged (before -> after this task):
+  legacy seeds 11/22/33: 67 -> **63/72** (attack_3v2 4/9, wing_defence 9 -> 8, high_loss 9 -> 6);
+  extended 44..99: 122 -> **129/144** (blocked_lane 15 -> 18, attack_3v2 5 -> 13, high_loss 15 -> 11, wing 17, buildup 16 -> 18);
+  review seeds 107/131/167/199: 85 -> **88/96** (attack_3v2 9/12, high_loss 8/12).
+  All seeds are known data now; reserve new seeds before tuning AI05/AI03.
+- Full matches seeds 1..8, 360 s, 70v70: 2W/4D/2L, goals 7:9, **15.2 shots/match** (was 10.9), middle third
+  43–52 % (was 57–65 %), pass completion 77–94 %, 0 stalls, 0 conflicts; 84v62: 7W/1D/0L, 24:5.
+- Open, traced to the correction rather than to tuning: carriers now sprint with the ball when it is safe, so
+  counters travel 50 m in the 7 s `high_loss` window and only 4 defenders are goal-side at the end
+  (legacy v0/11, v2/11, v2/22). `wing_defence` v2/22: single presser 83 % (< 85 %). Tackle attempts in full
+  matches fell to 0–6 per team (were about 15–30). These belong to **AI05** (recovery / engagement),
+  not to weaker attackers.
 
 ## AI03 — Exploit 3v2 without sacrificing football quality
 

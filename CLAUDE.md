@@ -58,12 +58,12 @@ Read the **Active handoff** at the top of `PROGRESS.md` before resuming. Runtime
 ## Verified commands (Linux container; `godot` = Godot 4.5.1 stable)
 ```
 godot --headless --import                                   # import / parse check (also rebuilds translations)
-godot --headless -s tests/run_tests.gd                      # 421 automated checks, exit code 1 on failure (-- --violate=budget|lineup self-test must fail)
+godot --headless -s tests/run_tests.gd                      # 442 automated checks, exit code 1 on failure (-- --violate=budget|lineup self-test must fail)
 godot --headless -s tools/review_regressions.gd             # five desired-behaviour checks; all pass
 python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-audit  # now 42/47, exit 1; SAVE01/CAREER01 reopened
 python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-boundary --group review # five boundary cases
-godot --headless -s tools/run_scenarios.gd                  # AI validation scenarios; exit 1 while any episode fails (currently 67/72), 2 on bad --only
-godot --headless -s tools/run_scenarios.gd -- --seeds=44,55,66,77,88,99 # extended known seeds: 122/144, exit 1
+godot --headless -s tools/run_scenarios.gd                  # AI validation scenarios; exit 1 while any episode fails (currently 63/72), 2 on bad --only
+godot --headless -s tools/run_scenarios.gd -- --seeds=44,55,66,77,88,99 # extended known seeds: 129/144, exit 1
 godot --headless -s tools/run_match.gd -- --seeds=1,2,3     # full AI-vs-AI matches with metrics
 godot --headless -s tools/fuzz_human.gd                     # random-input robustness of human control
 godot --headless -s tools/career_journey.gd                 # career end-to-end through the real match engine

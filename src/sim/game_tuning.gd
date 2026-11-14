@@ -121,6 +121,8 @@ extends Resource
 @export var pass_margin_soft := 0.2
 @export var hold_decay := 0.012
 @export var dribble_margin_bias := 0.15
+@export var dribble_sprint_min_stamina := 0.3
+@export var dribble_sprint_control := 0.96
 @export var carry_bonus := 0.015
 @export var impatience_gain := 0.03
 @export var shot_min_xg := 0.025

@@ -194,28 +194,44 @@ static func decide(ai: TeamAI, p: SimPlayer, ag: AIAgent, restart: bool, t_press
 	var fwd := Vector2(tm.dir, 0.0)
 	var to_goal := (Vector2(Pitch.HALF_L * tm.dir, 0.0) - p.pos).normalized()
 	var base_dir := (fwd * 0.5 + to_goal * 0.5).normalized() if lp.x > 10.0 else fwd
-	var run_speed := p.top_speed(tn) * tn.dribble_speed_ratio
+	var can_sprint := p.stamina > tn.dribble_sprint_min_stamina
 	for ang in DRIBBLE_ANGLES:
 		var dir := base_dir.rotated(ang)
 		var q := p.pos + dir * 6.0
 		if absf(q.x) > Pitch.HALF_L - 1.5 or absf(q.y) > Pitch.HALF_W - 1.5:
 			continue
-		var t_me := 6.0 / run_speed + 0.15
-		var m_far := SimQuery.opp_arrival(sim, q, opp, 0.15) - t_me
-		var m_mid := SimQuery.opp_arrival(sim, p.pos + dir * 3.0, opp, 0.15) - t_me * 0.5
-		var mm := minf(m_far, m_mid + 0.15)
-		var pd := FieldValue.sigmoid((mm + tn.dribble_margin_bias) / 0.3) * (0.72 + 0.28 * p.control)
+		var opp_far := SimQuery.opp_arrival(sim, q, opp, 0.15)
+		var opp_mid := SimQuery.opp_arrival(sim, p.pos + dir * 3.0, opp, 0.15)
 		var ql := ai.local(q)
-		var ev_d := pd * FieldValue.value(ql, tn) - (1.0 - pd) * loss_here
-		ev_d += (imp * tn.impatience_gain * 0.5 + tn.progress_bonus * 0.4) * clampf((ql.x - lp.x) / 6.0, -1.0, 1.0) * pd
+		var v_q := FieldValue.value(ql, tn)
+		var prog := (imp * tn.impatience_gain * 0.5 + tn.progress_bonus * 0.4) * clampf((ql.x - lp.x) / 6.0, -1.0, 1.0)
+		var shared := 0.0
 		# Open grass ahead: carry the ball and commit a defender before releasing it.
 		if absf(ang) < 0.7 and SimQuery.nearest_opponent_dist(sim, q, opp) > 7.0:
-			ev_d += tn.carry_bonus
+			shared += tn.carry_bonus
 		if ag.move_dir.length() > 0.5 and ag.move_dir.normalized().dot(dir) > 0.9:
-			ev_d += 0.002
-		ev_d += sim.rng.randfn(0.0, noise)
-		var sprint := (mm > 0.4 and absf(ang) < 1.0 and p.stamina > 0.3) or (counter and mm > 0.2)
-		opts.append({"label": "dribble %d°" % int(rad_to_deg(ang)), "ev": ev_d, "p": pd, "target": q, "move": dir, "sprint": sprint})
+			shared += 0.002
+		shared += sim.rng.randfn(0.0, noise)
+		# Each gait is scored with the time it will really take (SimQuery.carry_time mirrors the
+		# movement step); the gait that is scored is the gait that is commanded.
+		var best_ev := -INF
+		var best_pd := 0.0
+		var best_sprint := false
+		for gait_sprint: bool in [false, true]:
+			if gait_sprint and not can_sprint:
+				continue
+			var m_far := opp_far - SimQuery.carry_time(p, dir, 6.0, gait_sprint, tn)
+			var m_mid := opp_mid - SimQuery.carry_time(p, dir, 3.0, gait_sprint, tn)
+			var mm := minf(m_far, m_mid + 0.15)
+			var pd := FieldValue.sigmoid((mm + tn.dribble_margin_bias) / 0.3) * (0.72 + 0.28 * p.control)
+			if gait_sprint:
+				pd *= tn.dribble_sprint_control   # the ball runs further from the foot at speed
+			var ev_d := pd * v_q - (1.0 - pd) * loss_here + prog * pd + shared
+			if ev_d > best_ev:
+				best_ev = ev_d
+				best_pd = pd
+				best_sprint = gait_sprint
+		opts.append({"label": "dribble %d°" % int(rad_to_deg(ang)), "ev": best_ev, "p": best_pd, "target": q, "move": dir, "sprint": best_sprint})
 
 	# ---- hold / shield -----------------------------------------------------
 	var p_hold := clampf((t_press - 0.25) / 1.1, 0.0, 1.0)

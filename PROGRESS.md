@@ -4,36 +4,35 @@ Last update: 2026-11-14, independent review of Claude session 2. Engine Godot 4.
 
 ## Active handoff
 
-- **Implementation reviewed:** `claude/new-session-yr8bm1` @ `bbe7dbb03990c1480bbdb94268b2575ca179891b`.
-  Review/handoff published on `codex/deep-audit-claude-brief`; it contains those implementation commits.
-  Reviewer local branch: `codex/review-session-2`. Runtime/tuning unchanged by the review.
-- **Queue authority:** `docs/AI_WORK_PLAN.md`; review details: `docs/SESSION2_REVIEW_2026-11-14.md`.
-- **Active task:** none implemented by reviewer. **Next task: SAVE01 (REOPENED)**, then CAREER01 (REOPENED),
-  then AI02, AI05, AI03, AI04, V01/T01. PC00 waits for the reopened foundation dependencies.
-- **Retain accepted work:** QA01, RULE01/02, MEM01 (simulation cycles), SUB01, INPUT01/02/03 and AI01.
-  Existing SAVE01/CAREER01 fixes also remain; boundary cases prevent full acceptance.
-- **Independent results at bbe7dbb:** core 421/0 failed; original review 5/5; existing strict audit 42/42;
-  expanded audit **42/47, exit 1**. Five additional boundary cases fail, three with script errors.
-- **Boundary cases:** missing history (season-end error), malformed extra attr (normalize error), malformed
-  fitness (match-setup error), duplicate fixture pairing (same club plays twice in one round), legal low-rated
-  keeper (auto-lineup refuses despite a legal team). Isolated saves only; adversarial reachability labelled.
-- **AI:** legacy 67/72; extended 122/144; fresh review seeds 107/131/167/199 **85/96 vs old 89/96**.
-  Five known blocked-lane regressions need AI02 traces. These review seeds are now known, not unseen holdouts.
-- **Full matches:** eight seeds 1..8, 360 s, 70v70 -> 4W/1D/3L, goals 11:11, 10.9 shots/match,
-  0 stalls/conflicts; all 16 team-match offside counts zero, middle-third share 57–65%.
-- **Other checks:** fuzz seeds 4..15/30 s OK; journey `--played=3 --duration=60` OK; runner-event average 2.75,
-  max 4 decisions/0.5 s; fault-injection tests each fail as intended; unknown scenario/missing dependency exit 2.
-- **Evidence:** `docs/evidence/session2-review-2026-11-14/manifest.json`, logs and `expanded/summary.json`.
-  Real commands use the pinned binary; portable forms are in CLAUDE.md and the review.
-- **Residual:** direct scene shutdown leaks an audio stream/playback, not a retained MatchSim/TeamAI;
-  verbose log retained. Existing substitute rig skin/hair refresh limitation remains.
-- **Unverified:** Windows EXE/human play/focus/GPU/audio acceptance; no new visual render or export in review.
-  The original Windows build predates session-2 fixes. Player career is still planned, not implemented.
-- **Publication/WIP:** reviewer changes are diagnostics/docs/evidence only, preserved in the handoff commit;
-  no runtime WIP. Commit SHA is the published handoff branch head; do not reset newer local Claude work.
-- **Concrete next action:** run `python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-review
-  --group review` on Godot 4.5.1, inspect `CareerState.validate/normalize` and SaveManager._read, then close
-  SAVE01's four boundary cases while keeping the valid backup/normal career controls passing.
+- **Implementation branch:** `claude/new-session-yr8bm1`, contains reviewed handoff `codex/deep-audit-claude-brief`
+  @ `bb03a1a` (fast-forward) plus session-3 commits; published to origin. Queue authority: `docs/AI_WORK_PLAN.md`.
+- **Session 3 DONE (evidence in each task's Status block):** SAVE01 reopened items, CAREER01 reopened item, AI02.
+  Previously accepted and retained: QA01, RULE01/02, MEM01, SUB01, INPUT01/02/03, AI01.
+- **Active task:** none in progress. **Next task: AI05 (READY)**, then AI03, AI04, V01/T01. PC00 is dependency-ready
+  but follows the tactical phase.
+- **Checks at this revision (real results):**
+  - `godot --headless -s tests/run_tests.gd` -> 442 checks, 0 failed, exit 0.
+  - `python3 tools/run_deep_audit.py --godot godot --out <dir>` -> **47/47, exit 0** (run before AI02; AI02 touched
+    only `SimQuery`, `OnBallAI.decide`, tuning and tests).
+  - `tools/review_regressions.gd` -> 5/5 at bb03a1a; **not rerun after AI02**.
+  - Scenarios, unchanged predicates: legacy **63/72** (exit 1), extended 44..99 **129/144**, review seeds
+    107/131/167/199 **88/96**. Per-scenario table in `docs/AI_VALIDATION.md` (top section).
+  - Matches seeds 1..8, 360 s: 70v70 2W/4D/2L, 7:9, 15.2 shots/match, middle third 43–52 %, 0 stalls/conflicts;
+    84v62 7W/1D/0L, 24:5. `tools/career_journey.gd -- --played=3 --duration=60` OK (before AI02).
+  - Not rerun after AI02: fuzz_human, career_journey, deep audit, review regressions, Windows export.
+- **What AI02 changed:** dribble options are scored per gait with `SimQuery.carry_time` and command that gait;
+  forecast error <= 0.019 s straight. Attack improved (extended `attack_3v2` 5 -> 13/18, `blocked_lane` 18/18);
+  defence exposed: `high_loss` legacy 9 -> 6, extended 15 -> 11, review 8/12; `wing_defence` legacy 8/9;
+  tackle attempts in matches 0–6 per team. No utility weights were changed.
+- **Seeds:** 11/22/33, 44..99 and 107/131/167/199 are all known data; reserve fresh seeds/geometry before tuning.
+- **Stale:** session-1 Windows build; lower sections of `docs/AI_VALIDATION.md` (marked historical).
+- **Residual:** audio playback objects at direct scene shutdown; substitute rig skin/hair not refreshed.
+- **External gates:** PLAY01 (Windows EXE, human play, focus/keyboard, GPU, audio) unverified. Player career not started.
+- **Concrete next action:** read the AI05 section, then trace
+  `godot --headless -s tools/probe_scn.gd -- --name=high_loss --variant=0 --seed=11 --secs=7 --duties`
+  and inspect `TeamAI._plan_defend` during `DEFENSIVE_TRANSITION`: which players sprint back (`ag.sprint` only
+  when more than 7 m from the anchor), how fast the anchors drop when the ball is carried at sprint speed
+  (`AIShape.defence_line_x` follows the current ball, no lead), and why the presser does not engage/tackle.
 
 ## Claude session-2 implementation handoff (historical)
 

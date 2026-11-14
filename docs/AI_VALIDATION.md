@@ -1,5 +1,32 @@
 # AI validation
 
+## Current baseline (session 3, after AI01 + AI02; predicates unchanged)
+
+Commands: `tools/run_scenarios.gd` (legacy seeds 11/22/33), `-- --seeds=44,55,66,77,88,99`,
+`-- --seeds=107,131,167,199`, `tools/run_match.gd -- --seeds=1,2,3,4,5,6,7,8 --duration=360 [--levels=84,62]`.
+
+| Scenario | Legacy /9 | Extended /18 | Review seeds /12 |
+| --- | --- | --- | --- |
+| buildup_pressure | 9 | 18 | 12 |
+| blocked_lane | 9 | 18 | 12 |
+| attack_3v2 | 4 | 13 | 9 |
+| wing_defence | 8 | 17 | 12 |
+| high_loss | 6 | 11 | 8 |
+| run_behind | 9 | 18 | 11 |
+| shot_rebound | 9 | 18 | 12 |
+| human_support | 9 | 18 | 12 |
+| **Total** | **63/72** | **129/144** | **88/96** |
+
+Full matches (70v70, seeds 1..8): 0-0, 2-0, 2-1, 1-1, 2-2, 0-1, 0-4, 0-0; 15.2 shots/match; pass completion
+77–94 %; middle third 43–52 %; swarm 0.7–2.3 %; 0 stalls; 0 assignment conflicts; offside 0–1 per team.
+84v62: 7 wins, 1 draw, 24:5.
+Dribble forecast vs execution: worst 0.019 s on 54 straight cases. Runner event: 2.75 decisions / 0.5 s.
+
+Open defects at this baseline: defensive recovery after a high loss (AI05), 3v2 on legacy seeds (AI03),
+through balls behind the line rarely played and offside rarely tested (AI04), tackle attempts rare (AI05).
+Everything below this section is the historical session-1 record (commit a47746e).
+
+
 ## Current independent checkpoint: bbe7dbb (2026-11-14)
 
 See [SESSION2_REVIEW_2026-11-14.md](SESSION2_REVIEW_2026-11-14.md) and its saved evidence for full details.

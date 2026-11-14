@@ -29,6 +29,51 @@ static func time_to_reach(p: SimPlayer, point: Vector2, tn: GameTuning, react :=
 	return react + t_acc + (d - d_acc) / vmax
 
 
+## Top speed a player actually reaches while carrying the ball with the given gait.
+## Mirrors MatchSim._move_players: sprint needs stamina, jogging applies jog_ratio,
+## and the ball always costs dribble_speed_ratio.
+static func carry_speed(p: SimPlayer, sprint: bool, tn: GameTuning) -> float:
+	var top := p.top_speed(tn)
+	if not (sprint and p.stamina > 0.03):
+		top *= tn.jog_ratio
+	if not p.can_act():
+		top = minf(top, tn.recover_speed)
+	return top * tn.dribble_speed_ratio
+
+
+## Time for the ball carrier to cover `dist` metres in direction `dir` with the given gait,
+## from his current velocity, using the same acceleration / braking limits as the movement
+## step. Exact for straight runs; a turn is approximated by braking the sideways component.
+static func carry_time(p: SimPlayer, dir: Vector2, dist: float, sprint: bool, tn: GameTuning) -> float:
+	var vmax := carry_speed(p, sprint, tn)
+	if vmax <= 0.01:
+		return INF
+	var t := 0.0
+	var d := dist
+	var v0 := p.vel.dot(dir)
+	var side := (p.vel - dir * v0).length()
+	# Sideways speed has to be shed while turning; it delays the forward build-up.
+	t += 0.5 * side / tn.decel
+	if v0 < 0.0:
+		var tb := -v0 / tn.decel
+		d += 0.5 * -v0 * tb
+		t += tb
+		v0 = 0.0
+	if v0 > vmax:
+		# Faster than this gait allows (e.g. easing from a sprint): slows down on the way.
+		var td := (v0 - vmax) / tn.decel
+		var dd := v0 * td - 0.5 * tn.decel * td * td
+		if dd >= d:
+			return t + (v0 - sqrt(maxf(0.0, v0 * v0 - 2.0 * tn.decel * d))) / tn.decel
+		return t + td + (d - dd) / vmax
+	var a := p.accel(tn)
+	var t_acc := (vmax - v0) / a
+	var d_acc := v0 * t_acc + 0.5 * a * t_acc * t_acc
+	if d_acc >= d:
+		return t + (-v0 + sqrt(v0 * v0 + 2.0 * a * d)) / a
+	return t + t_acc + (d - d_acc) / vmax
+
+
 ## 0 = free, 1 = one opponent on top of him, can exceed 1 with several.
 static func pressure(sim: MatchSim, p: SimPlayer) -> float:
 	return pressure_at(sim, p.pos, 1 - p.team)
