@@ -56,6 +56,7 @@ func _init() -> void:
 	test_idle_human_restart()
 	test_keeper()
 	test_backpass()
+	test_substitution()
 	test_determinism()
 	group("teardown")
 	print("%d checks, %d failed, %.1fs" % [_checks, _fails, (Time.get_ticks_msec() - t0) / 1000.0])
@@ -1105,6 +1106,115 @@ func test_backpass() -> void:
 	sim3._register_touch(cb3, false)
 	sim3.ball.pos = gk3.pos + Vector2(0.3, 0)
 	check(sim3._may_handle(gk3), "a team-mate's deflection of an opponent's ball leaves handling legal")
+
+
+func test_substitution() -> void:
+	group("substitutions")
+	var cs := CareerState.create("smk", 2024)
+	var setup := cs.match_setup_for(cs.user_fixture(), 51)
+	var human_team := setup.human_team
+	var sim := MatchSim.new()
+	sim.init_match(setup, tuning)
+	_sims.append(sim)
+	run(sim, int(tuning.kickoff_setup_time * 60) + 120)
+	var tm := sim.teams[human_team]
+	var bench0 := tm.bench.size()
+	check(bench0 >= 5, "bench available")
+	# AI-controlled outfield slot with every kind of leftover state.
+	var pid := tm.player_ids[4]
+	if sim.players[pid].is_human or sim.ball.owner == pid:
+		pid = tm.player_ids[3]
+	var p := sim.players[pid]
+	var old_uid := p.uid
+	var incoming_uid := str(tm.bench[0]["id"])
+	var pos0 := p.pos
+	var role0 := p.role
+	p.stun = 0.8
+	p.tackle_cd = 1.2
+	p.tackle_recover = 0.5
+	p.kick_lock = 0.2
+	p.pending_kick = KickRequest.make(KickRequest.Kind.SHOT, Vector2.RIGHT, 20, 0, -1, Vector2(50, 0))
+	p.pending_kick_t = 0.3
+	p.distance_run = 4500.0
+	p.cmd.tackle = true
+	p.stamina = 0.1
+	var ag_old: AIAgent = tm.ai.agents[pid]
+	ag_old.run_state = 1
+	ag_old.engage = true
+	sim.offside_flags[pid] = p.pos
+	check(sim.substitute(human_team, pid, 0), "substitution accepted")
+	check(p.uid == incoming_uid and p.uid != old_uid, "slot now holds the bench player's stable id")
+	check(p.stun == 0.0 and p.tackle_cd == 0.0 and p.tackle_recover == 0.0 and p.kick_lock == 0.0, "no inherited stun / tackle / kick timers")
+	check(p.pending_kick == null and not p.cmd.tackle and p.cmd.kick == null, "no queued kick or stale command")
+	check(p.distance_run == 0.0 and absf(p.stamina - p.fitness) < 0.001 and p.stamina > 0.5, "fresh legs: own distance and stamina")
+	check(p.pos == pos0 and p.role == role0 and p.team == human_team, "formation slot and position kept")
+	var ag_new: AIAgent = tm.ai.agents[pid]
+	check(ag_new != ag_old and ag_new.run_state == 0 and not ag_new.engage, "fresh tactical memory")
+	check(not sim.offside_flags.has(pid), "no inherited offside flag")
+	check(sim.participants.has(old_uid) and sim.participants.has(incoming_uid), "both players count as participants")
+	check(tm.bench.size() == bench0 - 1 and tm.subs_made == 1, "bench and counter updated once")
+	var shots_before := tm.stats.shots
+	run(sim, 30)
+	check(tm.stats.shots == shots_before, "the outgoing player's queued shot is never executed")
+	check((tm.ai.agents[pid] as AIAgent).duty != AIAgent.Duty.NONE, "substitute receives a duty at the next replan")
+	# Human-controlled slot: control stays on the slot, charge state is cleared.
+	var hid := sim.human.controlled
+	if sim.ball.owner == hid:
+		sim.ball.owner = -1
+	sim.human.charging = true
+	sim.human.shot_charge = 0.7
+	check(sim.substitute(human_team, hid, 0), "human-controlled player can be substituted")
+	check(sim.players[hid].is_human and sim.human.controlled == hid and not sim.human.charging and sim.human.shot_charge == 0.0, "control stays on the slot without a carried-over shot charge")
+	var humans := 0
+	for q in sim.players:
+		if q.is_human:
+			humans += 1
+	check(humans == 1, "still exactly one human-controlled player")
+	# Goalkeeper slot keeps role and handling rights; a keeper holding the ball cannot be replaced.
+	var gk := sim.players[tm.player_ids[0]]
+	sim.ball.owner = -1
+	sim.ball.held_by = gk.id
+	check(not sim.substitute(human_team, gk.id, 0), "keeper holding the ball cannot be substituted")
+	sim.ball.held_by = -1
+	gk.dive_recover = 0.6
+	check(sim.substitute(human_team, gk.id, 0) and gk.is_keeper() and gk.dive_recover == 0.0, "keeper slot: role kept, no inherited dive recovery")
+	# Owner of the ball cannot be replaced; a substitute next to an in-flight ball can play it.
+	var cb := sim.players[tm.player_ids[2]]
+	sim.ball.owner = cb.id
+	check(not sim.substitute(human_team, cb.id, 0), "ball owner cannot be substituted")
+	sim.ball.owner = -1
+	sim.state = MatchSim.State.PLAYING
+	sim.ball.dead = false
+	sim.ball.pos = cb.pos + Vector2(3.0, 0)
+	sim.ball.vel = Vector2(-5.0, 0)
+	sim.ball.h = 0.0
+	sim.ball.in_pass = false
+	cb.kick_lock = 5.0
+	check(sim.substitute(human_team, cb.id, 0), "fourth substitution accepted")
+	for i in 60:
+		sim.tick += 1
+		sim._update_timers()
+		sim._ball_step()
+		sim._possession()
+	check(sim.ball.owner == cb.id, "substitute controls a ball arriving at his feet (no inherited lock)")
+	# Limit of five and invalid requests.
+	sim.ball.owner = -1
+	check(sim.substitute(human_team, tm.player_ids[6], 0), "fifth substitution accepted")
+	check(not sim.substitute(human_team, tm.player_ids[7], 0) and tm.subs_made == 5, "sixth substitution rejected")
+	check(not sim.substitute(human_team, tm.player_ids[7], 99), "invalid bench index rejected")
+	var uids := {}
+	var dup := false
+	for id in tm.player_ids:
+		if uids.has(sim.players[id].uid):
+			dup = true
+		uids[sim.players[id].uid] = true
+	for b: Dictionary in tm.bench:
+		if uids.has(str(b["id"])):
+			dup = true
+	check(not dup, "no player is on the pitch twice or on pitch and bench")
+	sim.state = MatchSim.State.FULL_TIME
+	tm.subs_made = 0
+	check(not sim.substitute(human_team, tm.player_ids[7], 0), "no substitution after full time")
 
 
 func test_determinism() -> void:

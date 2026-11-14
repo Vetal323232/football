@@ -63,6 +63,21 @@ func dispose() -> void:
 	agents.clear()
 
 
+## A substitute starts with fresh tactical memory; the next replan (forced here)
+## gives him a duty for the slot he took over.
+func on_substitution(id: int) -> void:
+	if agents.has(id):
+		var fresh := AIAgent.new()
+		fresh.anchor = (agents[id] as AIAgent).anchor
+		fresh.target = (agents[id] as AIAgent).target
+		agents[id] = fresh
+	if presser_id == id:
+		presser_id = -1
+	if cover_id == id:
+		cover_id = -1
+	_last_kick_id = -2   # marks the plan dirty: replan on the next update
+
+
 func opp_index() -> int:
 	return 1 - team.index
 

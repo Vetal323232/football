@@ -25,6 +25,12 @@ func dispose() -> void:
 	sim = null
 
 
+func reset_actions() -> void:
+	charging = false
+	shot_charge = 0.0
+	input.clear_edges()
+
+
 func on_restart() -> void:
 	charging = false
 	shot_charge = 0.0

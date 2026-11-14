@@ -34,7 +34,7 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 | 3 | RULE02 | DONE | QA01, RULE01 | Keeper foot control preserves a back-pass restriction. |
 | 4 | SAVE01 | DONE | QA01 | Nested invalid saves recover safely; no script errors during validation. |
 | 5 | MEM01 | DONE | QA01 | Repeated matches release simulation ownership cycles. |
-| 6 | SUB01 | READY | QA01 | Fresh substitutes do not inherit outgoing action/recovery state. |
+| 6 | SUB01 | DONE | QA01 | Fresh substitutes do not inherit outgoing action/recovery state. |
 | 7 | INPUT01 | READY | QA01 | Forward intent cannot select a receiver behind the aim. |
 | 8 | INPUT02 | READY | QA01 | Initial human handoff follows the selected eligible receiver. |
 | 9 | INPUT03 | READY | QA01 | Releasing a charged shot in pause does not fire on resume. |
@@ -363,6 +363,14 @@ Acceptance:
 - Old and new stable IDs remain in match participation for correct career development; no double counting.
 - Preserve five-sub limit, bench membership, possession/keeper-hand restrictions and full-time rejection.
 - Verify human-controlled and AI slots, goalkeepers, scene refresh and a substitute near an in-flight ball.
+
+Status: **DONE** (session 2). `MatchSim.substitute` now calls `SimPlayer.reset_transient()`, sets stamina from the
+incoming player's fitness, drops his slot's offside flag, gives the slot a fresh `AIAgent`
+(`TeamAI.on_substitution`, forces a replan) and clears a human's shot charge. `deep_audit.gd
+--case=substitution_state` passes; new `test_substitution` (26 checks): AI slot, human slot, keeper slot,
+ball owner / keeper-in-hands rejection, arriving ball, five-sub limit, bench membership, both UIDs in
+`participants`, full-time rejection. Scene refresh: the existing `substitution` event still updates the shirt
+number; known cosmetic limit: the rig keeps the outgoing player's skin/hair colours (set once from the UID).
 
 ## INPUT02 — Respect the selected receiver at human handoff
 

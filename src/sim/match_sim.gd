@@ -122,7 +122,15 @@ func substitute(team: int, player_id: int, bench_index: int) -> bool:
 	var incoming: Dictionary = tm.bench[bench_index]
 	tm.bench.remove_at(bench_index)
 	_apply_identity(p, incoming)
-	p.stamina = 1.0
+	# The newcomer takes over the slot (position, role, control) but none of the
+	# outgoing player's transient state.
+	p.reset_transient()
+	p.stamina = p.fitness
+	offside_flags.erase(p.id)
+	if tm.ai != null:
+		tm.ai.on_substitution(p.id)
+	if human != null and human.controlled == p.id:
+		human.reset_actions()
 	tm.subs_made += 1
 	event.emit(&"substitution", {"team": team, "player": p.id})
 	return true

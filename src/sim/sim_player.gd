@@ -70,6 +70,28 @@ func can_touch_ball() -> bool:
 	return kick_lock <= 0.0 and stun <= 0.0 and tackle_recover <= 0.0 and dive_recover <= 0.0
 
 
+## Clear everything that belongs to the moment rather than to the slot: used when a
+## substitute takes over. Position, facing, role and control flag are kept.
+func reset_transient() -> void:
+	vel = Vector2.ZERO
+	distance_run = 0.0
+	kick_lock = 0.0
+	stun = 0.0
+	tackle_t = 0.0
+	tackle_recover = 0.0
+	tackle_cd = 0.0
+	tackle_done = false
+	dive_t = 0.0
+	dive_recover = 0.0
+	dive_dir = Vector2.ZERO
+	pending_kick = null
+	pending_kick_t = 0.0
+	has_ball_time = 0.0
+	cmd.clear()
+	anim = &""
+	anim_t = 0.0
+
+
 func set_anim(a: StringName, t: float) -> void:
 	anim = a
 	anim_t = t
