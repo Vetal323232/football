@@ -54,6 +54,7 @@ func _init() -> void:
 	test_halves_and_clock()
 	test_control_handoff()
 	test_pass_assist()
+	test_handoff_receiver()
 	test_idle_human_restart()
 	test_keeper()
 	test_backpass()
@@ -1075,6 +1076,100 @@ func test_pass_assist() -> void:
 		s3._ball_step()
 		s3._possession()
 	check(s3.ball.owner != m3.id, "an assisted pass through an opponent is not guaranteed to arrive")
+
+
+func test_handoff_receiver() -> void:
+	group("handoff to the selected receiver")
+	for human_team in 2:
+		for flip in 2:
+			var sim := new_sim(31 + human_team, human_team)
+			open_play(sim, Vector2.ZERO)
+			if flip == 1:
+				for tm in sim.teams:
+					tm.dir = -tm.dir
+			var d: float = sim.teams[human_team].dir
+			var ids := sim.teams[human_team].player_ids
+			var passer := sim.players[ids[6]]
+			var chosen := sim.players[ids[9]]
+			var nearer := sim.players[ids[7]]
+			var label := "team %d, dir %+d" % [human_team, int(d)]
+			passer.pos = Vector2(0, 0)
+			passer.passing = 1.0
+			chosen.pos = Vector2(22 * d, 2)
+			nearer.pos = Vector2(12 * d, -1.5)   # closer to the path: the coordinator may prefer him
+			sim.human._set_controlled(passer.id)
+			sim.ball.owner = passer.id
+			sim.ball.pos = passer.pos + Vector2(0.5 * d, 0)
+			var changes := [0]
+			sim.event.connect(func(kind: StringName, _dd: Dictionary) -> void:
+				if kind == &"control":
+					changes[0] += 1)
+			passer.pending_kick = KickRequest.make(KickRequest.Kind.PASS, chosen.pos - sim.ball.pos, 16.0, 0.0, chosen.id, chosen.pos)
+			passer.pending_kick_t = 0.3
+			sim._resolve_actions()
+			sim.ball.kick_tick = sim.tick
+			sim.step()
+			check(sim.human.controlled == chosen.id, "control goes to the receiver the pass was meant for (%s)" % label)
+			var flicker := false
+			for i in 12:
+				sim.step()
+				var humans := 0
+				for q in sim.players:
+					if q.is_human:
+						humans += 1
+				if humans != 1:
+					flicker = true
+			check(not flicker and changes[0] <= 2, "one human, no per-tick control flicker during the pass (%s, %d changes)" % [label, changes[0]])
+	# Fallbacks.
+	var s2 := new_sim(33, 0)
+	open_play(s2, Vector2.ZERO)
+	var ids2 := s2.teams[0].player_ids
+	var p2 := s2.players[ids2[6]]
+	var gk2 := s2.players[ids2[0]]
+	p2.pos = Vector2(-30, 0)
+	gk2.pos = Vector2(-47, 0)
+	s2.human._set_controlled(p2.id)
+	s2.ball.owner = p2.id
+	s2.ball.pos = p2.pos + Vector2(-0.5, 0)
+	p2.pending_kick = KickRequest.make(KickRequest.Kind.PASS, Vector2.LEFT, 12.0, 0.0, gk2.id, gk2.pos)
+	p2.pending_kick_t = 0.3
+	s2._resolve_actions()
+	s2.ball.kick_tick = s2.tick
+	s2.step()
+	check(not gk2.is_human and s2.human.controlled != gk2.id, "a pass to the goalkeeper never hands control to him")
+	# No receiver named (space pass): control is still on exactly one valid outfield player.
+	var s3 := new_sim(34, 0)
+	open_play(s3, Vector2.ZERO)
+	var ids3 := s3.teams[0].player_ids
+	var p3 := s3.players[ids3[6]]
+	p3.pos = Vector2.ZERO
+	s3.players[ids3[9]].pos = Vector2(15, 1)
+	s3.human._set_controlled(p3.id)
+	s3.ball.owner = p3.id
+	s3.ball.pos = Vector2(0.5, 0)
+	p3.pending_kick = KickRequest.make(KickRequest.Kind.PASS, Vector2.RIGHT, 14.0, 0.0, -1, Vector2(16, 0))
+	p3.pending_kick_t = 0.3
+	s3._resolve_actions()
+	s3.ball.kick_tick = s3.tick
+	run(s3, 3)
+	var c3 := s3.players[s3.human.controlled]
+	check(c3.team == 0 and not c3.is_keeper(), "space pass: control stays on a valid outfield player of our team")
+	# Receiver id of the other team (corrupt request) is ignored.
+	var s4 := new_sim(35, 0)
+	open_play(s4, Vector2.ZERO)
+	var p4 := s4.players[s4.teams[0].player_ids[6]]
+	var foe := s4.players[s4.teams[1].player_ids[6]]
+	p4.pos = Vector2.ZERO
+	foe.pos = Vector2(10, 0)
+	s4.human._set_controlled(p4.id)
+	s4.ball.owner = p4.id
+	s4.ball.pos = Vector2(0.5, 0)
+	p4.pending_kick = KickRequest.make(KickRequest.Kind.PASS, Vector2.RIGHT, 12.0, 0.0, foe.id, foe.pos)
+	p4.pending_kick_t = 0.3
+	s4._resolve_actions()
+	s4.ball.kick_tick = s4.tick
+	run(s4, 90)
+	check(not foe.is_human and s4.players[s4.human.controlled].team == 0, "an opponent is never controlled, also after he intercepts")
 
 
 func test_idle_human_restart() -> void:

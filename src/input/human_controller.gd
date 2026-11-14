@@ -10,6 +10,7 @@ var controlled := -1
 var input := InputFrame.new()
 var shot_charge := 0.0
 var charging := false
+var shot_blocked := false
 var _last_switch_tick := -1000
 var _switch_cycle: Array[int] = []
 var last_assist_target := Vector2.ZERO
@@ -25,9 +26,16 @@ func dispose() -> void:
 	sim = null
 
 
+func _valid_handoff(id: int, kicker: int) -> bool:
+	return id >= 0 and id != kicker and sim.teams[team].player_ids.has(id) and not sim.players[id].is_keeper()
+
+
+## Cancel everything that was in progress (pause, focus loss, substitution). A shot key that is
+## still held afterwards is ignored until it has been released once: no stale charge, no ghost shot.
 func reset_actions() -> void:
 	charging = false
 	shot_charge = 0.0
+	shot_blocked = true
 	input.clear_edges()
 
 
@@ -61,10 +69,13 @@ func update() -> void:
 	if b.owner >= 0 and tm.player_ids.has(b.owner) and b.owner != controlled and not sim.players[b.owner].is_keeper():
 		_set_controlled(b.owner)
 	elif b.in_pass and b.kicker >= 0 and sim.players[b.kicker].team == team and b.kick_tick == sim.tick - 1:
-		var r := tm.ai.receiver_id
-		if r < 0:
-			r = b.kick_receiver
-		if r >= 0 and r != controlled and tm.player_ids.has(r) and not sim.players[r].is_keeper():
+		# The receiver the pass was planned for wins the first handoff; the coordinator's own
+		# intercept choice is only the fallback (no receiver, keeper, or not our player).
+		# Whoever actually collects the ball later takes control through the owner rule above.
+		var r := b.kick_receiver
+		if not _valid_handoff(r, b.kicker):
+			r = tm.ai.receiver_id
+		if _valid_handoff(r, b.kicker) and r != controlled:
 			_set_controlled(r)
 	var p: SimPlayer = sim.players[controlled]
 	var has_ball := b.owner == p.id
@@ -93,7 +104,11 @@ func update() -> void:
 		elif input.lob_pressed:
 			p.cmd.kick = assist_pass(p, KickRequest.Kind.LOB)
 	# Shot: hold to charge, release to shoot.
-	if input.shot_held and (has_ball or taker or charging or can_play):
+	if not input.shot_held:
+		shot_blocked = false
+	if shot_blocked:
+		input.shot_released = false
+	if input.shot_held and not shot_blocked and (has_ball or taker or charging or can_play):
 		if not charging:
 			charging = true
 			shot_charge = 0.0

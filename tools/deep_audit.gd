@@ -3,7 +3,7 @@ extends SceneTree
 ## Run through run_deep_audit.py: GDScript runtime errors can otherwise exit 0.
 ## Does not modify gameplay. All save files use an isolated audit directory.
 
-const CASES := ["determinism", "career_stress", "substitution_state", "backpass_feet", "pause_shot", "pass_handoff", "keeper_only_lineup", "match_lifetime", "camera_input"]
+const CASES := ["determinism", "career_stress", "substitution_state", "backpass_feet", "pause_shot", "pass_handoff", "keeper_only_lineup", "match_lifetime", "camera_input", "pause_policy"]
 var failed := 0
 var checks := 0
 var tuning: GameTuning
@@ -387,4 +387,85 @@ func _camera_input() -> void:
 		if req.dir.dot(mv) < 0.0:
 			bad.append("%s pass behind aim" % action)
 	_check(bad.is_empty(), "camera_input", "wrong conversions: %s" % ", ".join(bad))
+	view.free()
+
+
+## INPUT03: full pause policy on the real match scene.
+func _pause_policy() -> void:
+	var game = root.get_node("Game")
+	game.pending_setup = MatchSetup.exhibition(51)
+	game.pending_setup.human_team = 0
+	var view = load("res://scenes/match.tscn").instantiate()
+	root.add_child(view)
+	view.set_physics_process(false)
+	view.set_process(false)
+	var sim: MatchSim = view.sim
+	sim.state = MatchSim.State.PLAYING
+	sim.ball.dead = false
+	sim.freeze_clock = false
+	var pid := 9
+	sim.human._set_controlled(pid)
+	var p: SimPlayer = sim.players[pid]
+	var give := func() -> void:
+		sim.ball.owner = pid
+		sim.ball.held_by = -1
+		sim.ball.pos = p.pos + p.facing * 0.5
+		sim.state = MatchSim.State.PLAYING
+	var tick_once := func() -> bool:
+		view._sample_input()
+		p.cmd.clear()
+		sim.human.update()
+		return p.cmd.kick != null
+	# 1. Normal charge and release still shoots.
+	give.call()
+	Input.action_press("shoot")
+	var early := false
+	for i in 20:
+		early = early or tick_once.call()
+	Input.action_release("shoot")
+	var shot_normal: bool = tick_once.call()
+	# 2. Hold through pause and resume: no shot while held, none on release, a new press works.
+	give.call()
+	Input.action_press("shoot")
+	for i in 10:
+		tick_once.call()
+	view.set_paused(true)
+	var t0 := sim.tick
+	var time0 := sim.time
+	var cd0: float = p.tackle_cd
+	for i in 30:
+		view._physics_process(1.0 / 60.0)
+	var frozen := sim.tick == t0 and sim.time == time0 and p.tackle_cd == cd0
+	view.set_paused(false)
+	var held_fire := false
+	for i in 30:
+		held_fire = held_fire or tick_once.call()
+	var charging_while_held: bool = sim.human.charging
+	Input.action_release("shoot")
+	var release_fire: bool = tick_once.call()
+	Input.action_press("shoot")
+	for i in 10:
+		tick_once.call()
+	Input.action_release("shoot")
+	var fresh_fire: bool = tick_once.call()
+	# 3. Edges queued before a pause do not leak out of the menu.
+	give.call()
+	view._edges.pass_pressed = true
+	view._edges.tackle_pressed = true
+	view.set_paused(true)
+	view.set_paused(false)
+	var leaked: bool = tick_once.call() or p.cmd.tackle
+	# 4. Focus loss pauses a human match and cancels a charge.
+	give.call()
+	Input.action_press("shoot")
+	for i in 10:
+		tick_once.call()
+	view.notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
+	var paused_on_blur: bool = view.paused
+	Input.action_release("shoot")
+	view.set_paused(false)
+	var blur_fire: bool = tick_once.call()
+	_check(shot_normal and not early and frozen and not held_fire and not charging_while_held and not release_fire and fresh_fire and not leaked and paused_on_blur and not blur_fire,
+		"pause_policy", "normal=%s early=%s frozen=%s held_fire=%s charging_while_held=%s release_fire=%s fresh=%s leaked=%s blur_pause=%s blur_fire=%s" % [
+			shot_normal, early, frozen, held_fire, charging_while_held, release_fire, fresh_fire, leaked, paused_on_blur, blur_fire])
 	view.free()

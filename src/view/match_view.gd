@@ -132,8 +132,17 @@ func _unhandled_input(event: InputEvent) -> void:
 func set_paused(p: bool) -> void:
 	paused = p
 	menus.call("show_pause", p)
-	if p:
-		_edges.clear_edges()
+	# Pausing and resuming both drop pending gameplay input: nothing pressed or released
+	# around the menu may turn into a pass, tackle or shot afterwards.
+	_edges.clear_edges()
+	if sim.human != null:
+		sim.human.reset_actions()
+
+
+func _notification(what: int) -> void:
+	# Losing the window focus pauses a human match; keys released elsewhere are never seen.
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and sim != null and sim.human != null and not paused and not finished:
+		set_paused(true)
 
 
 func _sample_input() -> void:

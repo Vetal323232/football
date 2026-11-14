@@ -36,9 +36,9 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 | 5 | MEM01 | DONE | QA01 | Repeated matches release simulation ownership cycles. |
 | 6 | SUB01 | DONE | QA01 | Fresh substitutes do not inherit outgoing action/recovery state. |
 | 7 | INPUT01 | DONE | QA01 | Forward intent cannot select a receiver behind the aim. |
-| 8 | INPUT02 | READY | QA01 | Initial human handoff follows the selected eligible receiver. |
-| 9 | INPUT03 | READY | QA01 | Releasing a charged shot in pause does not fire on resume. |
-| 10 | CAREER01 | TODO | QA01, SAVE01 | Auto-lineup handles negative candidate scores and invalid roster shapes. |
+| 8 | INPUT02 | DONE | QA01 | Initial human handoff follows the selected eligible receiver. |
+| 9 | INPUT03 | DONE | QA01 | Releasing a charged shot in pause does not fire on resume. |
+| 10 | CAREER01 | READY | QA01, SAVE01 | Auto-lineup handles negative candidate scores and invalid roster shapes. |
 | 11 | AI01 | READY | QA01 | Runner notifications trigger at the intended time, once. |
 | 12 | AI02 | TODO | AI01 | Dribble utility evaluates the movement that will actually execute. |
 | 13 | AI05 | TODO | AI01, AI02 | Defensive recovery holds beyond the original scenario seeds. |
@@ -395,6 +395,12 @@ Acceptance:
 - Invalid/unavailable receiver, goalkeeper distribution, opponent interception and later ownership have explicit fallbacks.
 - Control is stable; no per-tick flicker or multiple human-controlled players. Repeat both teams and halves.
 
+Status: **DONE** (session 2). `HumanController.update` hands control to `ball.kick_receiver` when it is a valid
+outfield team-mate; `TeamAI.receiver_id` is only the fallback; later ownership still follows the owner rule.
+`deep_audit.gd --case=pass_handoff` 3/3 (seed 44 fixed, geometry/inputs untouched); `human_support` scenario
+9/9 on legacy seeds and 18/18 on seeds 44..99; new `test_handoff_receiver` (11 checks: both teams x both
+directions, flicker, keeper receiver, space pass, opponent id/interception); fuzz 12 seeds OK.
+
 ## INPUT03 — Cancel/resynchronize input around pause and focus loss
 
 Files: src/view/match_view.gd, set_paused / _unhandled_input / _sample_input; HumanController charge state.
@@ -408,6 +414,15 @@ Acceptance:
 - Holding through resume follows a documented consistent policy without resurrecting a stale release.
 - Normal charge/release, input edges, pause-menu buttons and losing/regaining window focus behave correctly.
 - Simulation clock/AI/cooldowns remain frozen in pause; no queued pass/tackle leaks out of menus.
+
+Status: **DONE** (session 2). Policy: pausing or resuming cancels any charge and pending edges
+(`HumanController.reset_actions`); a shot key still held after resume is ignored until it has been released
+once (`shot_blocked`), so neither holding through nor releasing during pause produces a shot; losing window
+focus pauses a human match (`match_view._notification`). `deep_audit.gd --case=pause_shot` passes; new
+`--case=pause_policy` verifies on the real scene: normal charge/release shoots, sim tick/clock/cooldown frozen
+in pause, no shot while held or on release after resume, a fresh press shoots, queued pass/tackle edges do
+not leak, focus-out pauses and cancels. Real OS focus events and pause-menu buttons with a physical keyboard
+remain part of PLAY01.
 
 ## CAREER01 — Make lineup selection robust
 
