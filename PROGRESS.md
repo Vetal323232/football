@@ -1,7 +1,19 @@
 # Progress
 
-Last update: 2026-11-14 (session 1). Engine: Godot 4.5.1-stable, renderer `gl_compatibility`.
+Last update: 2026-11-14 (source review checkpoint; gameplay baseline `a47746e`). Engine: Godot 4.5.1-stable, renderer `gl_compatibility`.
 Built and checked in a Linux container (no GPU, no Windows): headless runs + software-rendered screenshots.
+
+## Review checkpoint
+
+- Read `docs/PROJECT_MAP.md`, `docs/CODE_REVIEW_2026-11-14.md` and `docs/AI_WORK_PLAN.md` before the next change.
+- The review repeated 300 core checks, 67/72 scenario results, all eight equal-strength full matches,
+  all eight 84-vs-62 matches (7 wins, 1 draw, 15:3), fuzz input, the career journey and a headless UI journey.
+- Five additional behavioural regressions reproduce offside-first-touch bypass, early runner events,
+  backward pass assistance, retained match ownership cycles and acceptance of round=999 saves.
+- `godot --headless -s tools/review_regressions.gd` currently reports 5 checks / 5 failed and exits 1.
+- The old scenario runner exits 0 even at 67/72; two original unit assertions contain `or true`.
+- Implementation milestones below are historical implementation status, not acceptance of gameplay quality.
+- First task: QA01 in `docs/AI_WORK_PLAN.md`. Gameplay fixes follow its verified checks.
 
 ## Milestones
 
@@ -54,8 +66,9 @@ Game:
 - UI strings in the career line-up for attribute abbreviations (СК, ПА, УД, КО, ЗА, ВЫ, ВР) are inline, not in the CSV.
 
 Environment:
-- `git push` was rejected (HTTP 403: the Claude GitHub App has no write access to `Vetal323232/football`).
-  Commits exist only in the session container until access is granted.
+- The original session reported a `git push` HTTP 403. The source branch was subsequently published:
+  `claude/new-session-yr8bm1` was fetched and reviewed at `a47746e`. The earlier statement that commits
+  exist only in the session container is no longer current; this does not establish the old app's write access.
 
 ## Tried and reverted
 - "Break mode" (bonus + sprint for forward dribbles when attackers >= defenders ahead, last defender delays when
@@ -63,11 +76,7 @@ Environment:
   The carrier-side bonus alone is not enough; the wide receiver's choice after the first pass is the real problem.
 
 ## Next executable task
-1. Human playtest with `docs/PLAYTEST.md`; collect notes on control feel and difficulty.
-2. AI iteration on defect 2: in `OnBallAI.decide` make a carrier with a numerical advantage ahead drive at the
-   last line (use `TeamAI._counter_chance`-style count of goal-side defenders to raise forward dribble value and
-   sprint), and in `TeamAI._update_engage` make an outnumbered last defender contain instead of stepping out.
-   Check with `tools/run_scenarios.gd -- --only=attack_3v2` (target ≥7/9) and re-run the 8 full matches.
-3. Then defect 1/3: evaluate through balls against the runner's speed 0.3 s ahead, and widen attacking anchors
-   when the opponent block is compact.
-4. Run `OpenPitch.exe` on Windows, measure FPS with `-- --autoplay --perf`.
+1. Complete QA01 in `docs/AI_WORK_PLAN.md`: correct failure exit status, screenshot verification and the two tautological assertions.
+2. Follow the ordered correctness/AI tasks. Reproduce each issue with the named command before changing it.
+3. Keep the legacy scenario result and any stricter behavioural contract separately labelled.
+4. Human Windows playtesting remains PLAY01 and `docs/PLAYTEST.md`; it has not been replaced by the headless checks.

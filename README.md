@@ -90,5 +90,11 @@ src/core/      autoloads: Game (settings, input map, scene flow), Sfx (synthesis
 data/          tuning resource, league definition
 locale/        UI strings (ru, en)
 tests/, tools/ automated checks and headless tools
-docs/          BRIEF, DESIGN, AI_VALIDATION, PLAYTEST
+docs/          BRIEF, DESIGN, AI_VALIDATION, PLAYTEST, project map, review and work plan
 ```
+
+## Development navigation
+
+- [Project map](docs/PROJECT_MAP.md): files, ownership and football decision paths.
+- [Reproduced code review](docs/CODE_REVIEW_2026-11-14.md): evidence, confirmed defects and verification limits.
+- [Ordered work plan](docs/AI_WORK_PLAN.md): exact tasks, reproductions, dependencies and acceptance criteria.
