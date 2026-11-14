@@ -431,6 +431,10 @@ func _try_kick(p: SimPlayer) -> void:
 	if dead_ball and restart_ready_t < 0.25:
 		return
 	p.pending_kick = null
+	# Judge this involvement against the PREVIOUS kick before any kick metadata is replaced:
+	# a flagged player who meets the ball first time is offside, his kick never happens.
+	if not dead_ball and _offside_involvement(p):
+		return
 
 	var is_shot := k.kind == KickRequest.Kind.SHOT
 	var attr := p.shooting if is_shot else p.passing
@@ -539,14 +543,23 @@ func _shot_on_target() -> bool:
 	return false
 
 
+## Offside is punished when a player flagged at a teammate's kick becomes involved.
+## Must be evaluated while `ball.kicker` still names that earlier kick. Returns true
+## if play was stopped (the restart clears the snapshot, so it cannot fire twice).
+func _offside_involvement(p: SimPlayer) -> bool:
+	if not offside_flags.has(p.id) or p.team != offside_team or ball.kicker == p.id:
+		return false
+	var spot: Vector2 = offside_flags[p.id]
+	teams[p.team].stats.offsides += 1
+	emit(&"offside", {"player": p.id})
+	emit(&"whistle", {"reason": "offside"})
+	begin_restart(Restart.FREE_KICK, 1 - p.team, Pitch.clamp_inside(spot, 1.0))
+	return true
+
+
 ## Bookkeeping for any ball touch. Returns true if play was stopped (offside).
 func _register_touch(p: SimPlayer, deliberate: bool) -> bool:
-	if offside_flags.has(p.id) and p.team == offside_team and ball.kicker != p.id:
-		var spot: Vector2 = offside_flags[p.id]
-		teams[p.team].stats.offsides += 1
-		emit(&"offside", {"player": p.id})
-		emit(&"whistle", {"reason": "offside"})
-		begin_restart(Restart.FREE_KICK, 1 - p.team, Pitch.clamp_inside(spot, 1.0))
+	if _offside_involvement(p):
 		return true
 	if deliberate and (p.team != offside_team or ball.kicker != p.id):
 		offside_flags.clear()

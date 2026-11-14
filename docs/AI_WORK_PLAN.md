@@ -30,8 +30,8 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 | Order | ID | Status | Dependency | Result |
 | --- | --- | --- | --- | --- |
 | 1 | QA01 | DONE | None | Failing checks produce failing commands; assertions actually assert. |
-| 2 | RULE01 | READY | QA01 | Offside is enforced before a flagged first-time kick. |
-| 3 | RULE02 | TODO | QA01, RULE01 | Keeper foot control preserves a back-pass restriction. |
+| 2 | RULE01 | DONE | QA01 | Offside is enforced before a flagged first-time kick. |
+| 3 | RULE02 | READY | QA01, RULE01 | Keeper foot control preserves a back-pass restriction. |
 | 4 | SAVE01 | READY | QA01 | Nested invalid saves recover safely; no script errors during validation. |
 | 5 | MEM01 | READY | QA01 | Repeated matches release simulation ownership cycles. |
 | 6 | SUB01 | READY | QA01 | Fresh substitutes do not inherit outgoing action/recovery state. |
@@ -144,6 +144,12 @@ Acceptance:
 - Normal offside on receipt still works, including after switching ends.
 - Throw-in/corner/goal-kick exemptions and restart double-touch behaviour do not regress.
 - The same incident cannot add multiple whistles, shots or goals.
+
+Status: **DONE** (session 2). `_try_kick` now calls `_offside_involvement(p)` before any kick metadata is
+replaced; `_register_touch` uses the same helper. Review case passes (offsides=1, shots=0, defending free kick).
+New tests in `test_offside`: flagged first-time shot in both attacking directions (one whistle, no kick, no
+goal after 240 further ticks), onside first-time shot executes, throw-in exemption and double-touch bar.
+310 core checks pass; legacy scenarios unchanged at 67/72.
 
 ## AI01 — Consume runner events at the intended tick
 

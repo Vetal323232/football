@@ -619,6 +619,89 @@ func test_offside() -> void:
 		if sim2.state == MatchSim.State.PLAYING:
 			sim2._possession()
 	check(sim2.state == MatchSim.State.PLAYING and sim2.ball.owner == r2.id, "onside pass is received normally")
+	# First-time kick by a flagged player: offside, and the kick itself never happens.
+	for dir_sign: float in [1.0, -1.0]:
+		var sf := new_sim()
+		open_play(sf, Vector2.ZERO)
+		if dir_sign < 0.0:
+			for tm in sf.teams:
+				tm.dir = -tm.dir   # second half: ends switched
+		var pf := sf.players[sf.teams[0].player_ids[6]]
+		var rf := sf.players[sf.teams[0].player_ids[9]]
+		for id in sf.teams[1].player_ids:
+			var df := sf.players[id]
+			df.pos = Vector2(48 * dir_sign, 0) if df.is_keeper() else Vector2(20 * dir_sign, -25.0 + df.role * 4.0)
+		pf.pos = Vector2(5 * dir_sign, 0)
+		pf.passing = 1.0
+		rf.pos = Vector2(35 * dir_sign, 0)
+		sf.ball.owner = pf.id
+		sf.ball.pos = pf.pos + Vector2(0.5 * dir_sign, 0)
+		pf.pending_kick = KickRequest.make(KickRequest.Kind.PASS, Vector2(dir_sign, 0), 24.0, 0.0, rf.id, rf.pos)
+		pf.pending_kick_t = 0.3
+		sf._resolve_actions()
+		var counts := {"offside": 0, "whistle": 0, "kick": 0, "goal": 0}
+		sf.event.connect(func(kind: StringName, _d: Dictionary) -> void:
+			if counts.has(String(kind)):
+				counts[String(kind)] += 1)
+		sf.ball.pos = rf.pos + Vector2(0.3 * dir_sign, 0)
+		rf.pending_kick = KickPlanner.plan_ai_shot(sf, rf)
+		rf.pending_kick_t = 0.4
+		sf._try_kick(rf)
+		var tag := "attacking %s" % ("+x" if dir_sign > 0.0 else "-x after switching ends")
+		check(sf.state == MatchSim.State.RESTART_SETUP and sf.restart_type == MatchSim.Restart.FREE_KICK and sf.restart_team == 1, "flagged first-time shot is offside (%s)" % tag)
+		check(sf.teams[0].stats.shots == 0 and counts["kick"] == 0, "the offside shot is never executed (%s)" % tag)
+		run(sf, 240)
+		check(sf.teams[0].stats.offsides == 1 and counts["offside"] == 1 and counts["whistle"] == 1 and counts["goal"] == 0, "one incident: one whistle, no shot, no goal (%s)" % tag)
+	# The same first-time shot from an onside position is executed.
+	var so := new_sim()
+	open_play(so, Vector2.ZERO)
+	var po := so.players[so.teams[0].player_ids[6]]
+	var ro := so.players[so.teams[0].player_ids[9]]
+	for id in so.teams[1].player_ids:
+		var d_o := so.players[id]
+		d_o.pos = Vector2(48, 0) if d_o.is_keeper() else Vector2(40, -25.0 + d_o.role * 4.0)
+	po.pos = Vector2(5, 0)
+	ro.pos = Vector2(35, 0)
+	so.ball.owner = po.id
+	so.ball.pos = po.pos + Vector2(0.5, 0)
+	po.pending_kick = KickRequest.make(KickRequest.Kind.PASS, Vector2.RIGHT, 24.0, 0.0, ro.id, ro.pos)
+	po.pending_kick_t = 0.3
+	so._resolve_actions()
+	so.ball.pos = ro.pos + Vector2(0.3, 0)
+	ro.pending_kick = KickPlanner.plan_ai_shot(so, ro)
+	ro.pending_kick_t = 0.4
+	so._try_kick(ro)
+	check(so.state == MatchSim.State.PLAYING and so.teams[0].stats.shots == 1 and so.teams[0].stats.offsides == 0 and so.ball.kicker == ro.id, "onside first-time shot is executed")
+	# Throw-in exemption: a receiver beyond the last defender is not flagged.
+	var st := new_sim()
+	open_play(st, Vector2.ZERO)
+	for id in st.teams[1].player_ids:
+		var dt := st.players[id]
+		dt.pos = Vector2(48, 0) if dt.is_keeper() else Vector2(10, -20.0 + dt.role * 3.0)
+	st.begin_restart(MatchSim.Restart.THROW_IN, 0, Vector2(15, Pitch.HALF_W))
+	st._snap_restart_positions()
+	st.state = MatchSim.State.RESTART_READY
+	st.restart_ready_t = 1.0
+	var taker := st.players[st.restart_taker]
+	var rt := st.players[st.teams[0].player_ids[9]]
+	if rt.id == taker.id:
+		rt = st.players[st.teams[0].player_ids[7]]
+	rt.pos = Vector2(30, 28)
+	for id in st.teams[1].player_ids:
+		var dt2 := st.players[id]
+		dt2.pos = Vector2(48, 0) if dt2.is_keeper() else Vector2(10, -20.0 + dt2.role * 3.0)
+	st.ball.owner = taker.id
+	taker.pending_kick = KickRequest.make(KickRequest.Kind.PASS, rt.pos - st.ball.pos, 12.0, 2.0, rt.id, rt.pos)
+	taker.pending_kick_t = 0.3
+	st._try_kick(taker)
+	check(st.state == MatchSim.State.PLAYING and st.ball.no_offside and not st.offside_flags.has(rt.id), "no offside directly from a throw-in")
+	check(st.ball.restart_taker == taker.id, "restart taker is still barred from a second touch")
+	st.ball.pos = rt.pos + Vector2(0.2, 0)
+	st.ball.h = 0.3   # the throw has come down to a playable height
+	rt.pending_kick = KickRequest.make(KickRequest.Kind.PASS, Vector2.LEFT, 10.0, 0.0, -1, rt.pos + Vector2(-10, 0))
+	rt.pending_kick_t = 0.3
+	st._try_kick(rt)
+	check(st.state == MatchSim.State.PLAYING and st.teams[0].stats.offsides == 0 and st.ball.restart_taker == -1, "first-time touch after a throw-in is legal and releases the double-touch bar")
 	# A player in his own half is never offside.
 	var sim3 := new_sim()
 	open_play(sim3, Vector2.ZERO)
