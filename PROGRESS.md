@@ -1,6 +1,6 @@
 # Progress
 
-Last update: 2026-11-14, independent review of Claude session 2. Engine Godot 4.5.1-stable, GL Compatibility.
+Last update: 2026-11-14, Claude session 3 (review boundary cases closed, AI02 done). Engine Godot 4.5.1-stable, GL Compatibility.
 
 ## Active handoff
 
@@ -12,14 +12,14 @@ Last update: 2026-11-14, independent review of Claude session 2. Engine Godot 4.
   but follows the tactical phase.
 - **Checks at this revision (real results):**
   - `godot --headless -s tests/run_tests.gd` -> 442 checks, 0 failed, exit 0.
-  - `python3 tools/run_deep_audit.py --godot godot --out <dir>` -> **47/47, exit 0** (run before AI02; AI02 touched
-    only `SimQuery`, `OnBallAI.decide`, tuning and tests).
-  - `tools/review_regressions.gd` -> 5/5 at bb03a1a; **not rerun after AI02**.
+  - `python3 tools/run_deep_audit.py --godot godot --out <dir>` -> **47/47, exit 0** (rerun after AI02).
+  - `tools/review_regressions.gd` -> 5 checks, 0 failed (rerun after AI02).
   - Scenarios, unchanged predicates: legacy **63/72** (exit 1), extended 44..99 **129/144**, review seeds
     107/131/167/199 **88/96**. Per-scenario table in `docs/AI_VALIDATION.md` (top section).
   - Matches seeds 1..8, 360 s: 70v70 2W/4D/2L, 7:9, 15.2 shots/match, middle third 43–52 %, 0 stalls/conflicts;
-    84v62 7W/1D/0L, 24:5. `tools/career_journey.gd -- --played=3 --duration=60` OK (before AI02).
-  - Not rerun after AI02: fuzz_human, career_journey, deep audit, review regressions, Windows export.
+    84v62 7W/1D/0L, 24:5.
+  - After AI02: `tools/fuzz_human.gd -- --seeds=4..15 --duration=30` FUZZ OK;
+    `tools/career_journey.gd -- --played=3 --duration=60` JOURNEY OK. Not rerun: Windows export, screenshots.
 - **What AI02 changed:** dribble options are scored per gait with `SimQuery.carry_time` and command that gait;
   forecast error <= 0.019 s straight. Attack improved (extended `attack_3v2` 5 -> 13/18, `blocked_lane` 18/18);
   defence exposed: `high_loss` legacy 9 -> 6, extended 15 -> 11, review 8/12; `wing_defence` legacy 8/9;
