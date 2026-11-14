@@ -71,6 +71,11 @@ extends Resource
 @export var throw_speed_max := 15.0
 @export var shot_charge_time := 0.85
 
+@export_group("Pass assistance")
+@export var assist_cone := 1.15
+@export var assist_cone_wide_aimed := 1.5
+@export var assist_cone_wide_free := 1.75
+
 @export_group("Tackling")
 @export var tackle_window := 0.26
 @export var tackle_reach := 1.0

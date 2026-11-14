@@ -119,7 +119,11 @@ func assist_pass(p: SimPlayer, kind: int) -> KickRequest:
 	var line := SimQuery.offside_line_local(sim, team)
 	var best: SimPlayer = null
 	var best_s := -INF
-	for cone: float in [1.15, 1.75]:
+	# A deliberate direction is a promise: the ball never goes to someone behind it.
+	# Without input the facing direction is only a hint, so the wider fallback cone stays.
+	var deliberate := input.move.length() > 0.25
+	var wide_cone := sim.tn.assist_cone_wide_aimed if deliberate else sim.tn.assist_cone_wide_free
+	for cone: float in [sim.tn.assist_cone, wide_cone]:
 		for id in tm.player_ids:
 			if id == p.id:
 				continue
@@ -129,7 +133,7 @@ func assist_pass(p: SimPlayer, kind: int) -> KickRequest:
 			if d < 3.0:
 				continue
 			var ang := absf(aim.angle_to(to))
-			if ang > cone:
+			if ang > cone or (deliberate and to.dot(aim) <= 0.0):
 				continue
 			var s := -ang * 1.7
 			match kind:
@@ -161,13 +165,7 @@ func assist_pass(p: SimPlayer, kind: int) -> KickRequest:
 		if best != null:
 			break
 	if best == null:
-		# Nobody in that direction: play the ball into space where the player aims.
-		last_assist_receiver = -1
-		var tgt := Pitch.clamp_inside(from + aim * 16.0, 1.0)
-		last_assist_target = tgt
-		if kind == KickRequest.Kind.LOB:
-			return KickPlanner._lob_launch(sim, from, Pitch.clamp_inside(from + aim * 30.0, 1.0), 1.9, KickRequest.Kind.LOB, -1)
-		return KickRequest.make(kind, aim, 14.0, 0.0, -1, tgt)
+		return _space_pass(from, aim, kind)
 	var plan := {}
 	match kind:
 		KickRequest.Kind.PASS:
@@ -178,9 +176,22 @@ func assist_pass(p: SimPlayer, kind: int) -> KickRequest:
 				plan = KickPlanner.plan_ground(sim, p, best)
 		_:
 			plan = KickPlanner.plan_lob(sim, p, best)
+	# The planner leads the receiver; if that lead would send the ball behind the aim, play into space instead.
+	if deliberate and (plan["req"] as KickRequest).dir.dot(aim) < 0.0:
+		return _space_pass(from, aim, kind)
 	last_assist_receiver = best.id
 	last_assist_target = plan["target"]
 	return plan["req"]
+
+
+## Nobody suitable in that direction: play the ball into space where the player aims.
+func _space_pass(from: Vector2, aim: Vector2, kind: int) -> KickRequest:
+	last_assist_receiver = -1
+	var tgt := Pitch.clamp_inside(from + aim * 16.0, 1.0)
+	last_assist_target = tgt
+	if kind == KickRequest.Kind.LOB:
+		return KickPlanner._lob_launch(sim, from, Pitch.clamp_inside(from + aim * 30.0, 1.0), 1.9, KickRequest.Kind.LOB, -1)
+	return KickRequest.make(kind, aim, 14.0, 0.0, -1, tgt)
 
 
 func _shot(p: SimPlayer, charge: float) -> KickRequest:

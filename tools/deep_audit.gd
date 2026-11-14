@@ -3,7 +3,7 @@ extends SceneTree
 ## Run through run_deep_audit.py: GDScript runtime errors can otherwise exit 0.
 ## Does not modify gameplay. All save files use an isolated audit directory.
 
-const CASES := ["determinism", "career_stress", "substitution_state", "backpass_feet", "pause_shot", "pass_handoff", "keeper_only_lineup", "match_lifetime"]
+const CASES := ["determinism", "career_stress", "substitution_state", "backpass_feet", "pause_shot", "pass_handoff", "keeper_only_lineup", "match_lifetime", "camera_input"]
 var failed := 0
 var checks := 0
 var tuning: GameTuning
@@ -360,3 +360,31 @@ func _match_lifetime() -> void:
 		if refs[i].get_ref() != null:
 			alive.append(labels[i])
 	_check(alive.is_empty(), "match_lifetime", "matches still alive after their owner released them: %d/%d %s" % [alive.size(), refs.size(), ", ".join(alive)])
+
+
+## INPUT01: keyboard directions are converted through the broadcast camera to the sim plane,
+## and an assisted pass made with that converted aim stays in the aimed half-plane.
+func _camera_input() -> void:
+	var game = root.get_node("Game")
+	game.pending_setup = MatchSetup.exhibition(51)
+	game.pending_setup.human_team = 0
+	var view = load("res://scenes/match.tscn").instantiate()
+	root.add_child(view)
+	view.set_physics_process(false)
+	view.set_process(false)
+	var sim: MatchSim = view.sim
+	var expect := {"move_right": Vector2(1, 0), "move_left": Vector2(-1, 0), "move_up": Vector2(0, -1), "move_down": Vector2(0, 1)}
+	var bad := PackedStringArray()
+	for action: String in expect:
+		Input.action_press(action)
+		view._sample_input()
+		var mv: Vector2 = sim.human.input.move
+		Input.action_release(action)
+		if mv.distance_to(expect[action]) > 0.02:
+			bad.append("%s->%s" % [action, mv])
+		var p: SimPlayer = sim.players[sim.human.controlled]
+		var req: KickRequest = sim.human.assist_pass(p, KickRequest.Kind.PASS)
+		if req.dir.dot(mv) < 0.0:
+			bad.append("%s pass behind aim" % action)
+	_check(bad.is_empty(), "camera_input", "wrong conversions: %s" % ", ".join(bad))
+	view.free()

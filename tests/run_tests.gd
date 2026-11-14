@@ -53,6 +53,7 @@ func _init() -> void:
 	test_tackle_needs_reach()
 	test_halves_and_clock()
 	test_control_handoff()
+	test_pass_assist()
 	test_idle_human_restart()
 	test_keeper()
 	test_backpass()
@@ -973,6 +974,107 @@ func test_control_handoff() -> void:
 		if p.is_human:
 			humans += 1
 	check(humans == 1, "still exactly one human-controlled player")
+
+
+func test_pass_assist() -> void:
+	group("pass assistance direction")
+	# Both teams, both halves (attack directions), four aims; one candidate at a given angle from the aim.
+	for human_team in 2:
+		for flip in 2:
+			var sim := new_sim(9 + human_team, human_team)
+			open_play(sim, Vector2.ZERO)
+			if flip == 1:
+				for tm in sim.teams:
+					tm.dir = -tm.dir
+			var ids := sim.teams[human_team].player_ids
+			var passer := sim.players[ids[9]]
+			var mate := sim.players[ids[10]]
+			sim.human._set_controlled(passer.id)
+			for id in ids:
+				if id != passer.id and id != mate.id:
+					sim.players[id].pos = Vector2(-35, -25) * (1.0 if human_team == 0 else -1.0)
+			for id in sim.teams[1 - human_team].player_ids:
+				sim.players[id].pos = Vector2(40, 30) * (1.0 if human_team == 0 else -1.0)
+			var label := "team %d, dir %+d" % [human_team, int(sim.teams[human_team].dir)]
+			var all_ok := true
+			var selected_85 := true
+			var rejected_95 := true
+			var space_ok := true
+			for aim: Vector2 in [Vector2.RIGHT, Vector2.LEFT, Vector2.UP, Vector2.DOWN, Vector2(1, 1).normalized()]:
+				passer.pos = Vector2.ZERO
+				passer.facing = -aim   # facing away must not matter when a direction is held
+				for id in ids:
+					if id != passer.id and id != mate.id:
+						sim.players[id].pos = -aim * 30.0   # everyone else is directly behind the aim
+				sim.ball.owner = passer.id
+				sim.ball.pos = aim * 0.5
+				sim.human.input.move = aim
+				for kind: int in [KickRequest.Kind.PASS, KickRequest.Kind.THROUGH, KickRequest.Kind.LOB]:
+					for deg: float in [0.0, 40.0, 85.0, 95.0, 130.0, 180.0]:
+						for side: float in [1.0, -1.0]:
+							mate.pos = sim.ball.pos + aim.rotated(deg_to_rad(deg) * side) * 18.0
+							mate.vel = Vector2.ZERO
+							var req := sim.human.assist_pass(passer, kind)
+							if req.dir.dot(aim) < -0.001:
+								all_ok = false
+							if req.receiver == mate.id and (mate.pos - sim.ball.pos).dot(aim) <= 0.0:
+								all_ok = false
+							if kind == KickRequest.Kind.PASS and deg == 85.0 and req.receiver != mate.id:
+								selected_85 = false
+							if deg >= 95.0 and req.receiver != -1:
+								rejected_95 = false
+							if deg >= 95.0 and req.dir.dot(aim) < 0.99:
+								space_ok = false
+			check(all_ok, "no assisted kick goes behind a held direction (%s)" % label)
+			check(selected_85, "a lateral team-mate 85 degrees off the aim can still be chosen (%s)" % label)
+			check(rejected_95, "a team-mate 95+ degrees off the aim is never chosen (%s)" % label)
+			check(space_ok, "with only backward candidates the ball is played into space along the aim (%s)" % label)
+	# A moving receiver whose lead point ends up behind the aim falls back to a space pass.
+	var s2 := new_sim(9, 0)
+	open_play(s2, Vector2.ZERO)
+	var ids2 := s2.teams[0].player_ids
+	var ps := s2.players[ids2[9]]
+	var mt := s2.players[ids2[10]]
+	s2.human._set_controlled(ps.id)
+	ps.pos = Vector2.ZERO
+	s2.ball.owner = ps.id
+	s2.ball.pos = Vector2(0.5, 0)
+	mt.pos = Vector2(2.5, 14)
+	mt.vel = Vector2(-7.5, 0)
+	s2.human.input.move = Vector2.RIGHT
+	var rq := s2.human.assist_pass(ps, KickRequest.Kind.PASS)
+	check(rq.dir.dot(Vector2.RIGHT) >= 0.0, "receiver running back across the aim: kick still not behind the aim")
+	# Without a held direction the facing is only a hint: the wide fallback still finds a team-mate.
+	s2.human.input.move = Vector2.ZERO
+	ps.facing = Vector2.RIGHT
+	mt.vel = Vector2.ZERO
+	mt.pos = s2.ball.pos + Vector2.RIGHT.rotated(deg_to_rad(95.0)) * 15.0
+	var rq2 := s2.human.assist_pass(ps, KickRequest.Kind.PASS)
+	check(rq2.receiver == mt.id, "no direction held: a team-mate slightly behind the facing may be used")
+	# Assistance only plans the kick; the outcome is physical (the pass can be cut out).
+	var s3 := new_sim(9, 0)
+	open_play(s3, Vector2.ZERO)
+	var ids3 := s3.teams[0].player_ids
+	var p3 := s3.players[ids3[9]]
+	var m3 := s3.players[ids3[10]]
+	var blocker := s3.players[s3.teams[1].player_ids[5]]
+	s3.human._set_controlled(p3.id)
+	p3.pos = Vector2.ZERO
+	p3.passing = 1.0
+	s3.ball.owner = p3.id
+	s3.ball.pos = Vector2(0.5, 0)
+	m3.pos = Vector2(20, 0)
+	blocker.pos = Vector2(10, 0)
+	s3.human.input.move = Vector2.RIGHT
+	p3.pending_kick = s3.human.assist_pass(p3, KickRequest.Kind.PASS)
+	p3.pending_kick_t = 0.3
+	s3._resolve_actions()
+	for i in 120:
+		s3.tick += 1
+		s3._update_timers()
+		s3._ball_step()
+		s3._possession()
+	check(s3.ball.owner != m3.id, "an assisted pass through an opponent is not guaranteed to arrive")
 
 
 func test_idle_human_restart() -> void:

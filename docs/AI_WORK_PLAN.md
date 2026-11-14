@@ -35,7 +35,7 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 | 4 | SAVE01 | DONE | QA01 | Nested invalid saves recover safely; no script errors during validation. |
 | 5 | MEM01 | DONE | QA01 | Repeated matches release simulation ownership cycles. |
 | 6 | SUB01 | DONE | QA01 | Fresh substitutes do not inherit outgoing action/recovery state. |
-| 7 | INPUT01 | READY | QA01 | Forward intent cannot select a receiver behind the aim. |
+| 7 | INPUT01 | DONE | QA01 | Forward intent cannot select a receiver behind the aim. |
 | 8 | INPUT02 | READY | QA01 | Initial human handoff follows the selected eligible receiver. |
 | 9 | INPUT03 | READY | QA01 | Releasing a charged shot in pause does not fire on resume. |
 | 10 | CAREER01 | TODO | QA01, SAVE01 | Auto-lineup handles negative candidate scores and invalid roster shapes. |
@@ -266,6 +266,14 @@ Acceptance:
 - A valid forward or lateral candidate can still be selected as specified.
 - Verify near-90-degree cases, both teams, both halves, and keyboard camera conversion.
 - Passing assistance still leaves outcome to the common physical simulation.
+
+Status: **DONE** (session 2). With a held direction the fallback cone is 1.5 rad (`assist_cone_wide_aimed`),
+candidates with a non-positive projection on the aim are rejected, and a planned lead that would point behind
+the aim becomes a space pass; without input the old 1.75 rad facing fallback remains. Cone values moved to
+`GameTuning`. Review `forward_pass` passes. New `test_pass_assist` (19 checks): both teams x both attack
+directions x five aims x three pass kinds x angles 0..180 on both sides, 85-degree lateral still chosen,
+95+ never, moving receiver, no-input fallback, and an assisted pass cut out by an opponent.
+New `deep_audit.gd --case=camera_input` checks the four keys through the real match camera.
 
 ## MEM01 — Release match ownership cycles
 
