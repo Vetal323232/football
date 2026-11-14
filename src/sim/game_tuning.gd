@@ -57,13 +57,13 @@ extends Resource
 @export var kick_lock_time := 0.32
 
 @export_group("Kicking")
-@export var pass_arrive_speed := 8.5
+@export var pass_arrive_speed := 10.0
 @export var pass_speed_max := 24.0
 @export var shot_speed_min := 17.0
 @export var shot_speed_base := 26.0
 @export var shot_speed_attr := 6.0
-@export var pass_error_bad := 0.075
-@export var pass_error_good := 0.014
+@export var pass_error_bad := 0.06
+@export var pass_error_good := 0.01
 @export var shot_error_bad := 0.085
 @export var shot_error_good := 0.022
 @export var loft_error_mult := 1.5
@@ -98,7 +98,7 @@ extends Resource
 @export_group("AI timing")
 @export var team_update_ticks := 6
 @export var onball_decision_time := 0.15
-@export var settle_time := 0.28
+@export var settle_time := 0.2
 @export var dribble_commit_time := 0.4
 @export var press_switch_margin := 0.45
 @export var press_min_commit := 1.0
@@ -115,9 +115,9 @@ extends Resource
 @export var pass_margin_soft := 0.2
 @export var hold_decay := 0.012
 @export var impatience_gain := 0.03
-@export var shot_min_xg := 0.03
-@export var goal_value := 2.2
-@export var progress_bonus := 0.012
+@export var shot_min_xg := 0.025
+@export var goal_value := 2.6
+@export var progress_bonus := 0.04
 @export var through_arrive_speed := 8.0
 @export var xg_scale := 1.0
 @export var support_dist_min := 7.0

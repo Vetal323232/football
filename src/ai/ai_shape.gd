@@ -51,8 +51,8 @@ static func attack_anchor(role: int, f: Vector2, tac: TeamTactics, off_line: flo
 
 
 static func defence_line_x(b: Vector2, tac: TeamTactics) -> float:
-	var gap := clampf((b.x + Pitch.HALF_L) * 0.36, 5.0, 21.0)
-	var max_line := lerpf(-17.0, -3.0, tac.line_height)
+	var gap := clampf((b.x + Pitch.HALF_L) * 0.42, 5.0, 24.0)
+	var max_line := lerpf(-24.0, -8.0, tac.line_height)
 	return clampf(b.x - gap, -Pitch.HALF_L + 6.5, max_line)
 
 

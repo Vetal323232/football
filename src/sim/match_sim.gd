@@ -440,9 +440,9 @@ func _try_kick(p: SimPlayer) -> void:
 	if dead_ball or from_hands:
 		sigma *= 0.6
 	else:
-		sigma *= 1.0 + 0.5 * minf(SimQuery.pressure(self, p), 1.5)
-		sigma *= 1.0 + 0.6 * p.vel.length() / p.top_speed(tn)
-		sigma *= 1.0 + 0.9 * absf(p.facing.angle_to(k.dir)) / PI
+		sigma *= 1.0 + 0.35 * minf(SimQuery.pressure(self, p), 1.5)
+		sigma *= 1.0 + 0.35 * p.vel.length() / p.top_speed(tn)
+		sigma *= 1.0 + 0.5 * absf(p.facing.angle_to(k.dir)) / PI
 		if first_time:
 			sigma *= tn.first_time_error_mult
 	if not p.is_human:
@@ -724,6 +724,8 @@ func _free_ball_contacts() -> void:
 	var best: SimPlayer = null
 	var best_d := INF
 	var best_hands := false
+	var fresh_kick := ball.in_pass and tick - ball.kick_tick < 8 and ball.kicker >= 0
+	var kick_team := players[ball.kicker].team if ball.kicker >= 0 else -1
 	for p in players:
 		if not p.can_touch_ball() and not (p.is_keeper() and p.dive_t > 0.0):
 			continue
@@ -731,6 +733,9 @@ func _free_ball_contacts() -> void:
 			continue
 		var d := p.pos.distance_to(ball.pos)
 		if d > 2.0:
+			continue
+		# A freshly struck ball can only be blocked from in front, not grabbed from beside/behind.
+		if fresh_kick and p.team != kick_team and ball.vel.dot(p.pos - ball.pos) <= 0.0:
 			continue
 		var hands := _may_handle(p)
 		var ok := false

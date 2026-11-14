@@ -25,6 +25,9 @@ var long_shots := 0
 var shot_dist_sum := 0.0
 var shots := 0
 var min_pair_sum := 0.0
+var loss_causes := {}
+var _last_cause := ""
+var _last_kick_label := ""
 
 
 func attach(sim_: MatchSim, verbose_ := false) -> void:
@@ -38,6 +41,7 @@ func _on_event(kind: StringName, data: Dictionary) -> void:
 		&"kick":
 			var k := int(data["kind"])
 			kicks_by_kind[k] = int(kicks_by_kind.get(k, 0)) + 1
+			_last_cause = ["pass", "through", "lob", "shot", "clear"][k]
 			var p: SimPlayer = sim.players[int(data["player"])]
 			if k == KickRequest.Kind.SHOT:
 				var tm := sim.teams[p.team]
@@ -60,6 +64,21 @@ func _on_event(kind: StringName, data: Dictionary) -> void:
 				decisions[lbl] = int(decisions.get(lbl, 0)) + 1
 		&"possession":
 			pass_chain.clear()
+			var np: SimPlayer = sim.players[int(data["player"])]
+			var loser := sim.teams[1 - np.team]
+			var lx := np.pos.x * loser.dir
+			var zone := "own3" if lx < -17.5 else ("mid3" if lx < 17.5 else "att3")
+			var key := "%s:%s" % [zone, _last_cause if _last_cause != "" else "?"]
+			loss_causes[key] = int(loss_causes.get(key, 0)) + 1
+			_last_cause = ""
+		&"tackle":
+			if data["won"]:
+				_last_cause = "tackle"
+		&"deflect":
+			if _last_cause == "":
+				_last_cause = "deflect"
+		&"save":
+			_last_cause = "save"
 		&"goal":
 			var sc := int(data["scorer"])
 			goals.append(data.duplicate())
@@ -147,5 +166,11 @@ func summary() -> String:
 	out.append("  ball crowd avg %.2f max %d | swarm %.1f%% | min teammate gap avg %.1fm | thirds %2.0f/%2.0f/%2.0f%% | ping-pong %d | stalls %d" % [
 		crowd_sum / s, crowd_max, 100.0 * swarm_ticks / s, min_pair_sum / (2.0 * s), 100.0 * third_ticks[0] / s, 100.0 * third_ticks[1] / s, 100.0 * third_ticks[2] / s, ping_pong, sim.stalls])
 	out.append("  shots avg dist %.1fm, long(>28m) %d | restarts %s | max restart wait %.1fs | max keeper hold %.1fs" % [shot_dist_sum / maxf(1, shots), long_shots, str(restarts), max_restart_wait, max_keeper_hold])
+	var lc := loss_causes.keys()
+	lc.sort()
+	var lcs := PackedStringArray()
+	for k2: String in lc:
+		lcs.append("%s %d" % [k2, loss_causes[k2]])
+	out.append("  possession losses (zone of losing team : cause): %s" % ", ".join(lcs))
 	out.append("  kicks: %s | decisions T0 %s | T1 %s" % [str(decisions), str(sim.teams[0].ai.decision_counts), str(sim.teams[1].ai.decision_counts)])
 	return "\n".join(out)

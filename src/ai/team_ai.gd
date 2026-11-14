@@ -333,7 +333,8 @@ func _ball_claims() -> void:
 	else:
 		var theirs_pass := b.in_pass and b.kicker >= 0
 		if theirs_pass:
-			if our_eta < opp_eta - 0.05 or our_eta < 0.6:
+			# Defenders need a reaction time to read an opponent's pass.
+			if now - b.kick_tick * MatchSim.DT >= tac.reaction_time and (our_eta < opp_eta - 0.05 or our_eta < 0.6):
 				chaser_id = best_id
 		else:
 			chaser_id = best_id
@@ -379,7 +380,7 @@ func _plan_attack() -> void:
 	if fl.x > _progress_x + 4.0:
 		_progress_x = fl.x
 		_progress_t = now
-	impatience = clampf((now - _progress_t - 3.0) / 6.0, 0.0, 1.0)
+	impatience = clampf((now - _progress_t - 2.0) / 5.0, 0.0, 1.0)
 
 	var bs := signf(fl.y) if absf(fl.y) > 4.0 else 0.0
 	var carrier_role := -1
