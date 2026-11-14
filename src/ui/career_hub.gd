@@ -347,8 +347,10 @@ func _lineup() -> void:
 			if not lineup.has(pid):
 				inner.add_child(UIKit.label("        " + _player_line(cs.player(pid)), 18, UIKit.MUTED))
 		v.add_child(UIKit.button(tr("LINEUP_AUTO"), func() -> void:
-			cs.auto_lineup(cs.data["user_club"])
-			_autosave()
+			if cs.auto_lineup(cs.data["user_club"]):
+				_autosave()
+			else:
+				_message = tr("LINEUP_INVALID")
 			_show()))
 		v.add_child(UIKit.button(tr("BACK"), _back))
 	else:

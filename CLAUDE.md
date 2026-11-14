@@ -18,11 +18,12 @@ Read the **Active handoff** at the top of `PROGRESS.md` before resuming. Runtime
 - Context/token limits require a resumable checkpoint in PROGRESS.md: exact branch/revision, dirty files,
   completed/open acceptance, commands/results/evidence and one concrete next action. Preserve colleague work;
   resume the unfinished task rather than resetting the queue. One active task; no competing TODO/progress files.
-- `tools/review_regressions.gd` contains five desired-behaviour checks that currently fail on the baseline.
+- `tools/review_regressions.gd` contains five desired-behaviour checks (one still failing: AI01).
   Keep their expectations; document remaining failures while completing unrelated tasks.
 - Behavioural success and process exit status must both be checked. Never treat an exit code alone as AI quality.
 - `tools/run_deep_audit.py` runs isolated corruption/state/determinism/career checks and catches script errors.
-  Baseline: 11/37 subprocess cases pass (exit 1); failures are open defects, not optional green-check exclusions.
+  Baseline was 11/37; now 42/42. Any new failure is a defect, not an optional green-check exclusion.
+- Owners of a `MatchSim` must call `dispose()` when done (ownership cycles; see MEM01).
 
 ## Rules
 
@@ -47,9 +48,9 @@ Read the **Active handoff** at the top of `PROGRESS.md` before resuming. Runtime
 ## Verified commands (Linux container; `godot` = Godot 4.5.1 stable)
 ```
 godot --headless --import                                   # import / parse check (also rebuilds translations)
-godot --headless -s tests/run_tests.gd                      # 300 automated checks, exit code 1 on failure (-- --violate=budget|lineup self-test must fail)
-godot --headless -s tools/review_regressions.gd             # five baseline defects reproduced; currently exit 1
-python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-audit  # extended checks; currently exit 1
+godot --headless -s tests/run_tests.gd                      # 410 automated checks, exit code 1 on failure (-- --violate=budget|lineup self-test must fail)
+godot --headless -s tools/review_regressions.gd             # desired-behaviour checks; 1 of 5 still fails (run_trigger, AI01)
+python3 tools/run_deep_audit.py --godot godot --out /tmp/openpitch-audit  # extended checks; 42/42, exit 0
 godot --headless -s tools/run_scenarios.gd                  # AI validation scenarios; exit 1 while any episode fails (currently 67/72), 2 on bad --only
 godot --headless -s tools/run_scenarios.gd -- --seeds=44,55,66,77,88,99 # extended known seeds: 123/144
 godot --headless -s tools/run_match.gd -- --seeds=1,2,3     # full AI-vs-AI matches with metrics

@@ -41,6 +41,7 @@ func _init() -> void:
 	test_standings()
 	test_result_once()
 	test_transfers()
+	test_lineup_robustness()
 	test_development()
 	test_save_load()
 	test_season_rollover()
@@ -291,6 +292,69 @@ func test_transfers() -> void:
 			owners[p2] = cid
 	check(not dup_owner and owners.size() == 160, "no duplicated or lost players (160 total)")
 	check(CareerState.validate(cs.data).is_empty(), "state valid after all transfers")
+
+
+func test_lineup_robustness() -> void:
+	group("line-up selection robustness")
+	var cs := CareerState.create("smk", 2024)
+	var std := LeagueData.auto_lineup(cs.squad_of("smk"))
+	check(std.size() == 11 and cs.lineup_valid("smk", std) == "", "standard squad: legal eleven")
+	var pos_ok := true
+	for slot in 11:
+		if cs.player(std[slot])["pos"] != LeagueData.SLOT_POS[slot]:
+			pos_ok = false
+	check(pos_ok, "standard squad: everyone in his natural position group")
+	# Adversarial roster (not reachable through the UI): 16 goalkeepers.
+	var keepers := []
+	for pid: String in cs.data["players"]:
+		if cs.player(pid)["pos"] == "GK":
+			keepers.append(cs.player(pid))
+	var kl := LeagueData.auto_lineup(keepers)
+	var uniq := {}
+	for id: String in kl:
+		uniq[id] = true
+	check(kl.size() == 11 and uniq.size() == 11, "16 goalkeepers: eleven unique picks despite negative out-of-position scores")
+	# Tired players with negative scores must still be ordered sensibly: fitter one first.
+	var a: Dictionary = keepers[0].duplicate(true)
+	var b: Dictionary = keepers[0].duplicate(true)
+	a["id"] = "tired"
+	b["id"] = "fresh"
+	a["fitness"] = 0.2
+	var eleven := [a, b]
+	for i in 9:
+		var c: Dictionary = keepers[1].duplicate(true)
+		c["id"] = "k%d" % i
+		eleven.append(c)
+	var el := LeagueData.auto_lineup(eleven)
+	check(el.size() == 11 and el.find("fresh") < el.find("tired"), "low fitness lowers a candidate also when scores are negative")
+	check(LeagueData.auto_lineup([]).is_empty(), "empty roster: no line-up")
+	check(LeagueData.auto_lineup(cs.squad_of("smk").slice(0, 10)).is_empty(), "ten players: no partial line-up")
+	var messy: Array = cs.squad_of("smk")
+	messy.append(null)
+	messy.append("text")
+	messy.append({"id": "broken"})
+	messy.append(messy[0])
+	var ml := LeagueData.auto_lineup(messy)
+	check(ml.size() == 11 and cs.lineup_valid("smk", ml) == "", "malformed and duplicate entries are ignored")
+	# CareerState contract: all-or-nothing.
+	var before: Array = cs.user()["lineup"].duplicate()
+	var squad_backup: Array = cs.user()["squad"].duplicate()
+	var no_gk := []
+	for pid: String in squad_backup:
+		if cs.player(pid)["pos"] != "GK":
+			no_gk.append(pid)
+	cs.user()["squad"] = no_gk
+	cs.user()["lineup"] = no_gk.slice(0, 11)
+	var bad_before: Array = cs.user()["lineup"].duplicate()
+	check(not cs.auto_lineup("smk") and cs.user()["lineup"] == bad_before, "no goalkeeper in the squad: auto line-up refuses and changes nothing")
+	check(not cs._repair_lineup("smk"), "repair reports that no legal team can be fielded")
+	cs.user()["squad"] = squad_backup.slice(0, 9)
+	cs.user()["lineup"] = []
+	check(not cs.auto_lineup("smk") and (cs.user()["lineup"] as Array).is_empty(), "short squad: refused without a partial line-up")
+	cs.user()["squad"] = squad_backup
+	cs.user()["lineup"] = []
+	check(cs._repair_lineup("smk") and cs.user()["lineup"] == before, "valid squad: repair restores the best legal eleven")
+	check(CareerState.validate(cs.data).is_empty(), "state valid after the robustness checks")
 
 
 func test_development() -> void:

@@ -91,18 +91,32 @@ static func color(hex: String) -> Color:
 
 
 ## Best eleven in formation slot order from a list of player dicts (ids kept).
+## Contract: returns exactly 11 unique ids, or [] when the roster cannot provide eleven
+## usable records (never a partial line-up). Out-of-position picks are allowed and only
+## penalised, so any eleven usable players produce a result; whether the result is legal
+## for a match (a real goalkeeper in goal) is decided by CareerState.lineup_valid.
 static func auto_lineup(squad: Array) -> Array:
-	var pool := squad.duplicate()
+	var pool := []
+	var seen := {}
+	for entry: Variant in squad:
+		if not (entry is Dictionary):
+			continue
+		var e: Dictionary = entry
+		if not (e.get("id") is String) or not (e.get("pos") is String) or not (e.get("attrs") is Dictionary) or seen.has(e["id"]):
+			continue
+		seen[e["id"]] = true
+		pool.append(e)
+	if pool.size() < SLOT_POS.size():
+		return []
 	var lineup := []
 	for slot in SLOT_POS.size():
 		var want := SLOT_POS[slot]
 		var best: Dictionary = {}
-		var best_v := -1.0
+		var best_v := -INF
 		for p: Dictionary in pool:
-			var v := float(Attr.overall(p["attrs"], want))
+			var v := float(Attr.overall(p["attrs"], want)) * (0.6 + 0.4 * clampf(float(p.get("fitness", 1.0)), 0.0, 1.0))
 			if p["pos"] != want:
 				v -= 12.0 if want != "GK" and p["pos"] != "GK" else 60.0
-			v *= 0.6 + 0.4 * float(p.get("fitness", 1.0))
 			if v > best_v:
 				best_v = v
 				best = p

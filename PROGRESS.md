@@ -5,33 +5,33 @@ Built and checked in a Linux container (no GPU, no Windows): headless runs + sof
 
 ## Active handoff
 
-- **Implementation branch:** `claude/new-session-yr8bm1` (fast-forwarded from handoff `codex/deep-audit-claude-brief`
-  @ `7265450`, then session-2 commits). Published to origin. Queue authority: `docs/AI_WORK_PLAN.md`.
-- **DONE this session (acceptance evidence in each task's Status block):** QA01, RULE01, RULE02, SAVE01, MEM01.
-- **Active task:** none in progress. **Next task:** SUB01 (READY), then INPUT01, INPUT02, INPUT03, CAREER01, AI01.
-- **Changed files:** tools/run_scenarios.gd, tools/shot.sh, tests/run_tests.gd, src/sim/match_sim.gd,
-  src/career/career_state.gd, src/ai/team_ai.gd, src/ai/match_report.gd, src/input/human_controller.gd,
-  src/view/match_view.gd, src/core/sfx.gd, tools/audit_save_case.gd, tools/deep_audit.gd, tools/run_deep_audit.py,
-  headless tools (dispose calls), CLAUDE.md, docs/AI_WORK_PLAN.md. Working tree clean at checkpoint.
+- **Implementation branch:** `claude/new-session-yr8bm1` (based on handoff `codex/deep-audit-claude-brief` @ `7265450`
+  plus session-2 commits), published to origin. Queue authority: `docs/AI_WORK_PLAN.md`.
+- **DONE in session 2 (evidence in each task's Status block):** QA01, RULE01, RULE02, SAVE01, MEM01, SUB01,
+  INPUT01, INPUT02, INPUT03, CAREER01 — the whole foundation phase (queue orders 1–10).
+- **Active task:** none in progress. **Next task:** AI01 (READY), then AI02, AI05, AI03, AI04, V01, T01.
+  PC00 is also dependency-ready (QA01, SAVE01, MEM01, SUB01, CAREER01 done) but comes after the tactical phase.
 - **Checks at this revision (real results):**
-  - `godot --headless -s tests/run_tests.gd` -> 342 checks, 0 failed, exit 0 (`-- --violate=budget|lineup` -> exit 1).
-  - `godot --headless -s tools/run_scenarios.gd` -> TOTAL 67/72, **exit 1** (five `attack_3v2` episodes, AI03).
-  - `godot --headless -s tools/review_regressions.gd` -> 5 checks, 2 failed, exit 1
-    (open: `run_trigger` = AI01, `forward_pass` = INPUT01).
-  - `python3 tools/run_deep_audit.py --godot godot --out <dir>` -> **36/40**, exit 1 (was 11/37; 3 cases added).
-    Open: `edge/substitution_state` (SUB01), `edge/pause_shot` (INPUT03), `edge/pass_handoff` (INPUT02),
-    `edge/keeper_only_lineup` (CAREER01, script error).
-  - `tools/career_journey.gd` JOURNEY OK; 4 full matches: 0 stalls, 0 assignment conflicts.
-  - Not rerun this session: extended scenario seeds 44..99 (baseline 123/144), fuzz 12 seeds, Windows export.
-- **Behaviour changes to know:** a flagged player's first-time kick is now offside (match RNG path differs from
-  the a47746e baseline when that happens); keeper foot control keeps the back-pass ban; saves with impossible
-  round/season/line-up/fixture state are rejected and the backup is used; a disposed `MatchSim` cannot be stepped.
-- **Stale documents:** `docs/AI_VALIDATION.md` full-match numbers are from a47746e and were not regenerated.
-  The Windows build delivered in session 1 predates these fixes.
-- **External gates:** PLAY01 (Windows EXE / human play / GPU performance) unverified.
-- **Concrete next action:** `godot --headless -s tools/deep_audit.gd -- --case=substitution_state` to reproduce
-  SUB01, then reset the outgoing player's transient state in `MatchSim.substitute` / `_apply_identity`
-  (timers, pending kick, stamina/fitness from the incoming record, agent run/engage state) and add a test.
+  - `godot --headless -s tests/run_tests.gd` -> 410 checks, 0 failed, exit 0 (`-- --violate=budget|lineup` -> exit 1).
+  - `godot --headless -s tools/run_scenarios.gd` -> TOTAL 67/72, **exit 1** (five `attack_3v2` episodes = AI03).
+  - `godot --headless -s tools/review_regressions.gd` -> 5 checks, **1 failed** (`run_trigger` = AI01), exit 1.
+  - `python3 tools/run_deep_audit.py --godot godot --out <dir>` -> **42/42, exit 0** (baseline 11/37; five cases
+    added this session: both_invalid, missing_backup, match_lifetime, camera_input, pause_policy).
+  - `tools/run_scenarios.gd -- --only=human_support --seeds=44,55,66,77,88,99` -> 18/18.
+  - `tools/fuzz_human.gd -- --seeds=4..15 --duration=30` -> FUZZ OK; `tools/career_journey.gd` -> JOURNEY OK.
+  - Not rerun: full extended scenario matrix (baseline 123/144), 8-match AI metrics after the last input
+    fixes (4 matches after RULE02: 0 stalls, 0 conflicts), Windows export.
+- **Behaviour changes since a47746e:** first-time kick by a flagged player is offside; keeper foot control keeps
+  the back-pass ban; invalid saves rejected with backup recovery; `MatchSim.dispose()` must be called by owners;
+  substitutes start clean; assisted passes never go behind a held direction; handoff follows the selected
+  receiver; pause/focus loss cancels charges and pending edges; auto line-up is all-or-nothing.
+- **Stale:** `docs/AI_VALIDATION.md` match numbers (from a47746e); the session-1 Windows build predates these fixes.
+- **Known cosmetic gap:** a substitute's rig keeps the outgoing player's skin/hair colours.
+- **External gates:** PLAY01 (Windows EXE, human play, real focus/keyboard, GPU performance) unverified.
+- **Concrete next action:** `godot --headless -s tools/review_regressions.gd -- --case=run_trigger`, read the
+  AI01 section, then fix `TeamAI.run_started_tick` / `OnBallAI.drive` so the carrier's re-evaluation fires once
+  at the intended tick (currently the event is stored 12 ticks in the future and compared with `>= tick - 1`,
+  so it triggers on every tick until then).
 
 Historical audit and original implementation checkpoints follow; they are not alternate current work orders.
 

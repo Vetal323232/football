@@ -38,7 +38,7 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 | 7 | INPUT01 | DONE | QA01 | Forward intent cannot select a receiver behind the aim. |
 | 8 | INPUT02 | DONE | QA01 | Initial human handoff follows the selected eligible receiver. |
 | 9 | INPUT03 | DONE | QA01 | Releasing a charged shot in pause does not fire on resume. |
-| 10 | CAREER01 | READY | QA01, SAVE01 | Auto-lineup handles negative candidate scores and invalid roster shapes. |
+| 10 | CAREER01 | DONE | QA01, SAVE01 | Auto-lineup handles negative candidate scores and invalid roster shapes. |
 | 11 | AI01 | READY | QA01 | Runner notifications trigger at the intended time, once. |
 | 12 | AI02 | TODO | AI01 | Dribble utility evaluates the movement that will actually execute. |
 | 13 | AI05 | TODO | AI01, AI02 | Defensive recovery holds beyond the original scenario seeds. |
@@ -439,6 +439,13 @@ Acceptance:
   without partially mutating career state or returning an apparently valid broken team.
 - Standard lineup generation, transfers, keeper protection and normal career stress still pass.
 - Label this robustness case honestly; the audit did not demonstrate an ordinary UI route to the 16-GK roster.
+
+Status: **DONE** (session 2). `LeagueData.auto_lineup` contract: exactly 11 unique ids or `[]` (never partial),
+malformed/duplicate entries ignored, best candidate chosen with `-INF` start (negative scores allowed), fitness
+applied before the position penalty. `CareerState.auto_lineup` / `_repair_lineup` are all-or-nothing and
+return bool; the UI shows `LINEUP_INVALID` on refusal. `deep_audit.gd --case=keeper_only_lineup` passes without
+script error; `run_deep_audit.py` -> **42/42, exit 0**. New `test_lineup_robustness` (12 checks; the 16-GK
+roster is adversarial and has no UI route). Career stress and journey still pass.
 
 ## AI05 — Diagnose and repair recovery on the extended matrix
 

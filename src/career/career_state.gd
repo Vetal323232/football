@@ -176,13 +176,22 @@ func set_lineup(club_id: String, lineup: Array) -> bool:
 	return true
 
 
-func auto_lineup(club_id: String) -> void:
-	club(club_id)["lineup"] = LeagueData.auto_lineup(squad_of(club_id))
+## Replace the club's line-up with the best legal eleven. All-or-nothing: if the squad
+## cannot produce a legal line-up (too few players, no goalkeeper) nothing is changed
+## and false is returned.
+func auto_lineup(club_id: String) -> bool:
+	var candidate := LeagueData.auto_lineup(squad_of(club_id))
+	if lineup_valid(club_id, candidate) != "":
+		return false
+	club(club_id)["lineup"] = candidate
+	return true
 
 
-func _repair_lineup(club_id: String) -> void:
-	if lineup_valid(club_id, club(club_id)["lineup"]) != "":
-		auto_lineup(club_id)
+## True if the club has a legal line-up afterwards.
+func _repair_lineup(club_id: String) -> bool:
+	if lineup_valid(club_id, club(club_id)["lineup"]) == "":
+		return true
+	return auto_lineup(club_id)
 
 
 func match_setup_for(f: Dictionary, seed_: int) -> MatchSetup:
