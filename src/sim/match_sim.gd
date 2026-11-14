@@ -566,7 +566,9 @@ func _register_touch(p: SimPlayer, deliberate: bool) -> bool:
 	if ball.restart_taker >= 0 and ball.restart_taker != p.id:
 		ball.restart_taker = -1
 		ball.no_offside = false
-	if ball.kicker != p.id:
+	# The back-pass restriction ends when another player touches the ball. The receiving
+	# keeper's own foot control does not lift it, however often he loses and regains the ball.
+	if ball.kicker != p.id and not (p.is_keeper() and p.team == ball.backpass_team):
 		ball.backpass_team = -1
 	ball.last_touch = p.id
 	ball.last_touch_team = p.team

@@ -50,6 +50,7 @@ func _init() -> void:
 	test_control_handoff()
 	test_idle_human_restart()
 	test_keeper()
+	test_backpass()
 	test_determinism()
 	print("%d checks, %d failed, %.1fs" % [_checks, _fails, (Time.get_ticks_msec() - t0) / 1000.0])
 	quit(1 if _fails > 0 else 0)
@@ -997,6 +998,73 @@ func test_keeper() -> void:
 	gk3.pos = Vector2(25, 0)
 	free_ball(sim3, Vector2(24.5, 0), Vector2(1, 0), 1.6)
 	check(not sim3._may_handle(gk3), "no handling outside the area")
+
+
+func test_backpass() -> void:
+	group("back-pass rule")
+	var sim := new_sim()
+	open_play(sim, Vector2.ZERO)
+	var gk := sim.players[sim.teams[0].player_ids[0]]
+	var cb := sim.players[sim.teams[0].player_ids[2]]
+	var opp := sim.players[sim.teams[1].player_ids[9]]
+	gk.pos = Vector2(-47, 0)
+	cb.pos = Vector2(-35, 0)
+	cb.passing = 1.0
+	sim.ball.owner = cb.id
+	sim.ball.pos = cb.pos + Vector2(-0.5, 0)
+	cb.pending_kick = KickRequest.make(KickRequest.Kind.PASS, Vector2.LEFT, 11.0, 0.0, gk.id, gk.pos)
+	cb.pending_kick_t = 0.3
+	sim._resolve_actions()
+	check(sim.ball.backpass_team == 0 and not sim._may_handle(gk), "deliberate pass to own keeper: no handling")
+	for i in 120:
+		sim.tick += 1
+		sim._update_timers()
+		sim._ball_step()
+		sim._possession()
+	check(sim.ball.owner == gk.id and sim.ball.held_by < 0, "keeper controls the back-pass with his feet, not his hands")
+	check(not sim._may_handle(gk), "foot control keeps handling forbidden")
+	# He loses close control and meets the ball again: still forbidden, still feet only.
+	sim.ball.owner = -1
+	sim.ball.pos = gk.pos + Vector2(2.5, 0)
+	sim.ball.vel = Vector2(-4, 0)
+	for i in 90:
+		sim.tick += 1
+		sim._update_timers()
+		sim._ball_step()
+		sim._possession()
+	check(sim.ball.held_by < 0 and not sim._may_handle(gk), "regaining the loose ball does not make handling legal")
+	# An opponent's touch ends the restriction.
+	sim.ball.owner = -1
+	opp.pos = Vector2(-44, 3)
+	sim.ball.pos = opp.pos + Vector2(0.2, 0)
+	sim.ball.vel = Vector2.ZERO
+	sim._give_possession(opp, false)
+	check(sim.ball.backpass_team == -1, "an opponent's touch clears the restriction")
+	sim.ball.owner = -1
+	sim.ball.pos = gk.pos + Vector2(0.3, 0)
+	check(sim._may_handle(gk), "after the opponent's touch the keeper may handle again")
+	# A keeper's throw is not a back-pass; his kick from the ground is his own deliberate kick.
+	var sim2 := new_sim()
+	open_play(sim2, Vector2.ZERO)
+	var gk2 := sim2.players[sim2.teams[0].player_ids[0]]
+	gk2.pos = Vector2(-47, 0)
+	sim2.ball.held_by = gk2.id
+	gk2.pending_kick = KickRequest.make(KickRequest.Kind.PASS, Vector2.RIGHT, 12.0, 2.0, -1, Vector2(-30, 0))
+	gk2.pending_kick_t = 0.3
+	sim2._resolve_actions()
+	check(sim2.ball.backpass_team == -1 and sim2.ball.held_by < 0, "a throw from the keeper's hands carries no back-pass flag")
+	# A team-mate's non-kick touch (deflection) followed by the keeper is not a back-pass.
+	var sim3 := new_sim()
+	open_play(sim3, Vector2.ZERO)
+	var gk3 := sim3.players[sim3.teams[0].player_ids[0]]
+	var cb3 := sim3.players[sim3.teams[0].player_ids[3]]
+	gk3.pos = Vector2(-47, 0)
+	sim3.ball.kicker = sim3.teams[1].player_ids[9]
+	sim3.ball.backpass_team = -1
+	sim3.ball.pos = cb3.pos
+	sim3._register_touch(cb3, false)
+	sim3.ball.pos = gk3.pos + Vector2(0.3, 0)
+	check(sim3._may_handle(gk3), "a team-mate's deflection of an opponent's ball leaves handling legal")
 
 
 func test_determinism() -> void:

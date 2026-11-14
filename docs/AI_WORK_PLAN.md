@@ -31,7 +31,7 @@ The complete implementation request is [CLAUDE_MASTER_PROMPT_EN.md](CLAUDE_MASTE
 | --- | --- | --- | --- | --- |
 | 1 | QA01 | DONE | None | Failing checks produce failing commands; assertions actually assert. |
 | 2 | RULE01 | DONE | QA01 | Offside is enforced before a flagged first-time kick. |
-| 3 | RULE02 | READY | QA01, RULE01 | Keeper foot control preserves a back-pass restriction. |
+| 3 | RULE02 | DONE | QA01, RULE01 | Keeper foot control preserves a back-pass restriction. |
 | 4 | SAVE01 | READY | QA01 | Nested invalid saves recover safely; no script errors during validation. |
 | 5 | MEM01 | READY | QA01 | Repeated matches release simulation ownership cycles. |
 | 6 | SUB01 | READY | QA01 | Fresh substitutes do not inherit outgoing action/recovery state. |
@@ -325,6 +325,11 @@ Acceptance:
 - Legitimate opponent touches and legal keeper catches/distributions still behave as specified.
 - Keep direct back-pass, restart no-second-touch and offside-history checks passing.
 - Do not add an unrelated discipline/foul system to fix the history flag.
+
+Status: **DONE** (session 2). `_register_touch` no longer clears `backpass_team` on the receiving keeper's
+own touch. `deep_audit.gd --case=backpass_feet` passes; new `test_backpass` (8 checks) covers foot control,
+losing and regaining the ball, opponent touch, keeper throw and a team-mate's deflection. 318 core checks pass,
+legacy scenarios 67/72, four full matches without stalls/conflicts.
 
 ## SUB01 — Separate player identity from outgoing transient state
 
