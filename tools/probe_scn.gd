@@ -22,7 +22,7 @@ func _init() -> void:
 			var p: SimPlayer = sim.players[int(data["player"])]
 			var ag: AIAgent = sim.teams[p.team].ai.agents[p.id]
 			var o := PackedStringArray()
-			for x: Dictionary in ag.options.slice(0, 5):
+			for x: Dictionary in ag.options.slice(0, 10):
 				o.append("%s %.3f(p%.2f)" % [x["label"], x["ev"], x["p"]])
 			print("%5.2f KICK T%d #%d %s at %s spd %.0f | %s" % [t, p.team, p.number, ag.decision_label, p.pos.snapped(Vector2(0.1, 0.1)), data["speed"], ", ".join(o)])
 		elif kind != &"bounce" and kind != &"control":

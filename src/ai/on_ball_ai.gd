@@ -237,7 +237,7 @@ static func _pick(ag: AIAgent, opts: Array) -> Dictionary:
 		ag.options = []
 		return {}
 	opts.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return float(a["ev"]) > float(b["ev"]))
-	ag.options = opts.slice(0, 6)
+	ag.options = opts.slice(0, 10)
 	return opts[0]
 
 

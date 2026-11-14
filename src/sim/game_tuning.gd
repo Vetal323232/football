@@ -119,7 +119,7 @@ extends Resource
 @export var carry_bonus := 0.015
 @export var impatience_gain := 0.03
 @export var shot_min_xg := 0.025
-@export var goal_value := 2.6
+@export var goal_value := 3.3
 @export var progress_bonus := 0.04
 @export var through_arrive_speed := 8.0
 @export var xg_scale := 1.0

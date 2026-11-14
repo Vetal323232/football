@@ -34,6 +34,8 @@ func _ready() -> void:
 		setup.seed = int(Game.cli["seed"])
 	if Game.cli.has("speed"):
 		speed = int(Game.cli["speed"])
+	if Game.cli.has("duration"):
+		setup.duration = float(Game.cli["duration"])
 	sun.shadow_enabled = bool(Game.settings["shadows"])
 	if Game.cli.has("scenario"):
 		setup = ScenarioLib.make_setup(str(Game.cli["scenario"]), int(Game.cli.get("variant", "0")), int(Game.cli.get("seed", "11")))
@@ -246,7 +248,6 @@ func _on_event(kind: StringName, data: Dictionary) -> void:
 
 func _finish() -> void:
 	finished = true
-	hud.call("show_banner", tr("FULL_TIME"), 2.0)
 	var stats := []
 	for tm in sim.teams:
 		var d := tm.stats.to_dict()

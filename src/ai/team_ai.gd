@@ -183,6 +183,9 @@ func update() -> void:
 	for id in team.player_ids:
 		var p: SimPlayer = sim.players[id]
 		if p.is_human:
+			# An idle human taker must not block the match: after the limit the AI takes the restart.
+			if sim.state == MatchSim.State.RESTART_READY and id == sim.restart_taker and sim.restart_ready_t > tn.restart_force_time_human:
+				OnBallAI.drive_restart(self, p, agents[id])
 			continue
 		_drive(p, agents[id])
 

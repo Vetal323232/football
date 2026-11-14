@@ -52,7 +52,7 @@ func _draw() -> void:
 		elif sim.human != null and selected < 0:
 			selected = sim.human.controlled
 	# Team header.
-	var y := 150.0
+	var y := 100.0
 	for tm in sim.teams:
 		var ai: TeamAI = tm.ai
 		var txt := "%s: %s %s  press=%s cover=%s  impatience %.2f  offside line %.1f  conflicts %d" % [

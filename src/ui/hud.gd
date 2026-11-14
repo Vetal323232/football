@@ -43,11 +43,11 @@ func _ready() -> void:
 	_clock.custom_minimum_size = Vector2(150, 0)
 	row.add_child(_clock)
 
-	_banner = UIKit.label("", 64, Color.WHITE)
+	_banner = UIKit.label("", 46, Color.WHITE)
 	_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_banner.add_theme_color_override("font_outline_color", Color.BLACK)
 	_banner.add_theme_constant_override("outline_size", 12)
-	UIKit.place(_banner, 0.5, 0.0, 0.5, 0.0, -600, 130, 600, 300)
+	UIKit.place(_banner, 0.5, 0.0, 0.5, 0.0, -600, 170, 600, 320)
 	root.add_child(_banner)
 
 	_hint = UIKit.label("", 24, UIKit.ACCENT)

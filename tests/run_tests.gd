@@ -39,6 +39,7 @@ func _init() -> void:
 	test_tackle_needs_reach()
 	test_halves_and_clock()
 	test_control_handoff()
+	test_idle_human_restart()
 	test_keeper()
 	test_determinism()
 	print("%d checks, %d failed, %.1fs" % [_checks, _fails, (Time.get_ticks_msec() - t0) / 1000.0])
@@ -832,6 +833,20 @@ func test_control_handoff() -> void:
 		if p.is_human:
 			humans += 1
 	check(humans == 1, "still exactly one human-controlled player")
+
+
+func test_idle_human_restart() -> void:
+	group("idle human at a restart")
+	var sim := new_sim(4, 0)
+	sim.first_kickoff_team = 0
+	sim.begin_restart(MatchSim.Restart.KICKOFF, 0, Vector2.ZERO)
+	check(sim.players[sim.restart_taker].is_human, "human controls the kick-off taker")
+	var ticks := 0
+	while sim.state != MatchSim.State.PLAYING and ticks < 1500:
+		sim.step()
+		ticks += 1
+	check(sim.state == MatchSim.State.PLAYING, "kick-off is taken automatically when the human does nothing (%.1fs)" % (ticks / 60.0))
+	check(ticks / 60.0 > tuning.restart_force_time_human, "the human gets the full time before the AI takes over")
 
 
 func test_keeper() -> void:
